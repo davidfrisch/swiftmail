@@ -270,3 +270,6 @@ ipython_config.py
 #   git rm -r .ipynb_checkpoints/
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node,Python,JupyterNotebooks
+*.sqlite3
+*.pem
+*.db
