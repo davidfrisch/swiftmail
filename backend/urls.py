@@ -5,7 +5,6 @@ UCL_URLS = [
     "http://www.ucl.ac.uk/library",
     "http://www.ucl.ac.uk/isd/services/email-calendar",
     "http://www.ucl.ac.uk/docschool",
-    "https://moodle.ucl.ac.uk/",
     "https://timetable.ucl.ac.uk/tt/homePage.do",
     "https://evision.ucl.ac.uk/urd/sits.urd/run/siw_lgn",
     "https://www.ucl.ac.uk/students/students/askucl",

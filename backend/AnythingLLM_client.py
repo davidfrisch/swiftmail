@@ -105,7 +105,7 @@ class AnythingLLM:
     response = self._make_request("POST", f"workspace/{slug}/upload-link", payload)
     return response
 
-  def embed_document_into_workspace(self, slug, adds, deletes):
+  def embed_document_into_workspace(self, slug, adds: list = [], deletes: list = []):
     """Adds and deletes are lists of document IDs."""
     payload = {
       "adds": adds,
@@ -130,7 +130,7 @@ class AnythingLLM:
     response = self._make_request("DELETE", f"workspace/{slug}")
     return response
 
-  def chat_with_workspace(self, slug, message, mode):
+  def chat_with_workspace(self, slug, message, mode: str = "chat"):
     if mode not in ["chat", "query"]:
       raise ValueError("mode must be either 'chat' or 'query'")
     

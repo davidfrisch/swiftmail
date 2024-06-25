@@ -1,13 +1,37 @@
 from AnythingLLM_client import AnythingLLM
-from constants import ANYTHING_LLM_BASE_URL, ANYTHING_LLM_TOKEN
+from LLM.OllamaLLM import OllamaAI
+from constants import ANYTHING_LLM_BASE_URL, ANYTHING_LLM_TOKEN, OLLAMA_API_URL
 from urls import UCL_URLS
 
+import json
 
 
 llm = AnythingLLM(base_url=ANYTHING_LLM_BASE_URL, token=ANYTHING_LLM_TOKEN)
 
+def add_url_to_local_files():
+    for url in UCL_URLS:
+        llm.add_url_to_local_files("test2", url)
+    
+def chat_with_llm():
+    response = llm.chat_with_workspace("test2", "WHen is the Lunch Hour Lecture | The Global Fight Against LGBTI Rights ?")
+    print(response)
+    
 
-for url in UCL_URLS:
-  llm.add_url_to_local_files("test2", url)
-  
-  
+def extract_data_from_text_response(text_response):
+    prompt = "Rewrite the following text, higlighting the quantitative data: \n\n" + text_response
+    llm2 = OllamaAI(OLLAMA_API_URL, "gemma:2b")
+    response = llm2.predict(prompt)
+    print(response)
+    response = json.loads(response)
+    return response
+
+
+
+with open('example.json') as f:
+    data = json.load(f)
+
+    text_response = data['textResponse']
+    sources = data['sources']
+    
+    extract_data_from_text_response(text_response)
+    

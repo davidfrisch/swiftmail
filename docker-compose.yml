@@ -1,7 +1,7 @@
 
 services:
   anythingllm:
-    image: mintplexlabs/anythingllm
+    image: mintplexlabs/anythingllm:latest
     container_name: anythingllm
     env_file: ./anythingllm/.env
     ports:
