@@ -283,3 +283,4 @@ anythingllm/tmp
 anythingllm/vector-cache
 
 chromadb/chroma
+.DS_Store
