@@ -1,27 +1,6 @@
+version: '3.5'
 
 services:
-  anythingllm:
-    image: mintplexlabs/anythingllm:latest
-    container_name: anythingllm
-    env_file: ./anythingllm/.env
-    ports:
-      - "3001:3001"
-    cap_add:
-      - SYS_ADMIN
-    volumes:
-      - ./anythingllm:/app/server/storage
-      - ./anythingllm/.env:/app/server/.env
-    environment:
-      STORAGE_DIR: "/app/server/storage"
-    restart: unless-stopped
-
-  chromadb:
-    image: chromadb/chroma:latest
-    ports:
-      - 8000:8000
-    volumes:
-      - ./chromadb/chroma/:/chroma/chroma
-
   etcd:
     container_name: milvus-etcd
     image: quay.io/coreos/etcd:v3.5.0
@@ -50,7 +29,7 @@ services:
 
   standalone:
     container_name: milvus-standalone
-    image: milvusdb/milvus
+    image: milvusdb/milvus:v2.0.2
     command: ["milvus", "run", "standalone"]
     environment:
       ETCD_ENDPOINTS: etcd:2379
@@ -63,3 +42,6 @@ services:
       - "etcd"
       - "minio"
 
+networks:
+  default:
+    name: milvus

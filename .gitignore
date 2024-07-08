@@ -284,3 +284,5 @@ anythingllm/vector-cache
 
 chromadb/chroma
 .DS_Store
+volumes
+lancedb
