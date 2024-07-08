@@ -4,7 +4,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 logger.setLevel("INFO")
 
-class AnythingLLM:
+class AnythingLLMClient:
   def __init__(self, base_url, token):
     self.base_url = base_url
     self.token = token
@@ -55,7 +55,7 @@ class AnythingLLM:
     return None
 
   def check_auth_jwt(self):
-    response = self._make_request("GET", "system/check-token")
+    response = self._make_request("GET", "v1/auth")
     return response
 
   def request_auth_jwt(self, password):
