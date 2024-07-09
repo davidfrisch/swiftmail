@@ -2,12 +2,15 @@ from typing import List
 import json
 
 categories = [
-  "Program",
-  "Accomodation",
-  "Tuition Fees",
-  "Scholarships",
-  "Visa",
-  "Admission",
+  "Applications",
+  "Entry requirements",
+  "Application fees",
+  "References for application",
+  "Updating your application",
+  "Application status",
+  "Offers of admission",
+  "Tuition fees",
+  "Student visas",
   "Others"
 ]
 
@@ -18,7 +21,9 @@ def extract_questions_from_text(model, text:str) -> List[str]:
       {text}
       
       For each question, provide the question asked and the category of the question.
-      Possible categories are: {categories}
+      Possible categories are: {''.join([f'{category} ' for category in categories])}.
+      Keep everything lowercase
+
     """
     
     count_retries = 0
@@ -27,6 +32,7 @@ def extract_questions_from_text(model, text:str) -> List[str]:
         try:
             res = model.predict(prompt, format="json")
             res_json = json.loads(res)
+            print(res_json)
             questions = res_json['questions']
             if len(questions) == 0:
                 raise Exception("No questions extracted")

@@ -24,8 +24,6 @@ def generate_response_email(model, original_email, questions):
     
     
     Please respond to the student's email with the answers to their questions.
-    """
-    
-    print(prompt)
+    """    
     
     return model.predict(prompt)
