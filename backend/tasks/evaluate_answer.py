@@ -23,6 +23,21 @@ def score_answer(model, question:str, answer: str):
     res = model.predict(prompt)
     return res
 
+
+def binary_score_answer(model, question:str, answer: str):
+    # Provide an answer to the question
+    prompt = f"""
+      From this question:
+      Question: {question}
+      Does the following answer answer the question?
+      Answer: {answer}
+      
+      Provide a one character reply which is 0 or 1, where 0 means the answer is not helpful and 1 means the answer is helpful and relevant.
+    """
+    res = model.predict(prompt)
+    return int(res)
+
+
 def evaluate_answer_with_chromadb(model, question:str, answer: str):
     client = chromadb.PersistentClient(path="../../chromadb/chroma")
     collection = client.get_collection(name="verifier")
@@ -55,27 +70,27 @@ def evaluate_answer_with_chromadb(model, question:str, answer: str):
     data: {'\n'.join(documents)}
     ---
     output should be like:
+    ---
     number_of_information: 2
     the information that is not in the data:
     - information 1
     - information 2
+    ---
     """
 
     result = model.predict(prompt)
-    print(result)
+    return result
   
 
-def highlight_data_in_answer(model, answer: str):
-    prompt = f"""
-      Highlight relevant data in the following answer:
-      Answer: {answer}
-    """
-    
-    res = model.predict(prompt)
-    print(res)
-    
+
 
 
 def evaluate_answer(model, question:str, answer: str):
-    highlight_data_in_answer(model, answer)
-    return None
+    bin_score = binary_score_answer(model, question, answer)
+    score = score_answer(model, question, answer)
+    eval_score = evaluate_answer_with_chromadb(model, question, answer)
+    return {
+      'binary_score' : bin_score,
+      'score' : score,
+      'eval_score' : eval_score
+    }

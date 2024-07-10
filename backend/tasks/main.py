@@ -9,7 +9,7 @@ from generate_response_email import generate_response_email
 from evaluate_answer import evaluate_answer
 
 def main():
-    llm = OllamaAI('http://localhost:11434', 'llama3:latest')
+    llm = OllamaAI('http://localhost:11434', 'llama3_custom:latest')
     anything_llm_client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")
 
     with open('generated_email_1.txt', 'r') as f:
@@ -24,9 +24,11 @@ def main():
         evaluation = evaluate_answer(llm, question_text, answer)
         question['answer'] = answer
         question['evaluation'] = evaluation
+        print(evaluation)
 
     response_email = generate_response_email(llm, text, questions)
     print(response_email)
+    
     
 if __name__ == '__main__':
     main()

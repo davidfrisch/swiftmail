@@ -1,5 +1,12 @@
 
-
+def highlight_data(model, data: str):
+    prompt = f"""
+      Highlight relevant qualitative data with ** in the following text:
+      text: {data}
+    """
+    res = model.predict(prompt)
+    return res
+    
 
 def generate_response_email(model, original_email, questions):
     program_administrator_name = "David"
@@ -24,6 +31,8 @@ def generate_response_email(model, original_email, questions):
     
     
     Please respond to the student's email with the answers to their questions.
-    """    
+    """
     
-    return model.predict(prompt)
+    generated_email = model.predict(prompt)
+    generated_email_with_highlights = highlight_data(model, generated_email)
+    return generated_email_with_highlights

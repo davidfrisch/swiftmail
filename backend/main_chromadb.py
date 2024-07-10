@@ -1,9 +1,10 @@
 import chromadb
 import ollama
 import json
+from typing import List, Dict, Any
 
 client = chromadb.PersistentClient(path="../chromadb/chroma")
-collection = client.get_collection(name="test")
+collection = client.get_collection(name="verifier")
 
 
 prompt = """
@@ -21,7 +22,11 @@ results = collection.query(
 )
 
 
-data = results['documents'][0][0]
+data: List[Dict[str, Any]] = [
+  { 'id' : id, 'distance' : distance, 'text' : text, 'metadata' : metadata }
+  for id, distance, text, metadata in zip(results['ids'][0], results['distances'][0], results['documents'][0], results['metadatas'][0])
+]
+
 
 document_medatdata = data.split("\n")[1].split(":")[1].strip()
 
