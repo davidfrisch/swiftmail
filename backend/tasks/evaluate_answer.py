@@ -10,18 +10,16 @@ def score_answer(model, question:str, answer: str):
     prompt = f"""
       From this question:
       Question: {question}
-      Does the following answer answer the question?
+      Does the following answers the question?
       Answer: {answer}
-      
-      Provide a score from 0 to 10, where 0 means the answer is completely wrong and 10 means the answer is answered completely and effectively.
-      Answer should be like:
-      '
-      score : 5
-      '
+      ---
+      Provide in json format with a key of 'score' and a value of 0 to 10, where 0 means the answer is not helpful and 10 means the answer is helpful and gives relevant information without asking to do more.
     """
     
-    res = model.predict(prompt)
-    return res
+    result = model.predict(prompt, format="json")
+    print(result)
+    score = int(json.loads(result)['score'])
+    return score
 
 
 def binary_score_answer(model, question:str, answer: str):
@@ -32,9 +30,10 @@ def binary_score_answer(model, question:str, answer: str):
       Does the following answer answer the question?
       Answer: {answer}
       
-      Provide a one character reply which is 0 or 1, where 0 means the answer is not helpful and 1 means the answer is helpful and relevant.
+      Provide in a json format with a key of 'score' and a value of 0 or 1, where 0 means the answer is not helpful and 1 means the answer is helpful and gives relevant information without asking to do more.
     """
-    res = model.predict(prompt)
+    result = model.predict(prompt, format="json")
+    res = json.loads(result)['score']
     return int(res)
 
 
@@ -62,24 +61,23 @@ def evaluate_answer_with_chromadb(model, question:str, answer: str):
     documents = [doc['text'] for doc in data]
 
     prompt = f"""
-    How many information is given in the answer that you cannot find in the given data:
+    What informations is given in the answer that you cannot find in the context:
     question: {question}
     \n
     answer: {answer}
     ---
-    data: {'\n'.join(documents)}
+    context: {'\n'.join(documents)}
     ---
-    output should be like:
-    ---
-    number_of_information: 2
-    the information that is not in the data:
-    - information 1
-    - information 2
-    ---
+    Reply in a json with informations key and a list of informations that are not in the context.
     """
-
-    result = model.predict(prompt)
-    return result
+   
+    result = model.predict(prompt, format="json")
+    result = json.loads(result)
+    informations = result['informations']
+    return {
+      'number_of_information' : len(informations),
+      'informations' : informations
+    }
   
 
 
