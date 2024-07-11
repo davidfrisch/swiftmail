@@ -17,7 +17,6 @@ def score_answer(model, question:str, answer: str):
     """
     
     result = model.predict(prompt, format="json")
-    print(result)
     score = int(json.loads(result)['score'])
     return score
 
@@ -38,8 +37,9 @@ def binary_score_answer(model, question:str, answer: str):
 
 
 def evaluate_answer_with_chromadb(model, question:str, answer: str):
+    # Does not work well
     client = chromadb.PersistentClient(path="../../chromadb/chroma")
-    collection = client.get_collection(name="verifier")
+    collection = client.get_collection(name="general")
 
     num_results = 2
 
@@ -52,18 +52,15 @@ def evaluate_answer_with_chromadb(model, question:str, answer: str):
       query_embeddings=[response["embedding"]],
       n_results=num_results,
     )
-
+    
     data: List[Dict[str, Any]] = [
       { 'id' : id, 'distance' : distance, 'text' : text, 'metadata' : metadata }
       for id, distance, text, metadata in zip(results['ids'][0], results['distances'][0], results['documents'][0], results['metadatas'][0])
     ]
 
     documents = [doc['text'] for doc in data]
-
     prompt = f"""
-    What informations is given in the answer that you cannot find in the context:
-    question: {question}
-    \n
+    What informations is incorrect in the answer given the faq ? 
     answer: {answer}
     ---
     context: {'\n'.join(documents)}

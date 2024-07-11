@@ -7,9 +7,9 @@ from extract_questions import extract_questions_from_text
 from answer_questions import answer_question
 from generate_response_email import generate_response_email
 from evaluate_answer import evaluate_answer
-
+import json 
 def main():
-    llm = OllamaAI('http://localhost:11434', 'llama3_custom:latest')
+    llm = OllamaAI('http://localhost:11434', 'llama3:instruct')
     anything_llm_client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")
 
     with open('generated_email_1.txt', 'r') as f:
@@ -19,15 +19,25 @@ def main():
     print(questions)
     for question in questions:
         category = question['category']
-        question_text = question['question']
+        question_text = question['question'] + "\n  In your answer put in ** all qualitative information (words, date, numbers, time)"
         answer = answer_question(anything_llm_client, question_text, "general")
-        evaluation = evaluate_answer(llm, question_text, answer)
         question['answer'] = answer
-        question['evaluation'] = evaluation
-        print(evaluation)
-
+        
     response_email = generate_response_email(llm, text, questions)
     print(response_email)
+    
+
+    # with open('responses.json', 'r') as f:
+    #     questions = json.load(f)
+    
+    # for question in questions:
+    #   category = question['category']
+    #   question_text = question['question']
+    #   answer = question['answer']
+    #   evaluation = evaluate_answer(llm, question_text, answer)
+    #   question['evaluation'] = evaluation
+    #   print(evaluation)
+        
     
     
 if __name__ == '__main__':

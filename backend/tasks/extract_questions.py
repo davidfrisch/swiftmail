@@ -22,7 +22,10 @@ def extract_questions_from_text(model, text:str) -> List[str]:
       
       For each question, provide the question asked and the category of the question.
       Possible categories are: {''.join([f'{category} ' for category in categories])}.
-      Keep everything lowercase
+      
+      Give it in a json format:
+      questions: [ question ]
+      question = { { 'question': 'question', 'category': 'category' } }
 
     """
     
