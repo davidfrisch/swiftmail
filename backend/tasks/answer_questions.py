@@ -1,3 +1,4 @@
+from constants import NO_ANSWERS_TEMPLATE
 
 def answer_question(model, question:str, category="general"):
         
@@ -5,6 +6,10 @@ def answer_question(model, question:str, category="general"):
     answer = res['textResponse']
     sources = res['sources']
     
+    if len(sources) == 0:
+        print(f"No sources found for question: {question}")
+        return "WARNING: No answer found for this question. Here is a generic response:\n\n" + NO_ANSWERS_TEMPLATE.get(category)
+      
     total_score = sum([source['score'] if 'score' in source else 0 for source in sources]) / len(sources)
     total_sim_distance = sum([source['_distance'] if '_distance' in source else 0 for source in sources]) / len(sources)
     chunk_sources = [source['chunkSource'].replace("link://", "") for source in sources if 'chunkSource' in source]

@@ -22,8 +22,6 @@ def generate_response_email(model, original_email, questions):
     Here are the questions that the student asked with the answers:
     {''.join(questions_answers)}
     
-    
-    
     Reply to the student's email with the answers to their questions.
     Keep the highlighted qualitative information in the answers.
     """

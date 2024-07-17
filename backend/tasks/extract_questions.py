@@ -1,18 +1,6 @@
 from typing import List
 import json
-
-categories = [
-  "Applications",
-  "Entry requirements",
-  "Application fees",
-  "References for application",
-  "Updating your application",
-  "Application status",
-  "Offers of admission",
-  "Tuition fees",
-  "Student visas",
-  "Others"
-]
+from constants import WORKSPACE_CATEGORIES as categories
 
 def extract_questions_from_text(model, text:str) -> List[str]:
     prompt = f"""

@@ -30,3 +30,17 @@ NO_ANSWERS_TEMPLATE = {
   "Student visas": "Sorry, I don't have an answer for this question. Category: Student visas",
   "Others": "Sorry, I don't have an answer for this question. Category: Others"
 }
+
+
+WORKSPACE_CATEGORIES = [
+  "Applications",
+  "Entry requirements",
+  "Application fees",
+  "References for application",
+  "Updating your application",
+  "Application status",
+  "Offers of admission",
+  "Tuition fees",
+  "Student visas",
+  "Others"
+]
