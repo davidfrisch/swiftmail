@@ -42,5 +42,6 @@ WORKSPACE_CATEGORIES = [
   "Offers of admission",
   "Tuition fees",
   "Student visas",
-  "Others"
+  "Accommodation",
+  "General"
 ]

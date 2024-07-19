@@ -136,7 +136,8 @@ class AnythingLLMClient:
       "adds": adds,
       "deletes": deletes
     }
-    response = self._make_request("POST", f"workspace/{slug}/update-embeddings", payload)
+
+    response = self._make_request("POST", f"v1/workspace/{slug}/update-embeddings", payload)
     print(response)
     return response
   
@@ -144,15 +145,14 @@ class AnythingLLMClient:
     localFiles = self.see_local_files()
     already_urls = extract_urls(localFiles)
     
-    # if url in already_urls:
-    #     logger.error(f"[FAILED] URL {url} already exists in local files")
-    #     return 
-    
-    logger.info(f"[SUCCESS] Adding URL {url} to local files")
-    # self.__upload_link_to_workspace(slug, url)
-    document = self.get_document("web-links")
+    if url in already_urls:
+        logger.error(f"[WARNING] URL {url} already exists in local files")
+    else:
+        logger.info(f"[SUCCESS] Adding URL {url} to local files")
+        self.__upload_link_to_workspace(slug, url)
+    document = self.get_document("custom-documents")
     url_elem = self.get_url_from_folder(document, url)
-    elem_to_add = "web-links/"+url_elem["name"]
+    elem_to_add = "custom-documents/"+url_elem["name"]
     self.embed_document_into_workspace(slug, adds=[elem_to_add])
 
 
