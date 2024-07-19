@@ -286,3 +286,4 @@ chromadb/chroma
 .DS_Store
 volumes
 lancedb
+fake_emails
