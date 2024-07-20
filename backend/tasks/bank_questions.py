@@ -71,4 +71,3 @@ ucl_info = {
     ]
 }
 
-print(ucl_info)
