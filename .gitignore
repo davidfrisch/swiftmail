@@ -287,3 +287,7 @@ chromadb/chroma
 volumes
 lancedb
 fake_emails
+backend/benchmarking/results
+secrets
+client_secret.json
+gmail_token.json
