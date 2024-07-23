@@ -1,0 +1,8 @@
+{
+  "email": "Subject: Application Inquiry for Graduate Programme in Software Engineering\n\nDear Admissions Team,\n\nI am writing to express my interest in applying to the graduate program in Software Engineering at University College London (UCL). As a local student, I am excited about the opportunity to pursue my graduate studies at UCL and contribute to the vibrant academic community.\n\nAs I prepare my application, I had a few questions regarding the submission process. Firstly, for the programme, you require a portfolio showcasing our skills and experiences in software engineering. Could you please guide me on how to submit this portfolio? Is it possible to upload it through your online application portal or should I send it separately via email?\n\nAdditionally, I would like to confirm when is the best time to apply for the graduate program. Are there any specific deadlines or windows that I should be aware of?\n\nI am confident that my academic background and professional experience make me a strong candidate for this programme. I am eager to learn more about the program and explore how it can help me achieve my career goals.\n\nThank you for your time and assistance in this matter. I look forward to hearing from you soon.\n\nBest regards,\n\nJohn Doe",
+  "questions": [
+    "My programme requires a portfolio, how do I submit it?",
+    "When should I apply?"
+  ],
+  "prompt": "\n      Your name is John Doe and you are applying for a graduate program in Software Engineering. \n      You are a local student that is interested in the program at UCL.\n      \n      Write an email to UCL admissions asking the following questions:\n \n      My programme requires a portfolio, how do I submit it? \n When should I apply?\n      \n    "
+}

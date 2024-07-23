@@ -13,7 +13,12 @@ def score_answer(model, question:str, answer: str):
       Does the following answers the question?
       Answer: {answer}
       ---
-      Provide in json format with a key of 'score' and a value of 0 to 10, where 0 means the answer is not helpful and 10 means the answer is helpful and gives relevant information without asking to do more.
+      Provide in json format with a key of 'score' and a value of 0 to 5, where 
+      1 means the answer cannot be answered,
+      2 means the answer is not helpful and gives irrelevant information,
+      3 means the answer is not helpful and gives irrelevant information and asks to do more,
+      4 means the answer is helpful and gives relevant information but asks to do more,
+      5 means the answer is helpful and gives relevant information without asking to do more.
     """
     
     result = model.predict(prompt, format="json")

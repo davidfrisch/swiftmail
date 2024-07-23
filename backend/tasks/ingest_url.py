@@ -5,6 +5,7 @@ from AnythingLLM_client import AnythingLLMClient
 from LLM.OllamaLLM import OllamaAI
 from constants import WORKSPACE_CATEGORIES as CATEGORIES
 from langchain_community.document_loaders import WebBaseLoader
+from urls import UCL_URLS
 
 anythingllm_client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")
 
@@ -21,21 +22,21 @@ def create_workspace(workspace_name):
   
 def create_all_workspaces():
     for category in CATEGORIES:
-        print(create_workspace(category))
+        create_workspace(category)
 
 def add_url_to_workspace(workspace_name, url):
     if workspace_name not in workspaces_names:
         return f"Workspace {workspace_name} does not exist"
       
     workspace_slug = get_workspace_slug("General")
-    print(f"Workspace slug: {workspace_slug}")
     anythingllm_client.add_url_to_workspace(workspace_slug, url)
-    print(f"Document added to workspace {workspace_name}")
 
 
 def categorise_document(document):
     title = document[0].metadata.get("title")
     print(f"Title: {title}")
+    if "404" in title:
+        raise Exception("URL is not valid")
     prompt = f"""
     The possible categories are: {', '.join(CATEGORIES)}
     *Only say in what category this document can fit. If it can go to more than one category, say it is "General"*
@@ -65,10 +66,14 @@ def main(url: str):
   loader = WebBaseLoader(url)
   docs = loader.load()
   category = categorise_document(docs)
-  add_url_to_workspace(category, url)
+  print(f"URL: {url}")
+  print(f"Category: {category}")
+  print("-------------------")
+  add_url_to_workspace("General", url)
   
 if __name__ == "__main__":
-    url = "https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions"
-    url2 = "https://www.ucl.ac.uk/students/fees/pay-your-fees/how-to-pay"
-    url2 = "https://www.ucl.ac.uk/accommodation/"
-    main(url)
+    for url in UCL_URLS:
+        try:
+          main(url)
+        except Exception as e:
+          print(f"Error: {e}")

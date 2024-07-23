@@ -138,7 +138,6 @@ class AnythingLLMClient:
     }
 
     response = self._make_request("POST", f"v1/workspace/{slug}/update-embeddings", payload)
-    print(response)
     return response
   
   def add_url_to_workspace(self, slug, url):

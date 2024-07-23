@@ -13,7 +13,7 @@ def extract_questions_from_text(model, text:str) -> List[str]:
       
       Give it in a json format:
       questions: [ question ]
-      question = { { 'question': 'question', 'category': 'category' } }
+      question = { { 'question': 'question', 'category': 'category', 'summary': 'summary' } }
 
     """
     
@@ -23,7 +23,6 @@ def extract_questions_from_text(model, text:str) -> List[str]:
         try:
             res = model.predict(prompt, format="json")
             res_json = json.loads(res)
-            print(res_json)
             questions = res_json['questions']
             if len(questions) == 0:
                 raise Exception("No questions extracted")

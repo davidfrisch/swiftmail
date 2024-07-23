@@ -18,7 +18,7 @@ OLLAMA_API_URL = ENV_OLLAMA_API_URL
 
 
 NO_ANSWERS_TEMPLATE = {
-  "general": "Sorry, I don't have an answer for this question. Category: general",
+  "general": "Default GENERAL response",
   "Applications": "Sorry, I don't have an answer for this question. Category: Applications",
   "Entry requirements": "Sorry, I don't have an answer for this question. Category: Entry requirements",
   "Application fees": "Sorry, I don't have an answer for this question. Category: Application fees",
