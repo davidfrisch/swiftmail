@@ -23,7 +23,7 @@ def generate_response_email(model, original_email, questions):
     {''.join(questions_answers)}
     
     Reply to the student's email with the answers to their questions.
-    Keep the highlighted qualitative information in the answers.
+    Keep the ** that highlight the answers.
     """
     
     generated_email = model.predict(prompt)
