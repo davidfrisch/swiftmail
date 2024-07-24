@@ -3,7 +3,7 @@ import os
 import sys
 import time
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from bank_questions import ucl_info
+from backend.tasks.dataset.bank_questions import ucl_info
 
 def generate_fake_email(ollamaLLM, numb_questions=5):
     all_questions = []

@@ -1,8 +1,8 @@
 import sys 
 import os
 import json
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from tasks.extract_questions import extract_questions_from_text
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from tasks.Generater import Generater
 from LLM.OllamaLLM import OllamaAI
 from pysimilar import compare
 from time import time
@@ -10,7 +10,7 @@ from time import time
 
 def main():
     llm = OllamaAI('http://localhost:11434', 'llama3:instruct')
-    filename_path = '../tasks/fake_emails/fake_email_2.json'
+    filename_path = '../../tasks/dataset/fake_email_2.json'
     filename = filename_path.split('/')[-1].split('.')[0]
     benchmark_file_path = f"./results/{time()}_{filename}_benchmark.json"
     benchmark_results = { "filename": filename , "date": time() }
@@ -21,7 +21,8 @@ def main():
     text = fake_email['email']
     original_questions = fake_email['questions']
     start_time = time()
-    extracted_questions = extract_questions_from_text(llm, text)
+    generater = Generater({'ollama_client': llm})
+    extracted_questions = generater.extract_questions_from_text(llm, text)
     end_time = time() - start_time
     
     if len(original_questions) == len(extracted_questions):

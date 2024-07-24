@@ -3,7 +3,7 @@ import json
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from AnythingLLM_client import AnythingLLMClient
 from LLM.OllamaLLM import OllamaAI
-from constants import WORKSPACE_CATEGORIES as CATEGORIES
+from backend.tasks.Generater.constants import WORKSPACE_CATEGORIES as CATEGORIES
 from langchain_community.document_loaders import WebBaseLoader
 from urls import UCL_URLS
 
