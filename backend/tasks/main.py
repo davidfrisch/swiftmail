@@ -10,13 +10,14 @@ from AnythingLLM_client import AnythingLLMClient
 from extract_questions import extract_questions_from_text
 from answer_questions import answer_question
 from generate_response_email import generate_response_email
-from evaluate_answer import evaluate_answer
+from evaluate_answer import answer_eval, draft_email_eval
 from constants import WORKSPACE_CATEGORIES as categories
 import json
 
 
 
 def generate(llms, text, with_interaction):
+    start_time = time.time()
     ollama_client = llms['ollama']
     anything_llm_client = llms['anything_llm']
     questions = extract_questions_from_text(ollama_client, text)
@@ -33,7 +34,7 @@ def generate(llms, text, with_interaction):
         
         if not with_interaction:
             question_text = question['question'] + "--- \n Additional context: "+ question['additional_context'] +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
-            answer, unique_chunk_sources, total_sim_distance = answer_question(anything_llm_client, question_text, summary, category, False)
+            answer, sources, total_sim_distance = answer_question(anything_llm_client, question_text, summary, category, False)
             
         else:
             tries = 0
@@ -41,10 +42,9 @@ def generate(llms, text, with_interaction):
                 question_text = question['question'] + "--- \n Additional context: "+ question['additional_context'] +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
                 has_additional_context = True if question['additional_context'] != "" else False
                 
-                answer, unique_chunk_sources, total_sim_distance = answer_question(anything_llm_client, question_text, summary, category, has_additional_context)
+                answer, sources, total_sim_distance = answer_question(anything_llm_client, question_text, summary, category, has_additional_context)
                 print("Question: ", question_text)
                 print("Answer: \n ", answer)
-                print("Unique chunk sources: ", unique_chunk_sources)
                 print("Total sim distance: ", total_sim_distance)
                 print(f"Are you satisfied with the answer? tries: {tries}")
                 response = input()
@@ -55,11 +55,18 @@ def generate(llms, text, with_interaction):
                     question['additional_context'] = question['additional_context'] + "\n" + response
             
             
-        question['unique_chunk_sources'] = unique_chunk_sources
+        question['sources'] = sources
         question['total_sim_distance'] = total_sim_distance
         question['answer'] = answer
       
     response_email = generate_response_email(ollama_client, text, questions)
+    response['time_generate'] =  time.time() - start_time
+    draft_response_to_markdown(response)
+    
+    
+    with open('./outputs/response.json', 'w') as f:
+        json.dump(response, f)
+        
     
     return {
         'response_email': response_email,
@@ -68,19 +75,37 @@ def generate(llms, text, with_interaction):
 
 
 
-def evaluate(llms, questions):
-    # with open('responses.json', 'r') as f:
-    #     questions = json.load(f)
+def evaluate(llms, source_questions):
+    output = None
+    
+    if isinstance(source_questions, str) and os.path.exists(source_questions):
+        with open(source_questions, 'r') as f:
+            output = json.load(f)
+    
+    if output is None:
+        raise ValueError("Questions not found")
+    
     
     ollama_client = llms['ollama']
+    questions = output['questions']
+    draft_email = output['response_email']
+    
+    output['questions'] = []
     for question in questions:
       category = question['category']
       question_text = question['question']
       answer = question['answer']
-      evaluation = evaluate_answer(ollama_client, question_text, answer)
-      question['evaluation'] = evaluation
-      print(evaluation)
+      sources = question['sources']
+      evaluation = answer_eval(ollama_client, question_text, answer, sources)
+      output['questions'].append({ "question": question_text, "evaluation": evaluation})
+     
+      
+    
+    all_sources = [source for question in questions for source in question['sources']]
+    draft_score = draft_email_eval(ollama_client, draft_email, all_sources)
+    output['draft_email_evaluation'] = draft_score
 
+    return output
 
 def draft_response_to_markdown(response):
     response_email = response['response_email']
@@ -90,7 +115,6 @@ def draft_response_to_markdown(response):
 
 
 def main(email_body: str, with_interaction: bool):
-    start_time = time.time()
     llm = OllamaAI('http://localhost:11434', 'llama3:instruct')
     anything_llm_client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")
     llms = {
@@ -98,13 +122,9 @@ def main(email_body: str, with_interaction: bool):
         'anything_llm': anything_llm_client
     }
 
-    response = generate(llms, email_body, with_interaction)
-    end_time = time.time()
-    response['time_generate'] = end_time - start_time
-    with open('./outputs/response.json', 'w') as f:
-        json.dump(response, f)
-        
-    draft_response_to_markdown(response)
+
+    generate(llms, email_body, with_interaction)
+    evaluate(llms, './outputs/response.json')
         
     
     
