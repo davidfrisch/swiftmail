@@ -22,17 +22,17 @@ def main(email_body: str, with_interaction: bool):
     }
 
     generater = Generater(llms)
-    # generater.reply_to_email(email_body, with_interaction)
+    generater.reply_to_email(email_body, with_interaction)
+    
     evaluator = Reviewer(llms, './outputs/response.json')
     evaluator.evaluate()
-#     evaluate(llms, './outputs/response.json')
         
     
     
 
 def arg_parser():
     parser = argparse.ArgumentParser(prog="main.py", description="Process email body and generate response")
-    parser.add_argument('--with_iteraction', action='store_true', help="Whether to interact with the user to improve the answer", default=False)
+    parser.add_argument('-w', action='store_true', help="Whether to interact with the user to improve the answer", default=False)
     args = parser.parse_args()
     return args     
     
@@ -47,5 +47,5 @@ if __name__ == '__main__':
     
     email_body = fake_email['email']
         
-    main(email_body, args.with_iteraction)
+    main(email_body, args.w)
     

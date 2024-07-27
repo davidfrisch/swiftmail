@@ -1,0 +1,11 @@
+{
+  "email": "Subject: Query regarding Admitted Offer and Programme Details - MSc in Software Engineering\n\nDear UCL Admissions Team,\n\nI hope this message finds you well. My name is John Doe, and I was recently offered a place on the MSc Software Engineering programme at University College London (UCL). I wanted to express my sincere gratitude for accepting me into this esteemed institution.\n\nHowever, I am writing to inquire about the next steps regarding my admission. Specifically, if I have accepted my offer but can no longer attend due to unforeseen circumstances, what should I do?\n\nCould you please guide me on how to formally withdraw from the programme and the potential implications on any financial commitments or scholarships that may be involved? If there are any specific procedures or documentation required in this situation, kindly inform me so that I can take the necessary steps.\n\nI would appreciate your prompt response regarding this matter. Your guidance will help me navigate this process with minimal disruption.\n\nThank you for your time and assistance in advance. I look forward to hearing from you soon.\n\nBest regards,\n\nJohn Doe",
+  "questions": [
+    {
+      "question": "What should I do if I have accepted my offer but can no longer attend?",
+      "answer": "If you would like to withdraw from your programme please contact Graduate Admissions.\n\nIf you would like to request a deferral please read the information about deferrals.",
+      "category": "After applying"
+    }
+  ],
+  "prompt": "\n      Your name is John Doe and you are applying for a graduate program in Software Engineering. \n      You are a local student that is interested in the MSc program at UCL.\n      \n      Write an email to UCL admissions asking the following questions:\n \n      What should I do if I have accepted my offer but can no longer attend?\n      \n    "
+}

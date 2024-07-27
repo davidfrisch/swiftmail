@@ -1,0 +1,21 @@
+{
+  "email": "Subject: Queries regarding Graduate Admissions to MSc Software Engineering at UCL\n\nDear Admissions Team,\n\nI hope this email finds you well. My name is John Doe and I am writing to express my interest in pursuing the MSc program in Software Engineering at University College London (UCL). Although, unfortunately, my application was unsuccessful, I would like to inquire about a few matters regarding the admissions process.\n\nFirstly, could you please inform me if it is possible to appeal against the decision made on my application? I understand that this may not be an option for everyone, but I am eager to learn from any feedback provided by the university.\n\nSecondly, assuming my application does proceed with a successful outcome in any future appeals or re-evaluations, could you please let me know when I would be able to request a Confirmation of Acceptance of Studies (CAS)? This information is crucial for my immigration purposes and further planning.\n\nLastly, if I were to receive an offer this academic year and I wish to defer it to the next academic year, is that possible? If so, could you please provide me with any relevant details or deadlines regarding the deferral process?\n\nThank you for your time and assistance. I look forward to hearing back from you soon.\n\nSincerely,\n\nJohn Doe",
+  "questions": [
+    {
+      "question": "My application has been unsuccessful, can I appeal?",
+      "answer": "Appeals against unsuccessful decisions can only be made on the grounds of a procedural error. Appeals based on an error of academic judgement will not be considered.\n\nIf you feel you have grounds for an appeal, please see our Appeals Procedure.",
+      "category": "After applying"
+    },
+    {
+      "question": "When can I request a CAS?",
+      "answer": "In most cases, your Confirmation of Acceptance of Studies (CAS) will be automatically assigned to you three to four months before the start of your programme. You will receive an email confirmation once this is available. Once you have accepted your offer and all conditions have been met, if your CAS is not assigned automatically you will be prompted to make a request through the UCL Portal.",
+      "category": "International students"
+    },
+    {
+      "question": "If I have received an offer, can I request to defer it to the next academic year?",
+      "answer": "Requests to defer can be considered for the majority of programmes at UCL, with the exception of those offered by UCL Laws, who do not consider deferrals.\n\nDeferral requests must be submitted through the Applicant Portal by 31 August 2024 for September 2024 start dates.\n\nApplications that include any Recognition of Prior Learning cannot be deferred.\n\nIf your request is approved you will be sent a new offer letter, which will be conditional upon your application meeting the conditions for the new admissions cycle. If your request is declined, you will need to submit a new application for the next admissions cycle, which will open in October 2024.\n\nDeferral requests will not be processed where you hold an offer that is still conditional and/or where the request is submitted after 31 August 2024.\n\nDeferral requests are considered at UCL's discretion.",
+      "category": "After applying"
+    }
+  ],
+  "prompt": "\n      Your name is John Doe and you are applying for a graduate program in Software Engineering. \n      You are a local student that is interested in the MSc program at UCL.\n      \n      Write an email to UCL admissions asking the following questions:\n \n      My application has been unsuccessful, can I appeal? \n When can I request a CAS? \n If I have received an offer, can I request to defer it to the next academic year?\n      \n    "
+}

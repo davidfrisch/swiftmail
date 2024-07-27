@@ -1,0 +1,11 @@
+{
+  "email": "Subject: Application Fee Payment Issue for MSc in Software Engineering Program\n\nDear Admissions Team,\n\nI am writing to bring to your attention a concern I have regarding my application for the MSc program in Software Engineering at University College London (UCL). My name is John Doe, and I am a local student interested in pursuing this graduate program.\n\nDuring the online application process, I attempted to pay the application fee using my preferred payment method. However, the payment did not go through, and I received an error message indicating that there was a problem with the transaction. Despite retrying multiple times, I have been unable to successfully complete the payment.\n\nI would appreciate it if you could provide me with some guidance on how to resolve this issue. Could you please let me know why my application fee payment is not going through? Are there any specific requirements or restrictions that I should be aware of when making the payment?\n\nI am eager to proceed with my application and have attached a copy of my receipt for your reference.\n\nThank you for your attention to this matter, and I look forward to hearing from you soon.\n\nSincerely,\n\nJohn Doe",
+  "questions": [
+    {
+      "question": "Why is my application fee payment not going through?",
+      "answer": "There can be a number of reasons why your payment is not going through:\n\nPlease do not use a Firefox browser to make your payment.\nThe payment system does not accept special characters, please ensure that you only use anglicised characters when making the payment.\nThe payment may have been blocked by your card issuer/bank. You should contact them to inform them that you are making an overseas payment.\nYou can access Flywire's FAQs, useful videos and articles, and also access the Flywire 24/7 Live Chat and speak with our global support team instantly.\n\nGet help from Flywire",
+      "category": "Application fees"
+    }
+  ],
+  "prompt": "\n      Your name is John Doe and you are applying for a graduate program in Software Engineering. \n      You are a local student that is interested in the MSc program at UCL.\n      \n      Write an email to UCL admissions asking the following questions:\n \n      Why is my application fee payment not going through?\n      \n    "
+}

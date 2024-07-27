@@ -1,0 +1,16 @@
+{
+  "email": "Subject: Query regarding Graduate Program Application - Software Engineering MSc\n\nDear Admissions Team,\n\nI hope this email finds you well. My name is John Doe and I recently applied for the Master of Science in Software Engineering program at University College London (UCL). Unfortunately, my application was unsuccessful.\n\nI would like to inquire about the possibility of appealing the decision made regarding my application. Could you please provide me with information on the appeal process, including any relevant deadlines or requirements that need to be met?\n\nAdditionally, as an international student planning to pursue the MSc program at UCL, I am interested in learning more about my work options during my studies. Can I work part-time or full-time while attending classes, and if so, are there any specific regulations or restrictions I should be aware of?\n\nI would greatly appreciate it if you could provide me with a detailed response to these questions.\n\nThank you for your time and assistance. I look forward to hearing from you soon.\n\nSincerely,\n\nJohn Doe",
+  "questions": [
+    {
+      "question": "My application has been unsuccessful, can I appeal?",
+      "answer": "Appeals against unsuccessful decisions can only be made on the grounds of a procedural error. Appeals based on an error of academic judgement will not be considered.\n\nIf you feel you have grounds for an appeal, please see our Appeals Procedure.",
+      "category": "After applying"
+    },
+    {
+      "question": "I am an international student, can I work during my studies?",
+      "answer": "In most cases, international students will hold a Student visa which will allow you to work in the UK during your studies. Please check your visa to confirm your permitted working hours.\n\nPlease note that if you are a part-time student, then you will not be permitted to work in the UK during your studies. If you are a student visitor, then you will not be permitted to work in the UK during your studies.\n\nFor more information about the working restrictions for international students, please contact the UCL Student Immigration Advice Team.",
+      "category": "International students"
+    }
+  ],
+  "prompt": "\n      Your name is John Doe and you are applying for a graduate program in Software Engineering. \n      You are a local student that is interested in the MSc program at UCL.\n      \n      Write an email to UCL admissions asking the following questions:\n \n      My application has been unsuccessful, can I appeal? \n I am an international student, can I work during my studies?\n      \n    "
+}

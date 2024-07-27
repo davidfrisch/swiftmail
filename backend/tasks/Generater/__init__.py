@@ -5,8 +5,11 @@ from .utils import get_workspace_slug
 
 
 class Generater:
-    def __init__(self, models:dict):
-        self.models = models
+    def __init__(self, ollama_client=None, anyllm_client=None):
+        if ollama_client is None and anyllm_client is None:
+            raise Exception("At least one client should be provided")
+        self.olllama_client = ollama_client
+        self.anyllm_client = anyllm_client
         self.questions = []
         self.answers = []
         self.generated_draft_email = ""
@@ -21,9 +24,9 @@ class Generater:
         self.response_to_markdown()
     
 
-    def extract_questions_from_text(self, model, text:str) -> List[str]:
+    def extract_questions_from_text(self, text:str) -> List[str]:
         prompt = f"""
-          Extract all questions from the following email:
+          Extract the questions from the following email:
           Email:
           {text}
           
@@ -41,7 +44,7 @@ class Generater:
         
         while count_retries < 3:
             try:
-                res = model.predict(prompt, format="json")
+                res = self.olllama_client.predict(prompt, format="json")
                 res_json = json.loads(res)
                 questions = res_json['questions']
                 if len(questions) == 0:
