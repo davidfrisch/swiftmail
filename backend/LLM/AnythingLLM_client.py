@@ -99,6 +99,13 @@ class AnythingLLMClient:
   def get_workspace(self, slug):
     response = self._make_request("GET", f"workspace/{slug}")
     return response
+  
+  def get_workspace_slug(self, category):
+    workspaces = self.get_all_workspaces()['workspaces']
+    for workspace in workspaces:
+        if workspace['name'] == category:
+            return workspace['slug']
+    return None
 
   def get_workspace_chats(self, slug):
     response = self._make_request("GET", f"workspace/{slug}/chats")

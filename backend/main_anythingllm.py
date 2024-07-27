@@ -1,4 +1,4 @@
-from AnythingLLM_client import AnythingLLMClient
+from LLM.AnythingLLM_client import AnythingLLMClient
 
 def main():
     client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")

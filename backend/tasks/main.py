@@ -5,7 +5,7 @@ import sys
 import argparse
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from LLM.OllamaLLM import OllamaAI
-from AnythingLLM_client import AnythingLLMClient
+from LLM.AnythingLLM_client import AnythingLLMClient
 from Generater import Generater
 from Reviewer import Reviewer
 import json
@@ -21,7 +21,7 @@ def main(email_body: str, with_interaction: bool):
         'anyllm_client': anything_llm_client
     }
 
-    generater = Generater(llms)
+    generater = Generater(ollama_client=llm, anyllm_client=anything_llm_client)
     generater.reply_to_email(email_body, with_interaction)
     
     evaluator = Reviewer(llms, './outputs/response.json')

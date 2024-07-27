@@ -1,13 +1,15 @@
 from typing import List
 import json
+import sys
+import os
 from .constants import NO_ANSWERS_TEMPLATE, WORKSPACE_CATEGORIES as categories
-from .utils import get_workspace_slug
-
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from LLM.OllamaLLM import OllamaAI
+from LLM.AnythingLLM_client import AnythingLLMClient
 
 class Generater:
-    def __init__(self, ollama_client=None, anyllm_client=None):
-        if ollama_client is None and anyllm_client is None:
-            raise Exception("At least one client should be provided")
+    def __init__(self, ollama_client:OllamaAI= None, anyllm_client:AnythingLLMClient = None):
+        
         self.olllama_client = ollama_client
         self.anyllm_client = anyllm_client
         self.questions = []
@@ -16,11 +18,9 @@ class Generater:
         
 
     def reply_to_email(self, email:str, with_interaction:bool=False):
-        ollama_client = self.models['ollama_client']
-        anyllm_client = self.models['anyllm_client']
-        self.extract_questions_from_text(ollama_client, email)
-        self.answer_questions(anyllm_client, self.questions, with_interaction)
-        self.generate_response_email(ollama_client, email, self.answers)
+        self.extract_questions_from_text(email)
+        self.answer_questions(self.questions, with_interaction)
+        self.generate_response_email(email, self.answers)
         self.response_to_markdown()
     
 
@@ -58,7 +58,7 @@ class Generater:
         raise Exception("Failed to extract questions from text")
 
 
-    def answer_questions(self, model, questions, with_interaction=False):
+    def answer_questions(self, questions, with_interaction=False):
         self.answers = []
         for question in questions:
             question_text = question['question']
@@ -68,14 +68,14 @@ class Generater:
           
             if not with_interaction:
                 question_text = question['question'] + "--- \n Additional context: "+ additional_context +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
-                answer, sources, total_sim_distance = self.answer_question(model, question_text, summary, category, False)
+                answer, sources, total_sim_distance = self.answer_question(question_text, summary, category, False)
             
             else:
                 tries = 0
                 while tries < 3:
                     question_text = question['question'] + "--- \n Additional context: "+ additional_context +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
                     has_additional_context = True if additional_context != "" else False
-                    answer, sources, total_sim_distance = self.answer_question(model, question_text, summary, category, has_additional_context)
+                    answer, sources, total_sim_distance = self.answer_question(question_text, summary, category, has_additional_context)
                     print("-----------------")
                     print("Question: ", question_text)
                     print("Answer: \n ", answer)
@@ -101,7 +101,7 @@ class Generater:
 
 
 
-    def answer_question(self, model, question:str, summary: str, category="general", has_additional_context=False):
+    def answer_question(self, question:str, summary: str, category="general", has_additional_context=False):
         prompt = f"""
           You are a Program Administrator at UCL. You only have access to the following information.
           If you don't have an answer, just say "I don't have an answer for this question".
@@ -111,8 +111,8 @@ class Generater:
           Summary: {summary}
         """
         
-        slug = get_workspace_slug(model, "General")
-        res = model.chat_with_workspace(slug, prompt)
+        slug = self.anyllm_client.get_workspace_slug("General")
+        res = self.anyllm_client.chat_with_workspace(slug, prompt)
         answer = res['textResponse']
         sources = res['sources']
         
@@ -123,7 +123,7 @@ class Generater:
             return answer, [], 0
           
         if len(sources) == 0 and has_additional_context:
-            res = model.chat_with_workspace("others", question)
+            res = self.anyllm_client.chat_with_workspace("others", question)
             answer = res['textResponse']
             return answer, [], 0
           
@@ -137,7 +137,7 @@ class Generater:
       
 
 
-    def generate_response_email(self, model, original_email, questions):
+    def generate_response_email(self, original_email, questions):
         program_administrator_name = "David"
         program_name = "UCL Software Engineering MSc"
         
@@ -161,7 +161,7 @@ class Generater:
         Keep the ** that highlight the answers.
         """
         
-        generated_email = model.predict(prompt)
+        generated_email = self.olllama_client.predict(prompt)
         self.generated_draft_email = generated_email
         
         

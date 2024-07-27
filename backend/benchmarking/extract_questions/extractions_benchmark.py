@@ -40,6 +40,8 @@ def run_benchmark(generater: Generater, data: dict):
             }
             
             results[f"question_{i}"] = result
+            results["original_questions"] = original_questions
+            results["extracted_questions"] = extracted_questions
             results["success"] = True
             
     else:
