@@ -2,6 +2,7 @@ from typing import List
 import json
 import sys
 import os
+from typing import List
 from .constants import NO_ANSWERS_TEMPLATE, WORKSPACE_CATEGORIES as categories
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from LLM.OllamaLLM import OllamaAI
@@ -58,7 +59,7 @@ class Generater:
         raise Exception("Failed to extract questions from text")
 
 
-    def answer_questions(self, questions, with_interaction=False):
+    def answer_questions(self, questions: List[str], with_interaction: bool=False):
         self.answers = []
         for question in questions:
             question_text = question['question']

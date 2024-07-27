@@ -65,6 +65,7 @@ def main():
     path_folder = '../../tasks/dataset'
     benchmark_results = {}
     benchmark_file_path = './results/benchmark_results.json'
+    os.makedirs(os.path.dirname(benchmark_file_path.replace('benchmark_results.json', '')), exist_ok=True)
     start_time = time()
     
     for filename in os.listdir(path_folder):
