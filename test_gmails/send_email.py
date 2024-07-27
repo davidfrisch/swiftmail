@@ -1,13 +1,11 @@
-import sys
 import os 
 import json
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from simplegmail import Gmail
 from simplegmail.query import construct_query
 
 gmail = Gmail() # will open a browser window to ask you to log in and authenticate
-path = "../tasks/dataset/"
+path = "../dataset/"
 
 for filename in os.listdir(path):
     if filename.endswith(".json") and "fake" in filename:

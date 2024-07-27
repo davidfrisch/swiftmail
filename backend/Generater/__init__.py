@@ -3,7 +3,7 @@ import json
 import sys
 import os
 from typing import List
-from .constants import NO_ANSWERS_TEMPLATE, WORKSPACE_CATEGORIES as categories
+from constants import NO_ANSWERS_TEMPLATE, WORKSPACE_CATEGORIES as categories
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from LLM.OllamaLLM import OllamaAI
 from LLM.AnythingLLM_client import AnythingLLMClient
@@ -18,11 +18,11 @@ class Generater:
         self.generated_draft_email = ""
         
 
-    def reply_to_email(self, email:str, with_interaction:bool=False):
+    def reply_to_email(self, email:str, path_output:str, with_interaction:bool=False):
         self.extract_questions_from_text(email)
         self.answer_questions(self.questions, with_interaction)
         self.generate_response_email(email, self.answers)
-        self.response_to_markdown()
+        self.response_to_markdown(path_output)
     
 
     def extract_questions_from_text(self, text:str) -> List[str]:
@@ -166,7 +166,7 @@ class Generater:
         self.generated_draft_email = generated_email
         
         
-    def response_to_markdown(self, output_path="./outputs/response.md"):
+    def response_to_markdown(self, output_path):
       response_email = self.generated_draft_email
       with open(output_path, 'w') as f:
           f.write(response_email)

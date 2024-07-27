@@ -37,7 +37,7 @@ def generate_fake_emails(ollamaLLM, numb_emails=5, numb_questions=None):
           "questions": questions,
           "prompt": prompt
       }
-      url_path = "../tasks/dataset"
+      url_path = "../dataset"
       with open(f'{url_path}/fake_email_{i}.json', 'w') as f:
           json.dump(json_output, f)
 

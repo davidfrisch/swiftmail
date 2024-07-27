@@ -1,9 +1,10 @@
 import json
 import os
+from LLM.OllamaLLM import OllamaAI
 
 class Reviewer():
 
-    def __init__(self, llms, source_questions):
+    def __init__(self, ollama_client, source_questions):
         if isinstance(source_questions, str) and os.path.exists(source_questions):
             with open(source_questions, 'r') as f:
                 output = json.load(f)
@@ -12,8 +13,7 @@ class Reviewer():
             raise ValueError("Questions not found")
           
       
-        self.llms = llms
-        self.model = llms['ollama_client']
+        self.model: OllamaAI = ollama_client
         self.questions = output['questions']
         self.draft_email = output['response_email']
         

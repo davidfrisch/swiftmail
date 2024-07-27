@@ -1,5 +1,5 @@
 import requests
-from anything_llm_utils import extract_urls
+from .anything_llm_utils import extract_urls
 from logging import getLogger
 logger = getLogger(__name__)
 logger.setLevel("INFO")

@@ -5,7 +5,7 @@ from LLM.AnythingLLM_client import AnythingLLMClient
 from LLM.OllamaLLM import OllamaAI
 from backend.tasks.Generater.constants import WORKSPACE_CATEGORIES as CATEGORIES
 from langchain_community.document_loaders import WebBaseLoader
-from urls import UCL_URLS
+from dataset.urls import UCL_URLS
 
 anythingllm_client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")
 

@@ -11,20 +11,16 @@ from Reviewer import Reviewer
 import json
 
 
-
-
 def main(email_body: str, with_interaction: bool):
-    llm = OllamaAI('http://localhost:11434', 'llama3:instruct')
+    ollama_client = OllamaAI('http://localhost:11434', 'llama3:instruct')
     anything_llm_client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")
-    llms = {
-        'ollama_client': llm,
-        'anyllm_client': anything_llm_client
-    }
-
-    generater = Generater(ollama_client=llm, anyllm_client=anything_llm_client)
-    generater.reply_to_email(email_body, with_interaction)
+    output_path = '../outputs/response.json'
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     
-    evaluator = Reviewer(llms, './outputs/response.json')
+    generater = Generater(ollama_client=ollama_client, anyllm_client=anything_llm_client)
+    generater.reply_to_email(email_body, output_path, with_interaction)
+    
+    evaluator = Reviewer(ollama_client, output_path)
     evaluator.evaluate()
         
     
@@ -42,7 +38,7 @@ if __name__ == '__main__':
     args = arg_parser()
     
     
-    with open('./dataset/fake_email_1.json', 'r') as f:
+    with open('../dataset/fake_email_1.json', 'r') as f:
       fake_email = json.load(f)
     
     email_body = fake_email['email']

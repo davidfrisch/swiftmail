@@ -4,9 +4,9 @@ import os
 import sys
 import time
 import json
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '.'))
 
-import LLM.OllamaLLM as OllamaLLM
+import backend.LLM.OllamaLLM as OllamaLLM
 gmail = Gmail()
 
 query_params = {
