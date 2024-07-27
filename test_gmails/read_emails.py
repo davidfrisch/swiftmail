@@ -4,16 +4,17 @@ import os
 import sys
 import time
 import json
-sys.path.append(os.path.join(os.path.dirname(__file__), '.'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-import backend.LLM.OllamaLLM as OllamaLLM
+from backend.LLM.OllamaLLM import OllamaAI
+
 gmail = Gmail()
 
 query_params = {
     "newer_than": (1, "year"),
 }
 
-llm = OllamaLLM.OllamaAI('http://localhost:11434', 'gemma:2b')
+llm = OllamaAI('http://localhost:11434', 'gemma:2b')
 messages = gmail.get_unread_inbox()
 print(f"Found {len(messages)} unread messages")
 start_time = time.time()
@@ -27,7 +28,7 @@ for message in messages:
       {message.subject}
       -
       Body: 
-      {message.plain[:500]}
+      {message.plain[:500] if message.plain else ""}
       
       ---
       expected output is a JSON object with the following structure:

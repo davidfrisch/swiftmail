@@ -2,8 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
-
-Base = declarative_base()
+from .create_database import Base
 
 class Email(Base):
     __tablename__ = 'emails'
@@ -33,7 +32,7 @@ class ExtractResult(Base):
     category = Column(String, nullable=True)
     
     email = relationship("Email", back_populates="questions")
-    answers = relationship("AnswerResult", secondary='draft_answer_link', back_populates="drafts")
+    answer = relationship("AnswerResult", uselist=False, back_populates="question")
 
     def __repr__(self):
         return f"<ExtractResult(id={self.id}, email_id={self.email_id}, " \

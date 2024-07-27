@@ -1,4 +1,4 @@
-from LLM.BaseLLM import BaseLLM
+from .BaseLLM import BaseLLM
 import requests
 import json
 
