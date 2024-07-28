@@ -13,13 +13,13 @@ for filename in os.listdir(path):
             data = json.load(file)
             email = data['email']
             subject = email.split("\n\n")[0].split("Subject: ")[1]
-            body = email.split("\n\n")[1]
+            body = email.replace(subject, "")
 
             params = {
               "to": "xxx@gmail.com",
               "sender": "xxx@gmail.com",
               "subject": subject,
-              "msg_plain": body,
+              "msg_plain": body
             }
             
             message = gmail.send_message(**params)

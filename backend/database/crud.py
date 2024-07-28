@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-
+from typing import List
 from . import models, schemas
 
 ## Emails
@@ -18,17 +18,17 @@ def create_email(db: Session, email: schemas.EmailCreate):
   
 
 ## ExtractResult
-def get_extract_results(db: Session, skip: int = 0, limit: int = 100):
+def get_extract_results(db: Session, skip: int = 0, limit: int = 100) -> List[schemas.ExtractResult]:
     return db.query(models.ExtractResult).offset(skip).limit(limit).all()
   
-def get_extract_result(db: Session, extract_result_id: int):
+def get_extract_result(db: Session, extract_result_id: int) -> schemas.ExtractResult:
     return db.query(models.ExtractResult).filter(models.ExtractResult.id == extract_result_id).first()
 
-def get_extract_results_by_email_id(db: Session, email_id: int):
+def get_extract_results_by_email_id(db: Session, email_id: int) -> List[schemas.ExtractResult]:
     return db.query(models.ExtractResult).filter(models.ExtractResult.email_id == email_id).all()
   
 def create_extract_result(db: Session, extract_result: schemas.ExtractResultCreate):
-    db_extract_result = models.ExtractResult(**extract_result.dict())
+    db_extract_result = models.ExtractResult(**extract_result.model_dump())
     db.add(db_extract_result)
     db.commit()
     db.refresh(db_extract_result)
@@ -67,8 +67,39 @@ def get_draft_results_by_email_id(db: Session, email_id: int):
     return db.query(models.DraftResult).filter(models.DraftResult.email_id == email_id).all()
   
 def create_draft_result(db: Session, draft_result: schemas.DraftResultCreate):
-    db_draft_result = models.DraftResult(**draft_result.dict())
+    db_draft_result = models.DraftResult(**draft_result.model_dump())
     db.add(db_draft_result)
     db.commit()
     db.refresh(db_draft_result)
     return db_draft_result
+
+
+
+# Job
+
+def get_jobs(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Job).offset(skip).limit(limit).all()
+  
+def get_job(db: Session, job_id: int):
+    return db.query(models.Job).filter(models.Job.id == job_id).first()
+  
+def get_jobs_by_email_id(db: Session, email_id: int):
+    return db.query(models.Job).filter(models.Job.email_id == email_id).all()
+  
+def create_job(db: Session, job: schemas.JobCreate):
+    db_job = models.Job(**job.model_dump())
+    db.add(db_job)
+    db.commit()
+    db.refresh(db_job)
+    return db_job
+  
+def update_job(db: Session, job: models.Job):
+    db.commit()
+    db.refresh(job)
+    return job
+  
+def update_job_status(db: Session, job: schemas.Job, status: models.JobStatus):
+    job.status = status.name
+    db.commit()
+    db.refresh(job)
+    return job

@@ -3,6 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class AnswerResultBase(BaseModel):
+    extract_result_id: int
     answer_text: str
     answered_at: datetime
     binary_score: Optional[int] = None
@@ -14,13 +15,13 @@ class AnswerResultCreate(AnswerResultBase):
 
 class AnswerResult(AnswerResultBase):
     id: int
-    extract_result_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ExtractResultBase(BaseModel):
+    email_id: int
     question_text: str
     extracted_at: datetime
     is_answered: bool
@@ -31,11 +32,10 @@ class ExtractResultCreate(ExtractResultBase):
 
 class ExtractResult(ExtractResultBase):
     id: int
-    email_id: int
     answers: List[AnswerResult] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class DraftResultBase(BaseModel):
@@ -53,7 +53,7 @@ class DraftResult(DraftResultBase):
     email_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class EmailBase(BaseModel):
@@ -71,4 +71,31 @@ class Email(EmailBase):
     drafts: List[DraftResult] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+
+class JobBase(BaseModel):
+    status: str
+    started_at: datetime
+    completed_at: Optional[datetime] = None
+    email_id: int
+
+
+class Job(JobBase):
+    id: int
+    process_id: Optional[int] = None
+
+    class Config:
+        from_attributes = True
+
+class JobCreate(JobBase):
+    pass
+
+class JobUpdate(BaseModel):
+    status: Optional[str] = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    process_id: Optional[int] = None
+
+    class Config:
+        from_attributes = True

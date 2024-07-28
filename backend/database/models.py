@@ -1,20 +1,32 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Text, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .create_database import Base
+import enum 
+
+class JobStatus(enum.Enum):
+    PENDING = "PENDING"
+    EXTRACTING = "EXTRACTING"
+    ANSWERING = "ANSWERING"
+    DRAFTING = "DRAFTING"
+    EVALUATING = "EVALUATING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+
 
 class Email(Base):
     __tablename__ = 'emails'
 
     id = Column(Integer, primary_key=True)
     subject = Column(String(255), nullable=True)
-    body = Column(String, nullable=True)
+    body = Column(Text, nullable=True)
     sent_at = Column(DateTime, default=datetime.utcnow)
     is_read = Column(Boolean, default=False)
     
     questions = relationship("ExtractResult", back_populates="email")
     drafts = relationship("DraftResult", back_populates="email")
+    job = relationship("Job", uselist=False, back_populates="email")
 
     def __repr__(self):
         return f"<Email(id={self.id} " \
@@ -75,3 +87,21 @@ class DraftResult(Base):
     def __repr__(self):
         return f"<DraftResult(id={self.id}, email_id={self.email_id}, " \
                f"draft_body={self.draft_body}, created_at={self.created_at})>"
+               
+
+class Job(Base):
+    __tablename__ = 'jobs'
+
+    id = Column(Integer, primary_key=True)
+    process_id = Column(Integer, nullable=True)
+    email_id = Column(Integer, ForeignKey('emails.id'), nullable=False)
+    status = Column(Enum(JobStatus), default=JobStatus.PENDING, nullable=False)
+    started_at = Column(DateTime, default=datetime.now())
+    completed_at = Column(DateTime, nullable=True)
+
+    email = relationship("Email", back_populates="job")
+
+    def __repr__(self):
+        return f"<Job(id={self.id}, email_id={self.email_id}, status={self.status}, " \
+               f"started_at={self.started_at}, completed_at={self.completed_at}, " \
+               f"message={self.message})>"

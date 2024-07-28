@@ -7,6 +7,8 @@ from constants import NO_ANSWERS_TEMPLATE, WORKSPACE_CATEGORIES as categories
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from LLM.OllamaLLM import OllamaAI
 from LLM.AnythingLLM_client import AnythingLLMClient
+from database.schemas import Email, Job, ExtractResult
+from database.models import JobStatus
 
 class Generater:
     def __init__(self, ollama_client:OllamaAI= None, anyllm_client:AnythingLLMClient = None):
@@ -18,13 +20,13 @@ class Generater:
         self.generated_draft_email = ""
         
 
-    def reply_to_email(self, email:str, path_output:str, with_interaction:bool=False):
-        self.extract_questions_from_text(email)
+    def reply_to_email(self, email: Email, path_output:str, with_interaction:bool=False):
+        self.extract_questions_from_text(email.body)
         self.answer_questions(self.questions, with_interaction)
         self.generate_response_email(email, self.answers)
         self.response_to_markdown(path_output)
     
-
+    
     def extract_questions_from_text(self, text:str) -> List[str]:
         prompt = f"""
           Extract the questions from the following email:
@@ -57,28 +59,28 @@ class Generater:
                 count_retries += 1
                 
         raise Exception("Failed to extract questions from text")
+      
 
 
-    def answer_questions(self, questions: List[str], with_interaction: bool=False):
+    def answer_questions(self, questions: List[ExtractResult], with_interaction: bool=False):
         self.answers = []
         for question in questions:
-            question_text = question['question']
-            additional_context = question.get('additional_context', "")
-            category = question['category']
-            summary = question['summary']
+            full_question = question.question_text
+            category = question.category
+            additional_context = ""
           
             if not with_interaction:
-                question_text = question['question'] + "--- \n Additional context: "+ additional_context +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
-                answer, sources, total_sim_distance = self.answer_question(question_text, summary, category, False)
+                full_question = question.question_text + "--- \n Additional context: "+ additional_context +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
+                answer, sources, total_sim_distance = self.answer_question(full_question, category, False)
             
             else:
                 tries = 0
                 while tries < 3:
-                    question_text = question['question'] + "--- \n Additional context: "+ additional_context +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
+                    full_question = question.question_text + "--- \n Additional context: "+ additional_context +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
                     has_additional_context = True if additional_context != "" else False
-                    answer, sources, total_sim_distance = self.answer_question(question_text, summary, category, has_additional_context)
+                    answer, sources, total_sim_distance = self.answer_question(full_question, category, has_additional_context)
                     print("-----------------")
-                    print("Question: ", question_text)
+                    print("Question: ", full_question)
                     print("Answer: \n ", answer)
                     print("-----------------")
                     print(f"Are you satisfied with the answer? tries: {tries}")
@@ -87,12 +89,13 @@ class Generater:
                         break
                     else:
                         tries += 1
-                        question['additional_context'] = additional_context + "\n" + response
+                        additional_context = additional_context + "\n" + response
             
             
             
             self.answers.append({
-                'question': question_text,
+                'question': question.question_text,
+                'full_question': full_question,
                 'answer': answer,
                 'sources': sources,
                 'total_sim_distance': total_sim_distance
@@ -102,14 +105,13 @@ class Generater:
 
 
 
-    def answer_question(self, question:str, summary: str, category="general", has_additional_context=False):
+    def answer_question(self, question:str, category="general", has_additional_context=False):
         prompt = f"""
           You are a Program Administrator at UCL. You only have access to the following information.
           If you don't have an answer, just say "I don't have an answer for this question".
           Answer the following question:
           Question: {question}
           Category: {category}
-          Summary: {summary}
         """
         
         slug = self.anyllm_client.get_workspace_slug("General")
@@ -138,7 +140,7 @@ class Generater:
       
 
 
-    def generate_response_email(self, original_email, questions):
+    def generate_response_email(self, original_email: Email, questions):
         program_administrator_name = "David"
         program_name = "UCL Software Engineering MSc"
         
@@ -153,7 +155,8 @@ class Generater:
         prompt = f"""
         You are {program_administrator_name}, the program administrator for the {program_name} program.
         You have received an email from a student asking the following questions:
-        {original_email}
+        Subject: {original_email.subject}
+        Body: {original_email.body}
         
         Here are the questions that the student asked with the answers:
         {''.join(questions_answers)}
