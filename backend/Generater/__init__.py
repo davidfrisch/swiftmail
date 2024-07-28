@@ -69,8 +69,8 @@ class Generater:
             additional_context = ""
           
             if not with_interaction:
-                full_question = question.question_text + "--- \n Additional context: "+ additional_context +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
-                answer, sources, total_sim_distance = self.answer_question(full_question, category, False)
+                full_question = question.question_text +" \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
+                answer, sources, total_sim_distance = self.answer_question(full_question, additional_context, category, False)
             
             else:
                 tries = 0
@@ -104,15 +104,16 @@ class Generater:
 
 
 
-    def answer_question(self, question:str, category="general", has_additional_context=False):
+    def answer_question(self, question:str, feedback:str, category="general", has_additional_context=False):
         prompt = f"""
           You are a Program Administrator at UCL. You only have access to the following information.
           If you don't have an answer, just say "I don't have an answer for this question".
           Answer the following question:
-          Question: {question}
+          Question: {question} \n
+          Additional context: {feedback} \n
           Category: {category}
         """
-        
+        print(prompt)
         slug = self.anyllm_client.get_workspace_slug("General")
         res = self.anyllm_client.chat_with_workspace(slug, prompt)
         answer = res['textResponse']
@@ -139,7 +140,7 @@ class Generater:
       
 
 
-    def generate_response_email(self, original_email: Email, questions: List[ExtractResult], answers: List[AnswerResult]):
+    def generate_response_email(self, original_email: Email, questions: List[ExtractResult], answers: List[AnswerResult], additional_context=""):
         program_administrator_name = "David"
         program_name = "UCL Software Engineering MSc"
         
@@ -162,6 +163,8 @@ class Generater:
         
         Reply to the student's email with the answers to their questions.
         Keep the ** that highlight the answers.
+        
+        {"Additional information:"+ additional_context if additional_context else ""}
         """
         
         generated_email = self.olllama_client.predict(prompt)
@@ -169,7 +172,7 @@ class Generater:
         
         return generated_email
         
-        
+      
     def response_to_markdown(self, output_path):
       response_email = self.generated_draft_email
       with open(output_path, 'w') as f:

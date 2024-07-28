@@ -4,6 +4,7 @@ from .database.schemas import Email, Job
 from sqlalchemy.orm import Session
 from .Generater import Generater
 from datetime import datetime
+import endpoints_models
 
 
 def extract_questions_from_email(db: Session, generater: Generater, email: Email, job: Job):
@@ -42,6 +43,17 @@ def answer_questions(db: Session, generater: Generater, job: Job):
     return answers
 
 
+def update_answer(db: Session, generater: Generater, answer: schemas.AnswerResult, req_body: endpoints_models.Feedback):
+    extract_result = crud.get_extract_result(db, answer.extract_result_id)
+    feedback = f"Previous answer was: \n -start- {answer.answer_text} -end-.\n The user feedback was: {req_body.feedback}.\n Retry the answer considering this feedback."
+    
+    new_answer_text, _, _ = generater.answer_question(extract_result.question_text, feedback)
+    answer.answer_text = new_answer_text
+    new_answer = crud.update_answer_result(db, answer)
+    
+    return new_answer
+    
+
 def generate_draft_email(db: Session, generater: Generater, email: Email, job: Job):
     extract_results = crud.get_extract_results_by_job_id(db, job.id)
     answers = crud.get_answer_results_by_job_id(db, job.id)
@@ -57,6 +69,18 @@ def generate_draft_email(db: Session, generater: Generater, email: Email, job: J
     crud.create_draft_result(db, new_draft_result)
     return draft_response
     
+
+def update_draft_email(db: Session, generater: Generater, draft: schemas.DraftResult, feedback: endpoints_models.Feedback):
+    email = crud.get_email(db, draft.email_id)
+    questions = crud.get_extract_results_by_job_id(db, draft.job_id)
+    answers = crud.get_answer_results_by_job_id(db, draft.job_id)
+    
+    draft_response = generater.generate_response_email(email, questions, answers, feedback.feedback) 
+    draft.draft_body = draft_response
+    new_draft = crud.update_draft_result(db, draft)
+    
+    return new_draft
+
 
 def start_job_generater(db: Session, generater: Generater, email: Email, job: Job):
     crud.update_job_status(db, job, JobStatus.EXTRACTING)

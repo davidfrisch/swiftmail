@@ -61,6 +61,10 @@ def create_answer_result(db: Session, answer_result: schemas.AnswerResult):
     db.refresh(db_answer_result)
     return db_answer_result
   
+def update_answer_result(db: Session, answer_result: models.AnswerResult):
+    db.commit()
+    db.refresh(answer_result)
+    return answer_result
 
 ## DraftResult
 def get_draft_results(db: Session, skip: int = 0, limit: int = 100):
@@ -82,7 +86,10 @@ def create_draft_result(db: Session, draft_result: schemas.DraftResult):
     db.refresh(db_draft_result)
     return db_draft_result
 
-
+def update_draft_result(db: Session, draft_result: models.DraftResult):
+    db.commit()
+    db.refresh(draft_result)
+    return draft_result
 
 # Job
 
