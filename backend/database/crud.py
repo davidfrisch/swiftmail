@@ -93,13 +93,13 @@ def update_draft_result(db: Session, draft_result: models.DraftResult):
 
 # Job
 
-def get_jobs(db: Session, skip: int = 0, limit: int = 100):
+def get_jobs(db: Session, skip: int = 0, limit: int = 100) -> List[schemas.Job]:
     return db.query(models.Job).offset(skip).limit(limit).all()
   
-def get_job(db: Session, job_id: int):
+def get_job(db: Session, job_id: int) -> schemas.Job:
     return db.query(models.Job).filter(models.Job.id == job_id).first()
   
-def get_jobs_by_email_id(db: Session, email_id: int):
+def get_jobs_by_email_id(db: Session, email_id: int) -> List[schemas.Job]:
     return db.query(models.Job).filter(models.Job.email_id == email_id).all()
   
 def create_job(db: Session, job: schemas.Job):

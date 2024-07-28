@@ -60,21 +60,6 @@ async def get_enquiry(enquiry_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Enquiry not found")
     return enquiry
 
-@app.get("/enquiries/{enquiry_id}/results")
-async def get_enquiry_results(enquiry_id: int, db: Session = Depends(get_db)):
-    enquiry = crud.get_email(db, enquiry_id)
-    if not enquiry:
-        raise HTTPException(status_code=404, detail="Enquiry not found")
-    
-    extract_results = crud.get_extract_results_by_email_id(db, enquiry_id)
-    answers = crud.get_answer_results_by_email_id(db, enquiry_id)
-    draft_result = crud.get_draft_results_by_email_id(db, enquiry_id)
-    
-    return {
-        "extract_results": extract_results,
-        "answers": answers,
-        "draft_result": draft_result
-    }
 
 @app.post("/enquiries/{enquiry_id}/generate-response")
 async def generate_response(enquiry_id: int, db: Session = Depends(get_db)):
@@ -129,3 +114,33 @@ async def retry_draft(draft_id: int, feedback: Feedback, db: Session = Depends(g
     new_draft = update_draft_email(db, generator, draft, feedback) 
   
     return {"message": "Draft updated successfully", "draft": new_draft} 
+  
+
+
+
+@app.get("/jobs")
+async def get_jobs(db: Session = Depends(get_db)):
+    jobs = crud.get_jobs(db)
+    if not jobs:
+        raise HTTPException(status_code=404, detail="No jobs found")
+    return jobs
+
+
+  
+@app.get("/jobs/{job_id}/results")
+async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
+    job = crud.get_job(db, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    email = crud.get_email(db, job.email_id)
+    extract_results = crud.get_extract_results_by_job_id(db, job_id)
+    answers = crud.get_answer_results_by_job_id(db, job_id)
+    draft_result = crud.get_draft_results_by_job_id(db, job_id)
+    
+    return {
+        "email": email,
+        "extract_results": extract_results,
+        "answers": answers,
+        "draft_result": draft_result
+    }
