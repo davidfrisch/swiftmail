@@ -9,7 +9,7 @@ def get_emails(db: Session, skip: int = 0, limit: int = 100):
 def get_email(db: Session, email_id: int):
     return db.query(models.Email).filter(models.Email.id == email_id).first()
 
-def create_email(db: Session, email: schemas.EmailCreate):
+def create_email(db: Session, email: schemas.Email):
     db_email = models.Email(subject=email.subject, body=email.body, sent_at=email.sent_at, is_read=email.is_read)
     db.add(db_email)
     db.commit()
@@ -24,10 +24,13 @@ def get_extract_results(db: Session, skip: int = 0, limit: int = 100) -> List[sc
 def get_extract_result(db: Session, extract_result_id: int) -> schemas.ExtractResult:
     return db.query(models.ExtractResult).filter(models.ExtractResult.id == extract_result_id).first()
 
+def get_extract_results_by_job_id(db: Session, job_id: int) -> List[schemas.ExtractResult]:
+    return db.query(models.ExtractResult).filter(models.ExtractResult.job_id == job_id).all()
+
 def get_extract_results_by_email_id(db: Session, email_id: int) -> List[schemas.ExtractResult]:
     return db.query(models.ExtractResult).filter(models.ExtractResult.email_id == email_id).all()
   
-def create_extract_result(db: Session, extract_result: schemas.ExtractResultCreate):
+def create_extract_result(db: Session, extract_result: schemas.ExtractResult):
     db_extract_result = models.ExtractResult(**extract_result.model_dump())
     db.add(db_extract_result)
     db.commit()
@@ -48,7 +51,10 @@ def get_answer_results_by_extract_result_id(db: Session, extract_result_id: int)
 def get_answer_results_by_email_id(db: Session, email_id: int):
     return db.query(models.AnswerResult).join(models.ExtractResult).filter(models.ExtractResult.email_id == email_id).all()
 
-def create_answer_result(db: Session, answer_result: schemas.AnswerResultCreate):
+def get_answer_results_by_job_id(db: Session, job_id: int):
+    return db.query(models.AnswerResult).join(models.ExtractResult).filter(models.ExtractResult.job_id == job_id).all()
+
+def create_answer_result(db: Session, answer_result: schemas.AnswerResult):
     db_answer_result = models.AnswerResult(**answer_result.model_dump())
     db.add(db_answer_result)
     db.commit()
@@ -65,8 +71,11 @@ def get_draft_result(db: Session, draft_result_id: int):
 
 def get_draft_results_by_email_id(db: Session, email_id: int):
     return db.query(models.DraftResult).filter(models.DraftResult.email_id == email_id).all()
-  
-def create_draft_result(db: Session, draft_result: schemas.DraftResultCreate):
+
+def get_draft_results_by_job_id(db: Session, job_id: int):
+    return db.query(models.DraftResult).filter(models.DraftResult.job_id == job_id).all()
+
+def create_draft_result(db: Session, draft_result: schemas.DraftResult):
     db_draft_result = models.DraftResult(**draft_result.model_dump())
     db.add(db_draft_result)
     db.commit()
@@ -86,7 +95,7 @@ def get_job(db: Session, job_id: int):
 def get_jobs_by_email_id(db: Session, email_id: int):
     return db.query(models.Job).filter(models.Job.email_id == email_id).all()
   
-def create_job(db: Session, job: schemas.JobCreate):
+def create_job(db: Session, job: schemas.Job):
     db_job = models.Job(**job.model_dump())
     db.add(db_job)
     db.commit()

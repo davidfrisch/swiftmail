@@ -1,59 +1,17 @@
 from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
-
-class AnswerResultBase(BaseModel):
-    extract_result_id: int
-    answer_text: str
-    answered_at: datetime
-    binary_score: Optional[int] = None
-    linkert_score: Optional[int] = None
-    hallucination_score: Optional[int] = None
-
-class AnswerResultCreate(AnswerResultBase):
-    pass
-
-class AnswerResult(AnswerResultBase):
-    id: int
-
-    class Config:
-        from_attributes = True
+from enum import Enum
 
 
-class ExtractResultBase(BaseModel):
-    email_id: int
-    question_text: str
-    extracted_at: datetime
-    is_answered: bool
-    category: Optional[str] = None
-
-class ExtractResultCreate(ExtractResultBase):
-    pass
-
-class ExtractResult(ExtractResultBase):
-    id: int
-    answers: List[AnswerResult] = []
-
-    class Config:
-        from_attributes = True
-
-
-class DraftResultBase(BaseModel):
-    draft_body: str
-    created_at: datetime
-    binary_score: Optional[int] = None
-    linkert_score: Optional[int] = None
-    hallucination_score: Optional[int] = None
-
-class DraftResultCreate(DraftResultBase):
-    pass
-
-class DraftResult(DraftResultBase):
-    id: int
-    email_id: int
-
-    class Config:
-        from_attributes = True
+class JobStatus(str, Enum):
+    PENDING = "PENDING"
+    EXTRACTING = "EXTRACTING"
+    ANSWERING = "ANSWERING"
+    DRAFTING = "DRAFTING"
+    EVALUATING = "EVALUATING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
 
 
 class EmailBase(BaseModel):
@@ -62,40 +20,110 @@ class EmailBase(BaseModel):
     sent_at: datetime
     is_read: bool
 
-class EmailCreate(EmailBase):
-    pass
 
 class Email(EmailBase):
     id: int
-    questions: List[ExtractResult] = []
-    drafts: List[DraftResult] = []
+    questions: List['ExtractResult'] = []
+    drafts: List['DraftResult'] = []
+    job: Optional['Job'] = None
 
     class Config:
         from_attributes = True
 
 
+class EmailCreate(EmailBase):
+    pass
+
+
+class ExtractResultBase(BaseModel):
+    question_text: str
+    extracted_at: datetime
+    is_answered: bool
+    category: Optional[str] = None
+
+
+class ExtractResult(ExtractResultBase):
+    id: int
+    job_id: int
+    job: Optional['Job'] = None
+    answer: Optional['AnswerResult'] = None
+
+    class Config:
+        from_attributes = True
+
+class ExtractResultCreate(ExtractResultBase):
+    email_id: int
+    job_id: int
+
+
+class AnswerResultBase(BaseModel):
+    answer_text: str
+    answered_at: datetime
+    binary_score: Optional[int] = None
+    linkert_score: Optional[int] = None
+    hallucination_score: Optional[int] = None
+
+
+class AnswerResult(AnswerResultBase):
+    id: int
+    extract_result_id: int
+    job_id: int
+    job: Optional['Job'] = None
+    question: Optional[ExtractResult] = None
+
+    class Config:
+        from_attributes = True
+
+
+class AnswerResultCreate(AnswerResultBase):
+    extract_result_id: int
+    job_id: int
+
+class DraftResultBase(BaseModel):
+    draft_body: str
+    created_at: datetime
+    binary_score: Optional[int] = None
+    linkert_score: Optional[int] = None
+    hallucination_score: Optional[int] = None
+
+
+class DraftResult(DraftResultBase):
+    id: int
+    email_id: int
+    email: Optional[Email] = None
+
+    class Config:
+        from_attributes = True
+        
+class DraftResultCreate(DraftResultBase):
+    job_id: int
+    email_id: int
+
+
 class JobBase(BaseModel):
-    status: str
+    email_id: int
+    status: JobStatus
     started_at: datetime
     completed_at: Optional[datetime] = None
-    email_id: int
 
 
 class Job(JobBase):
     id: int
     process_id: Optional[int] = None
+    email: Optional[Email] = None
+    extract_results: List[ExtractResult] = []
+    answer_results: List[AnswerResult] = []
 
     class Config:
         from_attributes = True
+
 
 class JobCreate(JobBase):
     pass
 
-class JobUpdate(BaseModel):
-    status: Optional[str] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    process_id: Optional[int] = None
 
-    class Config:
-        from_attributes = True
+Email.model_rebuild()
+ExtractResult.model_rebuild()
+AnswerResult.model_rebuild()
+DraftResult.model_rebuild()
+Job.model_rebuild()

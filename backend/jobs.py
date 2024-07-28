@@ -6,13 +6,13 @@ from .Generater import Generater
 from datetime import datetime
 
 
-def extract_questions_from_email(db: Session, email: Email, generater: Generater):
+def extract_questions_from_email(db: Session, generater: Generater, email: Email, job: Job):
     extract_questions = generater.extract_questions_from_text(email.body)
     
     for question in extract_questions:
-        print(question)
         new_extract_result = schemas.ExtractResultCreate(
             email_id=email.id,
+            job_id=job.id,
             category=question['category'] if 'category' in question else None,
             question_text=question['question'],
             extracted_at=datetime.now(),
@@ -23,14 +23,15 @@ def extract_questions_from_email(db: Session, email: Email, generater: Generater
     return extract_questions
 
 
-def answer_questions(db: Session, generater: Generater, email: Email):
-    extract_results = crud.get_extract_results_by_email_id(db, email.id)
+def answer_questions(db: Session, generater: Generater, job: Job):
+    extract_results = crud.get_extract_results_by_job_id(db, job.id)
     answers = generater.answer_questions(extract_results)
     for answer in answers:
         find_extract_result = next((x for x in extract_results if x.question_text == answer['question']), None)
         if find_extract_result:
             new_answer_result = schemas.AnswerResultCreate(
                 extract_result_id=find_extract_result.id,
+                job_id=job.id,
                 answer_text=answer['answer'],
                 answered_at=datetime.now()
             )
@@ -41,15 +42,40 @@ def answer_questions(db: Session, generater: Generater, email: Email):
     return answers
 
 
+def generate_draft_email(db: Session, generater: Generater, email: Email, job: Job):
+    extract_results = crud.get_extract_results_by_job_id(db, job.id)
+    answers = crud.get_answer_results_by_job_id(db, job.id)
+    draft_response = generater.generate_response_email(email, extract_results, answers)
+    
+    new_draft_result = schemas.DraftResultCreate(
+        job_id=job.id,
+        email_id=email.id,
+        draft_body=draft_response,
+        created_at=datetime.now(),
+    )
+    
+    crud.create_draft_result(db, new_draft_result)
+    return draft_response
+    
+
 def start_job_generater(db: Session, generater: Generater, email: Email, job: Job):
-    # crud.update_job_status(db, job, JobStatus.EXTRACTING)
-    # extract_questions_from_email(db, email, generater)
+    crud.update_job_status(db, job, JobStatus.EXTRACTING)
+    extract_questions_from_email(db, generater, email, job)
     
     crud.update_job_status(db, job, JobStatus.ANSWERING)
-    answer_questions(db, generater, email)
+    answer_questions(db, generater, job)
     
-    # crud.update_job_status(db, job, JobStatus.DRAFTING)
-    # generater.generate_response_email(email, generater.answers)
+    crud.update_job_status(db, job, JobStatus.DRAFTING)
+    generate_draft_email(db, generater, email, job)
     
-    # crud.update_job_status(db, job, JobStatus.COMPLETED)
-    # job.generated_draft_email = generater.generated_draft_email
+    crud.update_job_status(db, job, JobStatus.COMPLETED)
+    
+    extract_results = crud.get_extract_results_by_job_id(db, job.id)
+    answers = crud.get_answer_results_by_job_id(db, job.id)
+    draft_result = crud.get_draft_results_by_job_id(db, job.id)
+    
+    return {
+        "extract_results": extract_results,
+        "answers": answers,
+        "draft_result": draft_result
+    }

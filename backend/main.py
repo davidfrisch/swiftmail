@@ -79,7 +79,6 @@ async def generate_response(enquiry_id: int, db: Session = Depends(get_db)):
     )
     job = crud.create_job(db, new_job)
     
-    start_job_generater(db, generator, enquiry, job)
+    results = start_job_generater(db, generator, enquiry, job)
 
-    job = crud.get_job(db, job.id)
-    return {"message": "Response generated successfully", "job": job}
+    return {"message": "Response generated successfully", "results": results}

@@ -7,8 +7,7 @@ from constants import NO_ANSWERS_TEMPLATE, WORKSPACE_CATEGORIES as categories
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from LLM.OllamaLLM import OllamaAI
 from LLM.AnythingLLM_client import AnythingLLMClient
-from database.schemas import Email, Job, ExtractResult
-from database.models import JobStatus
+from database.schemas import Email, ExtractResult, AnswerResult
 
 class Generater:
     def __init__(self, ollama_client:OllamaAI= None, anyllm_client:AnythingLLMClient = None):
@@ -140,7 +139,7 @@ class Generater:
       
 
 
-    def generate_response_email(self, original_email: Email, questions):
+    def generate_response_email(self, original_email: Email, questions: List[ExtractResult], answers: List[AnswerResult]):
         program_administrator_name = "David"
         program_name = "UCL Software Engineering MSc"
         
@@ -148,8 +147,8 @@ class Generater:
         questions_answers = []
         
         for question in questions:
-            question_text = question['question']
-            answer_text = question['answer']
+            question_text = question.question_text
+            answer_text = next((answer.answer_text for answer in answers if answer.extract_result_id == question.id), "I don't have an answer for this question")
             questions_answers.append(f"Question: {question_text}\nAnswer: {answer_text} \n-------\n")
         
         prompt = f"""
@@ -167,6 +166,8 @@ class Generater:
         
         generated_email = self.olllama_client.predict(prompt)
         self.generated_draft_email = generated_email
+        
+        return generated_email
         
         
     def response_to_markdown(self, output_path):
