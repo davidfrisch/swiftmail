@@ -291,4 +291,4 @@ results
 secrets
 client_secret.json
 gmail_token.json
-backend/tasks/outputs
+outputs

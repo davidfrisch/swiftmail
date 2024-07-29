@@ -1,19 +1,11 @@
 import "./App.css";
-import ChatWidget from "./components/ChatWidget";
-import ValidationWidget from "./components/ValidationWidget";
-import SaveConversationWidget from "./components/SaveConversationWidget";
+import ResultsPage from "./components/ResultsPage";
 
 function App() {
   return (
     <>
       <div className="container">
-        <div className="left-side">
-        <ChatWidget />
-        </div>
-        <div className="right-side">
-          <ValidationWidget />
-          <SaveConversationWidget />
-        </div>
+        <ResultsPage jobId="3" />
       </div>
     </>
   );

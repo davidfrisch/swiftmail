@@ -1,5 +1,6 @@
 #! fastapi dev
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from .database import crud, models, schemas
 from .database.create_database import SessionLocal, engine
@@ -9,10 +10,25 @@ from .LLM.OllamaLLM import OllamaAI
 from .LLM.AnythingLLM_client import AnythingLLMClient
 from datetime import datetime
 from .jobs import start_job_generater, update_answer, update_draft_email
-from .endpoints_models import Feedback
+from .endpoints_models import Feedback, NewJob
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:5173"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 ollama_client = OllamaAI('http://localhost:11434', 'llama3:instruct')
 anyllm_client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")
 
@@ -28,6 +44,7 @@ def get_db():
 async def root():
     return {"message": "Hello World"}
 
+# Enquiries
 
 @app.get("/enquiries/refresh")
 async def refresh_enquiries(db: Session = Depends(get_db)):
@@ -61,29 +78,7 @@ async def get_enquiry(enquiry_id: int, db: Session = Depends(get_db)):
     return enquiry
 
 
-@app.post("/enquiries/{enquiry_id}/generate-response")
-async def generate_response(enquiry_id: int, db: Session = Depends(get_db)):
-    if not enquiry_id:
-        raise HTTPException(status_code=400, detail="Enquiry ID is required")
-  
-    enquiry = crud.get_email(db, enquiry_id)
-    if not enquiry:
-        raise HTTPException(status_code=404, detail="Enquiry not found")
-    
-    generator = Generater(ollama_client, anyllm_client)
-    job_status = models.JobStatus.PENDING.name
-    new_job = schemas.JobCreate(
-      email_id=enquiry_id,
-      status=job_status,
-      started_at= datetime.now(),
-    )
-    job = crud.create_job(db, new_job)
-    
-    results = start_job_generater(db, generator, enquiry, job)
-
-    return {"message": "Response generated successfully", "results": results}
-
-
+# Answers
 
 @app.post("/answers/{answer_id}")
 async def retry_answer(answer_id: int, feedback: Feedback, db: Session = Depends(get_db)):
@@ -116,7 +111,7 @@ async def retry_draft(draft_id: int, feedback: Feedback, db: Session = Depends(g
     return {"message": "Draft updated successfully", "draft": new_draft} 
   
 
-
+# Jobs
 
 @app.get("/jobs")
 async def get_jobs(db: Session = Depends(get_db)):
@@ -125,6 +120,27 @@ async def get_jobs(db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No jobs found")
     return jobs
 
+
+@app.post("/jobs")
+async def generate_response(body: NewJob, db: Session = Depends(get_db)):
+
+    enquiry_id = body.email_id
+    enquiry = crud.get_email(db, enquiry_id)
+    if not enquiry:
+        raise HTTPException(status_code=404, detail="Enquiry not found")
+    
+    generator = Generater(ollama_client, anyllm_client)
+    job_status = models.JobStatus.PENDING.name
+    new_job = schemas.JobCreate(
+      email_id=enquiry_id,
+      status=job_status,
+      started_at= datetime.now(),
+    )
+    job = crud.create_job(db, new_job)
+    
+    results = start_job_generater(db, generator, enquiry, job)
+
+    return {"message": "Response generated successfully", "results": results}
 
   
 @app.get("/jobs/{job_id}/results")
