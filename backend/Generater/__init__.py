@@ -3,8 +3,8 @@ import json
 import sys
 import os
 from typing import List
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from constants import NO_ANSWERS_TEMPLATE, WORKSPACE_CATEGORIES as categories
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from LLM.OllamaLLM import OllamaAI
 from LLM.AnythingLLM_client import AnythingLLMClient
 from database.schemas import Email, ExtractResult, AnswerResult
@@ -113,7 +113,6 @@ class Generater:
           Additional context: {feedback} \n
           Category: {category}
         """
-        print(prompt)
         slug = self.anyllm_client.get_workspace_slug("General")
         res = self.anyllm_client.chat_with_workspace(slug, prompt)
         answer = res['textResponse']

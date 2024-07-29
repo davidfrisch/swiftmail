@@ -1,12 +1,12 @@
 import sys 
 import os
 import json
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-from tasks.Generater import Generater
-from LLM.OllamaLLM import OllamaAI
-from LLM.AnythingLLM_client import AnythingLLMClient
 from time import time
-from tasks.dataset.bank_questions import ucl_questions
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from dataset.bank_questions import ucl_questions
+from backend.Generater import Generater
+from backend.LLM.OllamaLLM import OllamaAI
+from backend.LLM.AnythingLLM_client import AnythingLLMClient
 
 
 def get_gold_answer(question_text):
@@ -19,24 +19,31 @@ def get_gold_answer(question_text):
 
 
 def run_benchmark(generater: Generater, data: dict):
-    start_time = time()
     questions = data['questions']
     results = []
     for question in questions:
+        start_time = time()
         question_text = question['question']
         gold_answer = get_gold_answer(question_text)
         category = question['category']
         answer, sources, total_sim_distance = generater.answer_question(question_text, category)
-        results = {
+        try: 
+            answer = answer.split("?\n")[1].strip()
+        except:
+            print(f"Could not split answer for question: {question_text}")
+        result = {
             "question": question_text,
             "gold_answer": gold_answer,
             "category": category,
             "generated_answer": answer,
             "sources": sources,
-            "total_sim_distance": total_sim_distance
+            "total_sim_distance": total_sim_distance,
+            "time": time() - start_time
         }
         
-    results["total_time"] = time() - start_time
+        results.append(result)
+        
+    
     return results
         
   
@@ -51,13 +58,13 @@ def main():
     llm = OllamaAI('http://localhost:11434', 'llama3:instruct')
     anything_llm_client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")
     generater = Generater(ollama_client=llm, anyllm_client=anything_llm_client)
-    path_folder = '../../tasks/dataset'
-    benchmark_results = {}
-    benchmark_file_path = './results/benchmark_results_responses.json'
+    path_folder = '../../dataset'
+    benchmark_results = { "results": {} }
+    benchmark_file_path = f'./results/benchmark_results_responses_{time()}.json'
     os.makedirs(os.path.dirname(benchmark_file_path.replace('benchmark_results_responses.json', '')), exist_ok=True)
     start_time = time()
     
-    for filename in os.listdir(path_folder)[:1]:
+    for filename in os.listdir(path_folder):
         filename_path = os.path.join(path_folder, filename)
         if filename_path.endswith('.json') and "fake" in filename:
             print(f"Running benchmark for {filename}")
@@ -67,7 +74,7 @@ def main():
                 
             
             results = run_benchmark(generater, data)
-            benchmark_results[filename] = results
+            benchmark_results["results"][filename] = results
           
 
 
