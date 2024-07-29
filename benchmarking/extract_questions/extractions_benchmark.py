@@ -1,12 +1,11 @@
 import sys 
 import os
 import json
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-from tasks.Generater import Generater
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../backend'))
+from Generater import Generater
 from LLM.OllamaLLM import OllamaAI
-from pysimilar import compare
 from time import time
-
+from datetime import datetime
 
 def run_benchmark(generater: Generater, data: dict):
     results = {}
@@ -15,55 +14,20 @@ def run_benchmark(generater: Generater, data: dict):
     original_questions = data['questions']
     extracted_questions = generater.extract_questions_from_text(data['email'])
     
+    results["original_questions"] = original_questions
+    results["extracted_questions"] = extracted_questions   
+    results["extraction_time"] = time() - start_time
     
-    if len(original_questions) == len(extracted_questions):
-        for i in range(len(original_questions)):
-            original_question = original_questions[i]['question']
-            original_category = original_questions[i]['category']
-            
-            extracted_question = extracted_questions[i]['question']
-            extracted_category = extracted_questions[i]['category']
-            
-            similarity_score = compare(original_question, extracted_question)
-            
-            print(f"Original Question: {original_question}")
-            print(f"Extracted Question: {extracted_question}")
-            print(f"Similarity Score: {similarity_score}")
-            print("\n")
-            
-            result = {
-                "original_question": original_question,
-                "extracted_question": extracted_question,
-                "original_category": original_category,
-                "extracted_category": extracted_category,
-                "similarity_score": similarity_score
-            }
-            
-            results[f"question_{i}"] = result
-            results["original_questions"] = original_questions
-            results["extracted_questions"] = extracted_questions
-            results["success"] = True
-            
-    else:
-        print("Number of questions extracted does not match number of original questions")
-        results["original_questions"] = original_questions
-        results["extracted_questions"] = extracted_questions
-        results["error"] = "Number of questions extracted does not match number of original questions"
-        results["success"] = False
-        
-    results["total_time"] = time() - start_time
     return results
             
 
-    
-
-
 
 def main():
-    llm = OllamaAI('http://localhost:11434', 'llama3:instruct')
+    model_name = 'llama3.1:latest'
+    llm = OllamaAI('http://localhost:11434', model_name)
     generater = Generater(ollama_client=llm)
-    path_folder = '../../tasks/dataset'
-    benchmark_results = {}
+    path_folder = '../../dataset'
+    benchmark_results = {"results": {}}
     benchmark_file_path = './results/benchmark_results.json'
     os.makedirs(os.path.dirname(benchmark_file_path.replace('benchmark_results.json', '')), exist_ok=True)
     start_time = time()
@@ -76,11 +40,14 @@ def main():
                 data = json.load(f)
             
             results = run_benchmark(generater, data)
-            benchmark_results[filename] = results
+            benchmark_results["results"][filename] = results
           
 
 
     benchmark_results["total_time"] = time() - start_time
+    benchmark_results["date"] = datetime.now().strftime("%d/%m/%Y")
+    benchmark_results["model_name"] = model_name
+    
     with open(benchmark_file_path, 'w') as f:
         json.dump(benchmark_results, f)
     
