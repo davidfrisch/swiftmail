@@ -56,6 +56,7 @@ class AnswerResult(Base):
 
     id = Column(Integer, primary_key=True)
     extract_result_id = Column(Integer, ForeignKey('extract_results.id'), nullable=False)
+    sources = Column(Text, nullable=True)
     job_id = Column(Integer, ForeignKey('jobs.id'), nullable=False)  # Corrected table name
     answer_text = Column(String, nullable=False)
     answered_at = Column(DateTime, default=datetime.now())

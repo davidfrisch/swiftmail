@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel
 from enum import Enum
 
@@ -62,6 +62,7 @@ class AnswerResultBase(BaseModel):
     binary_score: Optional[int] = None
     linkert_score: Optional[int] = None
     hallucination_score: Optional[int] = None
+    sources: str = "" 
 
 
 class AnswerResult(AnswerResultBase):
@@ -70,7 +71,6 @@ class AnswerResult(AnswerResultBase):
     job_id: int
     job: Optional['Job'] = None
     question: Optional[ExtractResult] = None
-
     class Config:
         from_attributes = True
 

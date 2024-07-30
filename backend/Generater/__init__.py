@@ -1,5 +1,6 @@
 from typing import List
-import json
+import json_tricks as json
+import json as simplejson
 import sys
 import os
 from typing import List
@@ -7,7 +8,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from constants import NO_ANSWERS_TEMPLATE, WORKSPACE_CATEGORIES as categories
 from LLM.OllamaLLM import OllamaAI
 from LLM.AnythingLLM_client import AnythingLLMClient
-from database.schemas import Email, ExtractResult, AnswerResult
+from database.schemas import Email, ExtractResult, AnswerResult, AnswerResultCreate
+from datetime import datetime
 
 class Generater:
     def __init__(self, ollama_client:OllamaAI= None, anyllm_client:AnythingLLMClient = None):
@@ -19,11 +21,39 @@ class Generater:
         self.generated_draft_email = ""
         
 
-    def reply_to_email(self, email: Email, path_output:str, with_interaction:bool=False):
-        self.extract_questions_from_text(email.body)
-        self.answer_questions(self.questions, with_interaction)
-        self.generate_response_email(email, self.answers)
-        self.response_to_markdown(path_output)
+    def single_run_reply_to_email(self, email: Email, path_output:str, with_interaction:bool=False):
+        with open(path_output, 'w') as f:
+            json.dump({}, f)
+      
+        extract_questions = self.extract_questions_from_text(email.body)
+        self.dump_intermediate({'extracted_questions': extract_questions}, path_output)
+        extract_questions = [ExtractResult(
+              job_id=-1,
+              question_text=question['question_text'],
+              category=question['category'],
+              is_answered=False,
+              id=i,
+              extracted_at=datetime.now()
+           ) for i, question in enumerate(extract_questions)
+        ]
+        answers = self.answer_questions(extract_questions, with_interaction)
+        self.dump_intermediate({'answers': answers}, path_output)
+        
+        answers_results: List[AnswerResult] = []
+        for answer in answers:
+            find_extract_result = next((x for x in extract_questions if x.question_text == answer['question']), None)
+            if find_extract_result:
+                answer_result = AnswerResultCreate(
+                    extract_result_id=find_extract_result.id,
+                    job_id=-1,
+                    answer_text = answer['answer'],
+                    sources = json.dumps(answer['sources']),
+                    answered_at = datetime.now()
+                )
+                
+                answers_results.append(answer_result)
+        generated_draft_email = self.generate_response_email(email, extract_questions,  answers_results)
+        self.dump_intermediate({'generated_draft_email': generated_draft_email}, path_output)
     
     
     def extract_questions_from_text(self, text:str) -> List[str]:
@@ -37,7 +67,7 @@ class Generater:
           
           Give it in a json format:
           questions: [ question ]
-          question = { { 'question': 'question', 'category': 'category', 'summary': 'summary' } }
+          question = { { 'question_text': 'question_text', 'category': 'category', 'summary': 'summary' } }
 
         """
         
@@ -176,3 +206,26 @@ class Generater:
       response_email = self.generated_draft_email
       with open(output_path, 'w') as f:
           f.write(response_email)
+          
+    def dump_response(self, path_output:str, email: Email, questions: List[ExtractResult], answers: List[AnswerResult], generated_draft_email:str):
+        with open(path_output, 'w') as f:
+            json.dump({
+                'email': email.model_dump(),
+                'questions': [question.model_copy() for question in questions],
+                'answers': [answer.model_dump() for answer in answers],
+                'generated_draft_email': generated_draft_email
+            }, f)
+            
+    def dump_intermediate(self, new_data: dict, path_output):
+        with open(path_output, 'r') as f:
+            data = json.load(f)
+        
+        old_data = data.copy()  
+        try:
+            data.update(new_data)
+            with open(path_output, 'w') as f:
+                json.dump(data, f)
+        except:
+            with open(path_output, 'w') as f:
+                json.dump(old_data, f)
+                raise Exception("Failed to write to file")

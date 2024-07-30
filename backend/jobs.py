@@ -15,7 +15,7 @@ def extract_questions_from_email(db: Session, generater: Generater, email: Email
             email_id=email.id,
             job_id=job.id,
             category=question['category'] if 'category' in question else None,
-            question_text=question['question'],
+            question_text=question['question_text'],
             extracted_at=datetime.now(),
             is_answered=False
         )
