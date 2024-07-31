@@ -118,6 +118,12 @@ async def get_jobs(db: Session = Depends(get_db)):
     jobs = crud.get_jobs(db)
     if not jobs:
         raise HTTPException(status_code=404, detail="No jobs found")
+      
+      
+    for job in jobs:
+        email = crud.get_email(db, job.email_id)
+        job.email = email
+        
     return jobs
 
 

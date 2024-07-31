@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import api from "../../api";
 import { Breadcrumb, Layout, Spin, theme, message, Input, Button } from "antd";
 import "./styles.css";
-const { Header, Content, Footer } = Layout;
 const { TextArea } = Input;
 
 export default function ResultsPage({ jobId }) {
@@ -106,142 +105,128 @@ export default function ResultsPage({ jobId }) {
   } = theme.useToken();
 
   return (
-    <Layout>
-      <Header style={{ display: "flex", alignItems: "center" }}>
-        <div className="demo-logo" />
-      </Header>
-      <Content style={{ padding: "0 64px" }}>
-        <Breadcrumb style={{ margin: "16px 0" }}>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>Jobs</Breadcrumb.Item>
-          <Breadcrumb.Item>Job</Breadcrumb.Item>
-        </Breadcrumb>
-        <div
-          style={{
-            background: colorBgContainer,
-            padding: 24,
-            borderRadius: borderRadiusLG,
-          }}
-        >
-          <h1>Email</h1>
-          <h2>Subject: {results?.email?.subject}</h2>
-          <div className="draft-body">{results?.email.body}</div>
-        </div>
+    <div>
+      <div
+        style={{
+          background: colorBgContainer,
+          padding: 24,
+          borderRadius: borderRadiusLG,
+        }}
+      >
+        <h1>Email</h1>
+        <h2>Subject: {results?.email?.subject}</h2>
+        <div className="draft-body">{results?.email.body}</div>
+      </div>
 
-        <div
-          style={{
-            background: colorBgContainer,
-            minHeight: 280,
-            padding: 24,
-            borderRadius: borderRadiusLG,
-            marginBottom: 24, // Added margin-bottom for spacing
-          }}
-        >
-          {loading ? (
-            <Spin size="large" />
-          ) : error ? (
-            <div className="error-message">{error}</div>
-          ) : (
-            <>
-              <h1>Results</h1>
-              {results.answers_questions?.length > 0 ? (
-                results.answers_questions.map((extractQuestion, index) => (
-                  <div key={index} className="question-container">
-                    <h2>{`Question ${index + 1}: ${
-                      extractQuestion.question
-                    }`}</h2>
-                    <div>{extractQuestion.answer}</div>
-                    <TextArea
-                      disabled={questionLoading[index]}
-                      rows={4}
-                      placeholder="Provide your feedback here..."
-                      value={feedback[index] || ""}
-                      onChange={(e) =>
-                        handleFeedbackChange(index, e.target.value)
+      <div
+        style={{
+          background: colorBgContainer,
+          minHeight: 280,
+          padding: 24,
+          borderRadius: borderRadiusLG,
+          marginBottom: 24, // Added margin-bottom for spacing
+        }}
+      >
+        {loading ? (
+          <Spin size="large" />
+        ) : error ? (
+          <div className="error-message">{error}</div>
+        ) : (
+          <>
+            <h1>Results</h1>
+            {results.answers_questions?.length > 0 ? (
+              results.answers_questions.map((extractQuestion, index) => (
+                <div key={index} className="question-container">
+                  <h2>{`Question ${index + 1}: ${
+                    extractQuestion.question
+                  }`}</h2>
+                  <div>{extractQuestion.answer}</div>
+                  <TextArea
+                    disabled={questionLoading[index]}
+                    rows={4}
+                    placeholder="Provide your feedback here..."
+                    value={feedback[index] || ""}
+                    onChange={(e) =>
+                      handleFeedbackChange(index, e.target.value)
+                    }
+                    style={{ marginTop: 16 }}
+                  />
+                  <div style={{ marginTop: 16 }}>
+                    <Button
+                      type="primary"
+                      onClick={() =>
+                        handleSubmitQuestionFeedback(
+                          index,
+                          extractQuestion.answer_id
+                        )
                       }
-                      style={{ marginTop: 16 }}
-                    />
-                    <div style={{ marginTop: 16 }}>
-                      <Button
-                        type="primary"
-                        onClick={() =>
-                          handleSubmitQuestionFeedback(
-                            index,
-                            extractQuestion.answer_id
-                          )
-                        }
-                        disabled={questionLoading[index]} // Disable button during loading
-                      >
-                        Regenerate answer
-                      </Button>
-                      {questionLoading[index] && (
-                        <Spin
-                          size="small"
-                          style={{ marginLeft: 10 }} // Add spinner next to the button
-                        />
-                      )}
-                    </div>
+                      disabled={questionLoading[index]} // Disable button during loading
+                    >
+                      Regenerate answer
+                    </Button>
+                    {questionLoading[index] && (
+                      <Spin
+                        size="small"
+                        style={{ marginLeft: 10 }} // Add spinner next to the button
+                      />
+                    )}
                   </div>
-                ))
-              ) : (
-                <div>No questions available.</div>
-              )}
-            </>
-          )}
-        </div>
-
-        {results?.draft_result && (
-          <div
-            style={{
-              background: colorBgContainer,
-              padding: 24,
-              borderRadius: borderRadiusLG,
-            }}
-          >
-            <h1>Generated Draft</h1>
-            <h2>Subject: {results.draft_result.subject}</h2>
-            <div className="draft-body">
-              {" "}
-              {questionLoading?.draft ? (
-                <Spin size="large" />
-              ) : (
-                parseText(results.draft_result.body)
-              )}
-            </div>
-
-            <div className="draft-feedback-container">
-              <TextArea
-                disabled={questionLoading?.draft}
-                rows={4}
-                className="draft-feedback"
-                placeholder="Provide feedback on the draft here..."
-                value={draftFeedback}
-                onChange={(e) => setDraftFeedback(e.target.value)}
-              />
-            </div>
-          </div>
+                </div>
+              ))
+            ) : (
+              <div>No questions available.</div>
+            )}
+          </>
         )}
+      </div>
 
-        <Button
-          type="primary"
-          onClick={() => handleSubmitDraftFeedback(false)}
-          style={{ marginTop: 24 }}
+      {results?.draft_result && (
+        <div
+          style={{
+            background: colorBgContainer,
+            padding: 24,
+            borderRadius: borderRadiusLG,
+          }}
         >
-          Submit Draft Feedback
-        </Button>
-        {hasRefreshedQuestions && (
+          <h1>Generated Draft</h1>
+          <h2>Subject: {results.draft_result.subject}</h2>
+          <div className="draft-body">
+            {" "}
+            {questionLoading?.draft ? (
+              <Spin size="large" />
+            ) : (
+              parseText(results.draft_result.body)
+            )}
+          </div>
+
+          <div className="draft-feedback-container">
+            <TextArea
+              disabled={questionLoading?.draft}
+              rows={4}
+              className="draft-feedback"
+              placeholder="Provide feedback on the draft here..."
+              value={draftFeedback}
+              onChange={(e) => setDraftFeedback(e.target.value)}
+            />
+          </div>
           <Button
             type="primary"
-            onClick={() => handleSubmitDraftFeedback(true)}
-            style={{ marginTop: 24, backgroundColor: "#00dd00" }}
+            onClick={() => handleSubmitDraftFeedback(false)}
+            style={{ marginTop: 24 }}
           >
-            Refresh Draft
+            Submit Draft Feedback
           </Button>
-        )}
-      </Content>
-      <Footer style={{ textAlign: "center" }}>
-        Swiftmail ©{new Date().getFullYear()}
-      </Footer>
-    </Layout>
+          {hasRefreshedQuestions && (
+            <Button
+              type="primary"
+              onClick={() => handleSubmitDraftFeedback(true)}
+              style={{ marginTop: 24, backgroundColor: "#00dd00" }}
+            >
+              Refresh Draft
+            </Button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,0 +1,7 @@
+.mails-table .ant-table-tbody > tr:nth-child(odd) > td {
+  background: #f9f9f9; /* Light gray color for odd rows */
+}
+
+.mails-table .ant-table-tbody > tr:nth-child(even) > td {
+  background: #ffffff; /* White color for even rows */
+}
