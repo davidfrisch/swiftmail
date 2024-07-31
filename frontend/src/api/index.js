@@ -61,8 +61,8 @@ const answers = {
 }
 
 const drafts = {
-  updateDrafts: async (draftId) => {
-    const response = await api.post(`drafts/${draftId}`);
+  updateDrafts: async (draftId, feedback) => {
+    const response = await api.post(`drafts/${draftId}`, { feedback });
     return response.data;
   }
 }

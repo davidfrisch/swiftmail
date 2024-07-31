@@ -12,6 +12,18 @@ export default function ResultsPage({ jobId }) {
   const [feedback, setFeedback] = useState({});
   const [draftFeedback, setDraftFeedback] = useState(""); // State for draft feedback
   const [questionLoading, setQuestionLoading] = useState({}); // State for each question's loading status
+  const [hasRefreshedQuestions, setHasRefreshedQuestions] = useState(false);
+
+  const parseText = (text) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g); // Split the text by **word** pattern
+    return parts.map((part, index) => {
+      if (part.match(/\*\*[^*]+\*\*/)) {
+        // If the part matches the pattern **word**, render it as bold
+        return <strong key={index}>{part.slice(2, -2)}</strong>;
+      }
+      return part; // Otherwise, return the part as is
+    });
+  };
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -36,20 +48,23 @@ export default function ResultsPage({ jobId }) {
     }));
   };
 
-  const handleSubmitDraftFeedback = async () => {
+  const handleSubmitDraftFeedback = async (isRefreshFeedback) => {
     try {
-      const feedbackData = {
-        questionsFeedback: feedback,
-        draftFeedback,
-      };
-
-      // Call API to submit feedback
-      // await api.drafts.updateDrafts(jobId, feedbackData);
-      // wait 10 sec
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      setQuestionLoading((prev) => ({
+        ...prev,
+        draft: true,
+      }));
+      const feedback = isRefreshFeedback ? "" : draftFeedback;
+      await api.drafts.updateDrafts(jobId, feedback);
       message.success("Feedback submitted successfully!");
+      setHasRefreshedQuestions(false);
     } catch (err) {
       message.error("Failed to submit feedback. Please try again.");
+    } finally {
+      setQuestionLoading((prev) => ({
+        ...prev,
+        draft: false,
+      }));
     }
   };
 
@@ -67,16 +82,18 @@ export default function ResultsPage({ jobId }) {
       setResults((prev) => ({
         ...prev,
         answers_questions: prev.answers_questions.map((item) =>
-          item.answer_id === answerId ? { ...item, answer_text: answer.answer_text } : item
+          item.answer_id === answerId
+            ? { ...item, answer: answer.answer_text }
+            : item
         ),
       }));
 
       message.success(resMessage);
+      setHasRefreshedQuestions(true);
     } catch (err) {
       console.log(err);
       message.error("Failed to submit feedback. Please try again.");
     } finally {
-
       setQuestionLoading((prev) => ({
         ...prev,
         [index]: false,
@@ -135,7 +152,7 @@ export default function ResultsPage({ jobId }) {
                     }`}</h2>
                     <div>{extractQuestion.answer}</div>
                     <TextArea
-                      disabled={questionLoading[index]} 
+                      disabled={questionLoading[index]}
                       rows={4}
                       placeholder="Provide your feedback here..."
                       value={feedback[index] || ""}
@@ -183,10 +200,18 @@ export default function ResultsPage({ jobId }) {
           >
             <h1>Generated Draft</h1>
             <h2>Subject: {results.draft_result.subject}</h2>
-            <div className="draft-body"> {results.draft_result.body}</div>
+            <div className="draft-body">
+              {" "}
+              {questionLoading?.draft ? (
+                <Spin size="large" />
+              ) : (
+                parseText(results.draft_result.body)
+              )}
+            </div>
 
             <div className="draft-feedback-container">
               <TextArea
+                disabled={questionLoading?.draft}
                 rows={4}
                 className="draft-feedback"
                 placeholder="Provide feedback on the draft here..."
@@ -199,11 +224,20 @@ export default function ResultsPage({ jobId }) {
 
         <Button
           type="primary"
-          onClick={handleSubmitDraftFeedback}
+          onClick={() => handleSubmitDraftFeedback(false)}
           style={{ marginTop: 24 }}
         >
-          Submit All Feedback
+          Submit Draft Feedback
         </Button>
+        {hasRefreshedQuestions && (
+          <Button
+            type="primary"
+            onClick={() => handleSubmitDraftFeedback(true)}
+            style={{ marginTop: 24, backgroundColor: "#00dd00" }}
+          >
+            Refresh Draft
+          </Button>
+        )}
       </Content>
       <Footer style={{ textAlign: "center" }}>
         Swiftmail ©{new Date().getFullYear()}

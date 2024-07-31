@@ -1,26 +1,27 @@
 .draft-feedback {
-  margin-top: 24px; /* Space above the feedback area */
-  padding: 12px; /* Padding inside the text area */
-  border: 1px solid #d9d9d9; /* Border color */
-  border-radius: 8px; /* Rounded corners */
-  width: 100%; /* Full width to match the draft body */
-  box-sizing: border-box; /* Ensure padding and border are included in the width */
+  margin-top: 24px; 
+  padding: 12px; 
+  border: 1px solid #d9d9d9; 
+  border-radius: 8px; 
+  width: 100%; 
+  box-sizing: border-box; 
 }
 
 .draft-feedback-container {
-  margin-top: 18px; /* Space above the feedback container */
+  margin-top: 18px; 
 }
 
 
 .draft-body {
-  font-size: 16px; /* Set a comfortable font size */
-  line-height: 1.6; /* Improve readability with line height */
-  color: #333; /* Dark gray color for text */
-  background-color: #f9f9f9; /* Light background color for contrast */
-  padding: 16px; /* Add padding for spacing */
-  border-radius: 8px; /* Rounded corners for a modern look */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  margin-top: 16px; /* Space between the header and body */
-  margin-bottom: 16px; /* Space between the body and feedback */
-  word-wrap: break-word; /* Ensure long words wrap to next line */
+  font-size: 16px; 
+  line-height: 1.6; 
+  color: #333; 
+  background-color: #f9f9f9; 
+  padding: 16px; 
+  border-radius: 8px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  margin-top: 16px; 
+  margin-bottom: 16px; 
+  word-wrap: break-word; 
+  white-space: pre-wrap; 
 }
