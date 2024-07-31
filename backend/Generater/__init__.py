@@ -169,7 +169,7 @@ class Generater:
       
 
 
-    def generate_response_email(self, original_email: Email, questions: List[ExtractResult], answers: List[AnswerResult], additional_context=""):
+    def generate_response_email(self, original_email: Email, questions: List[ExtractResult], answers: List[AnswerResult], additional_context="") -> str:
         program_administrator_name = "David"
         program_name = "UCL Software Engineering MSc"
         

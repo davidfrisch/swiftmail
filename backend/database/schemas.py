@@ -17,8 +17,8 @@ class JobStatus(str, Enum):
 class EmailBase(BaseModel):
     subject: Optional[str] = None
     body: Optional[str] = None
-    sent_at: datetime
-    is_read: bool
+    sent_at: datetime = datetime.now()
+    is_read: bool = False
 
 
 class Email(EmailBase):
@@ -37,8 +37,8 @@ class EmailCreate(EmailBase):
 
 class ExtractResultBase(BaseModel):
     question_text: str
-    extracted_at: datetime
-    is_answered: bool
+    extracted_at: datetime = datetime.now()
+    is_answered: bool = False
     category: Optional[str] = None
 
 
@@ -58,7 +58,7 @@ class ExtractResultCreate(ExtractResultBase):
 
 class AnswerResultBase(BaseModel):
     answer_text: str
-    answered_at: datetime
+    answered_at: datetime = datetime.now()
     binary_score: Optional[int] = None
     linkert_score: Optional[int] = None
     hallucination_score: Optional[int] = None
