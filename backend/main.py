@@ -78,6 +78,15 @@ async def get_enquiry(enquiry_id: int, db: Session = Depends(get_db)):
     return enquiry
 
 
+@app.put("/enquiries/{enquiry_id}/toggle-read")
+async def mark_enquiry_as_read(enquiry_id: int, db: Session = Depends(get_db)):
+    enquiry = crud.get_email(db, enquiry_id)
+    if not enquiry:
+        raise HTTPException(status_code=404, detail="Enquiry not found")
+    enquiry.is_read = not enquiry.is_read
+    crud.update_email(db, enquiry)
+    return {"message": "Enquiry marked as read", "enquiry": enquiry}
+
 # Answers
 
 @app.put("/answers/{answer_id}")

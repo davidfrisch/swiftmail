@@ -15,7 +15,11 @@ def create_email(db: Session, email: schemas.Email):
     db.commit()
     db.refresh(db_email)
     return db_email
-  
+
+def update_email(db: Session, email: models.Email):
+    db.commit()
+    db.refresh(email)
+    return email
 
 ## ExtractResult
 def get_extract_results(db: Session, skip: int = 0, limit: int = 100) -> List[schemas.ExtractResult]:

@@ -34,7 +34,7 @@ const enquiries = {
 
   getNewEnquiries: async () => {
     const response = await api.get('enquiries/refresh');
-    return response.data;
+    return response.data.enquiries;
   },
 
   getEnquiries: async () => {
@@ -44,6 +44,11 @@ const enquiries = {
 
   getEnquiry: async (id) => {
     const response = await api.get(`enquiries/${id}`);
+    return response.data;
+  },
+
+  toggleAsRead: async (enquiryId) => {
+    const response = await api.put(`enquiries/${enquiryId}/toggle-read`);
     return response.data;
   },
 }
