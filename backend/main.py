@@ -80,7 +80,7 @@ async def get_enquiry(enquiry_id: int, db: Session = Depends(get_db)):
 
 # Answers
 
-@app.post("/answers/{answer_id}")
+@app.put("/answers/{answer_id}")
 async def retry_answer(answer_id: int, feedback: Feedback, db: Session = Depends(get_db)):
     if not answer_id:
         raise HTTPException(status_code=400, detail="Answer ID is required")
@@ -153,10 +153,26 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
     extract_results = crud.get_extract_results_by_job_id(db, job_id)
     answers = crud.get_answer_results_by_job_id(db, job_id)
     draft_result = crud.get_draft_results_by_job_id(db, job_id)
+    latest_draft = draft_result[0]
+    subject_draft = latest_draft.draft_body.split("\n\n")[0]
+    body_draft = "\n\n".join(latest_draft.draft_body.split("\n\n")[1:])
+    
+    
+    answers_questions = [{
+      "question" : next((extract.question_text for extract in extract_results if extract.id == answer.extract_result_id), None),
+      "answer" : answer.answer_text,
+      "question_id" : answer.extract_result_id,
+      "answer_id" : answer.id
+    } for answer in answers]
     
     return {
         "email": email,
         "extract_results": extract_results,
         "answers": answers,
-        "draft_result": draft_result
+        "draft_result": {
+            "subject": subject_draft,
+            "body": body_draft,
+            "created_at": latest_draft.created_at,
+        },
+        "answers_questions": answers_questions
     }

@@ -54,7 +54,7 @@ const answers = {
     return response.data;
   },
 
-  updateAnswer: async (enquiryId, answerId, feedback) => {
+  updateAnswer: async (answerId, feedback) => {
     const response = await api.put(`answers/${answerId}`, { feedback });
     return response.data;
   }

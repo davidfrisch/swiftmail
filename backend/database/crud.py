@@ -6,7 +6,7 @@ from . import models, schemas
 def get_emails(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Email).offset(skip).limit(limit).all()
   
-def get_email(db: Session, email_id: int):
+def get_email(db: Session, email_id: int) -> schemas.Email:
     return db.query(models.Email).filter(models.Email.id == email_id).first()
 
 def create_email(db: Session, email: schemas.Email):
@@ -42,16 +42,16 @@ def create_extract_result(db: Session, extract_result: schemas.ExtractResult):
 def get_answer_results(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.AnswerResult).offset(skip).limit(limit).all()
   
-def get_answer_result(db: Session, answer_result_id: int):
+def get_answer_result(db: Session, answer_result_id: int) -> schemas.AnswerResult:
     return db.query(models.AnswerResult).filter(models.AnswerResult.id == answer_result_id).first()
   
-def get_answer_results_by_extract_result_id(db: Session, extract_result_id: int):
+def get_answer_results_by_extract_result_id(db: Session, extract_result_id: int) -> List[schemas.AnswerResult]:
     return db.query(models.AnswerResult).filter(models.AnswerResult.extract_result_id == extract_result_id).all()
 
-def get_answer_results_by_email_id(db: Session, email_id: int):
+def get_answer_results_by_email_id(db: Session, email_id: int) -> List[schemas.AnswerResult]:
     return db.query(models.AnswerResult).join(models.ExtractResult).filter(models.ExtractResult.email_id == email_id).all()
 
-def get_answer_results_by_job_id(db: Session, job_id: int):
+def get_answer_results_by_job_id(db: Session, job_id: int) -> List[schemas.AnswerResult]:
     return db.query(models.AnswerResult).join(models.ExtractResult).filter(models.ExtractResult.job_id == job_id).all()
 
 def create_answer_result(db: Session, answer_result: schemas.AnswerResult):
