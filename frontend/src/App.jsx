@@ -7,7 +7,7 @@ import { Layout } from "antd";
 const { Header, Content, Footer } = Layout;
 
 function App() {
-  const [currentJob, setCurrentJob] = useState(null);
+  const [currentJob, setCurrentJob] = useState("1");
 
   const handleView = (job) => {
     setCurrentJob(job.id);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
-import { Breadcrumb, Layout, Spin, theme, message, Input, Button } from "antd";
+import { Spin, theme, message, Input, Button } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 import "./styles.css";
 const { TextArea } = Input;
 
@@ -9,18 +10,18 @@ export default function ResultsPage({ jobId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [feedback, setFeedback] = useState({});
-  const [draftFeedback, setDraftFeedback] = useState(""); // State for draft feedback
-  const [questionLoading, setQuestionLoading] = useState({}); // State for each question's loading status
+  const [draftFeedback, setDraftFeedback] = useState("");
+  const [questionLoading, setQuestionLoading] = useState({});
+  const [questionEdit, setQuestionEdit] = useState({});
   const [hasRefreshedQuestions, setHasRefreshedQuestions] = useState(false);
 
   const parseText = (text) => {
-    const parts = text.split(/(\*\*[^*]+\*\*)/g); // Split the text by **word** pattern
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
     return parts.map((part, index) => {
       if (part.match(/\*\*[^*]+\*\*/)) {
-        // If the part matches the pattern **word**, render it as bold
         return <strong key={index}>{part.slice(2, -2)}</strong>;
       }
-      return part; // Otherwise, return the part as is
+      return part;
     });
   };
 
@@ -44,6 +45,13 @@ export default function ResultsPage({ jobId }) {
     setFeedback((prev) => ({
       ...prev,
       [index]: value,
+    }));
+  };
+
+  const handleQuestionEdit = (index) => {
+    setQuestionEdit((prev) => ({
+      ...prev,
+      [index]: !prev[index],
     }));
   };
 
@@ -137,10 +145,38 @@ export default function ResultsPage({ jobId }) {
             {results.answers_questions?.length > 0 ? (
               results.answers_questions.map((extractQuestion, index) => (
                 <div key={index} className="question-container">
-                  <h2>{`Question ${index + 1}: ${
-                    extractQuestion.question
-                  }`}</h2>
-                  <div>{extractQuestion.answer}</div>
+                  <div>
+                    <h2>{`Question ${index + 1}: ${
+                      extractQuestion.question
+                    }`}</h2>
+                    {questionEdit[index] ? (
+                      <TextArea
+                        rows={4}
+                        style={{
+                          height: `${
+                            extractQuestion.answer.split("\n").length * 30
+                          }px`,
+                          marginBottom: 16,
+                        }}
+                        value={extractQuestion.answer}
+                        onChange={(e) =>
+                          setResults((prev) => ({
+                            ...prev,
+                            answers_questions: prev.answers_questions.map(
+                              (item) =>
+                                item.answer_id === extractQuestion.answer_id
+                                  ? { ...item, answer: e.target.value }
+                                  : item
+                            ),
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div>
+                        <div>{extractQuestion.answer}</div>
+                      </div>
+                    )}
+                  </div>
                   <TextArea
                     disabled={questionLoading[index]}
                     rows={4}
@@ -151,7 +187,13 @@ export default function ResultsPage({ jobId }) {
                     }
                     style={{ marginTop: 16 }}
                   />
-                  <div style={{ marginTop: 16 }}>
+                  <div
+                    style={{
+                      marginTop: 16,
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
+                  >
                     <Button
                       type="primary"
                       onClick={() =>
@@ -170,6 +212,11 @@ export default function ResultsPage({ jobId }) {
                         style={{ marginLeft: 10 }} // Add spinner next to the button
                       />
                     )}
+                    <Button
+                      icon={<EditOutlined />}
+                      size={"medium"}
+                      onClick={() => handleQuestionEdit(index)}
+                    />
                   </div>
                 </div>
               ))
@@ -195,8 +242,45 @@ export default function ResultsPage({ jobId }) {
             {questionLoading?.draft ? (
               <Spin size="large" />
             ) : (
-              parseText(results.draft_result.body)
+              <div>
+                {questionEdit["draft"] ? (
+                  <TextArea
+                    rows={4}
+                    style={{
+                      height: `${
+                        results.draft_result.body.split("\n").length * 30
+                      }px`,
+                      marginBottom: 16,
+                    }}
+                    value={results.draft_result.body}
+                    onChange={(e) =>
+                      setResults((prev) => ({
+                        ...prev,
+                        draft_result: {
+                          ...prev.draft_result,
+                          body: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                ) : (
+                  parseText(results.draft_result.body)
+                )}
+              </div>
             )}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "end",
+                fontSize: "25px",
+              }}
+            >
+              <Button
+                icon={<EditOutlined />}
+                size={"large"}
+                onClick={() => handleQuestionEdit("draft")}
+              />
+            </div>
           </div>
 
           <div className="draft-feedback-container">
