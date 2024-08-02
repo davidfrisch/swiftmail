@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
-import { Spin, theme, message, Input, Button, Tooltip } from "antd";
+import {
+  Spin,
+  theme,
+  message,
+  Input,
+  Button,
+  Tooltip,
+  Dropdown,
+  Select,
+} from "antd";
 import { EditOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import "./styles.css";
 import ScoreToolTip from "./ScoreToolTip";
 const { TextArea } = Input;
 
 export default function ResultsPage({ jobId }) {
+  const [selectedJob, setSelectedJob] = useState(jobId);
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,7 +40,7 @@ export default function ResultsPage({ jobId }) {
     const fetchResults = async () => {
       try {
         setLoading(true);
-        const res = await api.results.getResults(jobId);
+        const res = await api.results.getResults(selectedJob);
         setResults(res);
       } catch (err) {
         setError("Failed to load results. Please try again.");
@@ -40,7 +50,7 @@ export default function ResultsPage({ jobId }) {
       }
     };
     fetchResults();
-  }, [jobId]);
+  }, [selectedJob]);
 
   const handleFeedbackChange = (index, value) => {
     setFeedback((prev) => ({
@@ -113,6 +123,11 @@ export default function ResultsPage({ jobId }) {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  const onChangeSelectJob = (newSelectedJob) => {
+    console.log(newSelectedJob);
+    setSelectedJob(newSelectedJob);
+  };
+
   return (
     <div>
       <div
@@ -122,7 +137,18 @@ export default function ResultsPage({ jobId }) {
           borderRadius: borderRadiusLG,
         }}
       >
-        <h1>Email</h1>
+        <h1>Email - Job: {selectedJob}</h1>
+        <Select onChange={onChangeSelectJob} defaultValue={jobId}>
+          {results?.jobs?.map((job) => {
+            if(job.status !== "COMPLETED") return null;
+
+            return (
+              <Select.Option key={job.id} value={job.id}>
+                Job: {job.id} - {new Date(job.started_at).toLocaleString()}
+              </Select.Option>
+            );
+          })}
+        </Select>
         <h2>Subject: {results?.email?.subject}</h2>
         <div className="draft-body">{results?.email.body}</div>
       </div>

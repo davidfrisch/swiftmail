@@ -13,6 +13,7 @@ from datetime import datetime
 from .jobs import start_job_generater, update_answer, update_draft_email
 from .endpoints_models import Feedback, NewJob
 from multiprocessing import Process
+import os, signal
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -65,7 +66,6 @@ async def refresh_enquiries(db: Session = Depends(get_db)):
         job = crud.get_jobs_by_email_id(db, enquiry.id)
         mails.append({ "mail": enquiry, "job": job[0] if job else None })
         
-    enquiries = crud.get_emails(db)
     return {"message": f"Found {len(new_enquiries)} new enquiries", "mails": mails}
 
 
@@ -77,8 +77,8 @@ async def get_enquiries(db: Session = Depends(get_db)):
 
     mails = []
     for enquiry in enquiries:
-        job = crud.get_jobs_by_email_id(db, enquiry.id)
-        mails.append({ "mail": enquiry, "job": job[0] if job else None })
+        jobs = crud.get_jobs_by_email_id(db, enquiry.id)
+        mails.append({ "mail": enquiry, "jobs": jobs })
             
     return mails
   
@@ -157,6 +157,14 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     if not enquiry:
         raise HTTPException(status_code=404, detail="Enquiry not found")
     
+    old_jobs = crud.get_jobs_by_email_id(db, enquiry_id)
+    if old_jobs:
+        for job in old_jobs:
+            if job.status != models.JobStatus.COMPLETED and job.status != models.JobStatus.FAILED:
+                print(models.JobStatus.COMPLETED)
+                print(f"Job already in progress: {job}")
+                return {"message": "Job already in progress", "job": job}
+
     job_status = models.JobStatus.PENDING.name
     new_job = schemas.JobCreate(
       email_id=enquiry_id,
@@ -166,8 +174,9 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     job = crud.create_job(db, new_job)
     
     process = Process(target=start_job_generater, args=(ollama_client, anyllm_client, enquiry_id, job.id))
-    job.process_id = process.pid
     process.start()
+    
+    job.process_id = process.pid
     print(f"Process started with PID: {process.pid}")
     crud.update_job(db, job)
 
@@ -200,6 +209,8 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
         "linkert_score": answer.linkert_score if answer.linkert_score else None
       }
     } for answer in answers]
+
+    other_jobs = crud.get_jobs_by_email_id(db, job.email_id)
     
     return {
         "email": email,
@@ -210,8 +221,34 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
             "body": body_draft,
             "created_at": latest_draft.created_at,
         },
-        "answers_questions": answers_questions
+        "answers_questions": answers_questions,
+        "jobs": other_jobs
     }
+
+
+@app.put("/jobs/{job_id}/cancel")
+async def cancel_job(job_id: int, db: Session = Depends(get_db)):
+    if not job_id:
+        raise HTTPException(status_code=400, detail="Job ID is required")
+      
+    job = crud.get_job(db, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    if job.status == models.JobStatus.FAILED or job.status == models.JobStatus.COMPLETED:
+        raise HTTPException(status_code=400, detail="Job already completed or failed")
+    
+    job.status = models.JobStatus.FAILED
+    
+    try:
+        if job.process_id:
+            os.kill(job.process_id, signal.SIGTERM)
+            print(f"Process with PID {job.process_id} killed")
+    except ProcessLookupError:
+        print(f"Process with PID {job.process_id} not found")
+    crud.update_job(db, job)
+    
+    return {"message": "Job cancelled successfully", "job": job_id}
 
 
 # Reviewer

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, message, Spin } from "antd";
 import api from "../../api";
-import "./MailsPage.css"; // Import the CSS file for custom styles
+import "./MailsPage.css";
+import JobsTooltip from "./JobsTooltip";
 
 export default function MailsPage({ handleView }) {
   const [mails, setMails] = useState([]);
@@ -42,7 +43,7 @@ export default function MailsPage({ handleView }) {
           mail.id === email.id ? { ...mail, is_read: !mail.is_read } : mail
         )
       );
-      // Update the job list to reflect the change if necessary
+     
     } catch (error) {
       console.error("Failed to mark as read:", error);
       message.error("Failed to mark job as read");
@@ -67,7 +68,7 @@ export default function MailsPage({ handleView }) {
     }
   };
 
-  // Define columns for the Ant Design Table
+ 
   const columns = [
     {
       title: "Is Completed",
@@ -77,7 +78,7 @@ export default function MailsPage({ handleView }) {
       render: (isRead) => (isRead ? "Yes" : "No"),
     },
     {
-      title: "Job ID",
+      title: "Mail ID",
       dataIndex: "id",
       key: "id",
       width: 100,
@@ -88,12 +89,18 @@ export default function MailsPage({ handleView }) {
       key: "subject",
     },
     {
+      title: "Jobs",
+      dataIndex: "jobs",
+      key: "jobs",
+      render: (jobs) => <JobsTooltip jobs={jobs} />,
+    },
+    {
       title: "Actions",
       key: "actions",
       render: (_, mail) => (
         <span>
           <div>
-            {mail.job ? (
+            {mail.jobs.length > 0 ? (
               <Button
                 type="link"
                 onClick={() => handleView(mail)}
@@ -137,10 +144,10 @@ export default function MailsPage({ handleView }) {
       </div>
       <Table
         columns={columns}
-        dataSource={mails.map(({ mail, job }) => ({ ...mail, job }))}
+        dataSource={mails.map(({ mail, jobs }) => ({ ...mail, jobs }))}
         rowKey="id"
-        pagination={{ pageSize: 5 }} // Disable pagination if you want to show all rows
-        className="mails-table" // Add a custom class for styling
+        pagination={{ pageSize: 5 }}
+        className="mails-table"
       />
     </div>
   );
