@@ -1,13 +1,18 @@
 from .database.models import JobStatus
-from .database import crud, schemas
-from .database.schemas import Email, Job
-from sqlalchemy.orm import Session
+from .database import crud, schemas, create_database, models, schemas
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy import create_engine
+from contextlib import contextmanager
 from .Generater import Generater
 from datetime import datetime
 import endpoints_models
+import logging
 
 
-def extract_questions_from_email(db: Session, generater: Generater, email: Email, job: Job):
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def extract_questions_from_email(db: Session, generater: Generater, email: schemas.Email, job: schemas.Job):
     extract_questions = generater.extract_questions_from_text(email.body)
     
     for question in extract_questions:
@@ -24,7 +29,7 @@ def extract_questions_from_email(db: Session, generater: Generater, email: Email
     return extract_questions
 
 
-def answer_questions(db: Session, generater: Generater, job: Job):
+def answer_questions(db: Session, generater: Generater, job: schemas.Job):
     extract_results = crud.get_extract_results_by_job_id(db, job.id)
     answers = generater.answer_questions(extract_results)
     for answer in answers:
@@ -54,7 +59,7 @@ def update_answer(db: Session, generater: Generater, answer: schemas.AnswerResul
     return new_answer
     
 
-def generate_draft_email(db: Session, generater: Generater, email: Email, job: Job):
+def generate_draft_email(db: Session, generater: Generater, email: schemas.Email, job: schemas.Job):
     extract_results = crud.get_extract_results_by_job_id(db, job.id)
     answers = crud.get_answer_results_by_job_id(db, job.id)
     draft_response = generater.generate_response_email(email, extract_results, answers)
@@ -82,29 +87,49 @@ def update_draft_email(db: Session, generater: Generater, draft: schemas.DraftRe
     return new_draft
 
 
-def start_job_generater(db: Session, generater: Generater, email: Email, job: Job):
-    crud.update_job_status(db, job, JobStatus.EXTRACTING)
-    highlight_email = generater.highlight_email(email)
+@contextmanager
+def get_db_session():
+    engine = create_engine(create_database.SQLITE3_DATABASE_URL)
+    Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    session = Session()
+    try:
+        yield session
+    finally:
+        session.close()
+
+def start_job_generater(ollama_client, anyllm_client, enquiry_id, job_id):
+    try:
+        logger.info("Starting job generator for enquiry_id: %s, job_id: %s", enquiry_id, job_id)
+        generater = Generater(ollama_client, anyllm_client)
+        
+        with get_db_session() as db:
+            email = crud.get_email(db, enquiry_id)
+            job = crud.get_job(db, job_id)
+            
+            crud.update_job_status(db, job, JobStatus.EXTRACTING)
+            crud.update_job(db, job)
+            logger.info("Job status updated to EXTRACTING")
+            
+            # highlight_email = generater.highlight_email(email)
+            # job.email_highlighted = highlight_email
+            
+            extract_questions_from_email(db, generater, email, job)
+            
+            crud.update_job_status(db, job, JobStatus.ANSWERING)
+            logger.info("Job status updated to ANSWERING")
+            answer_questions(db, generater, job)
+            
+            crud.update_job_status(db, job, JobStatus.DRAFTING)
+            logger.info("Job status updated to DRAFTING")
+            generate_draft_email(db, generater, email, job)
+            
+            crud.update_job_status(db, job, JobStatus.COMPLETED)
+            logger.info("Job status updated to COMPLETED")
     
-    job.email_highlighted = highlight_email
-    crud.update_job(db, job)
+    except Exception as e:
+        logger.error("An error occurred: %s", e, exc_info=True)
+        
     
-    extract_questions_from_email(db, generater, email, job)
     
-    crud.update_job_status(db, job, JobStatus.ANSWERING)
-    answer_questions(db, generater, job)
     
-    crud.update_job_status(db, job, JobStatus.DRAFTING)
-    generate_draft_email(db, generater, email, job)
-    
-    crud.update_job_status(db, job, JobStatus.COMPLETED)
-    
-    extract_results = crud.get_extract_results_by_job_id(db, job.id)
-    answers = crud.get_answer_results_by_job_id(db, job.id)
-    draft_result = crud.get_draft_results_by_job_id(db, job.id)
-    
-    return {
-        "extract_results": extract_results,
-        "answers": answers,
-        "draft_result": draft_result
-    }
+

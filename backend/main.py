@@ -12,6 +12,7 @@ from .LLM.AnythingLLM_client import AnythingLLMClient
 from datetime import datetime
 from .jobs import start_job_generater, update_answer, update_draft_email
 from .endpoints_models import Feedback, NewJob
+from multiprocessing import Process
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -156,7 +157,6 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     if not enquiry:
         raise HTTPException(status_code=404, detail="Enquiry not found")
     
-    generator = Generater(ollama_client, anyllm_client)
     job_status = models.JobStatus.PENDING.name
     new_job = schemas.JobCreate(
       email_id=enquiry_id,
@@ -165,7 +165,10 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     )
     job = crud.create_job(db, new_job)
     
-    new_job = start_job_generater(db, generator, enquiry, job)
+    process = Process(target=start_job_generater, args=(ollama_client, anyllm_client, enquiry_id, job.id))
+    job.process_id = process.pid
+    process.start()
+    print(f"Process started with PID: {process.pid}")
     crud.update_job(db, job)
 
     return {"message": "Response generated successfully", "job": job}

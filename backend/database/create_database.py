@@ -3,9 +3,10 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sqlalchemy_example.db"
+SQLITE3_DATABASE_URL = "sqlite:///./sqlalchemy_example.db"
+# POSTGRESQL_DATABASE_URL = "postgresql://postgres:postgres@localhost:5432"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(SQLITE3_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
