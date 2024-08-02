@@ -84,6 +84,11 @@ def update_draft_email(db: Session, generater: Generater, draft: schemas.DraftRe
 
 def start_job_generater(db: Session, generater: Generater, email: Email, job: Job):
     crud.update_job_status(db, job, JobStatus.EXTRACTING)
+    highlight_email = generater.highlight_email(email)
+    
+    job.email_highlighted = highlight_email
+    crud.update_job(db, job)
+    
     extract_questions_from_email(db, generater, email, job)
     
     crud.update_job_status(db, job, JobStatus.ANSWERING)

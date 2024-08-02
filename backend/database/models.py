@@ -76,7 +76,7 @@ class DraftResult(Base):
 
     id = Column(Integer, primary_key=True)
     email_id = Column(Integer, ForeignKey('emails.id'), nullable=False)
-    job_id = Column(Integer, ForeignKey('jobs.id'), nullable=False)  
+    job_id = Column(Integer, ForeignKey('jobs.id'), nullable=False)
     draft_body = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.now())
     binary_score = Column(Integer, nullable=True)
@@ -99,6 +99,7 @@ class Job(Base):
     status = Column(Enum(JobStatus), default=JobStatus.PENDING, nullable=False)
     started_at = Column(DateTime, default=datetime.now())
     completed_at = Column(DateTime, nullable=True)
+    email_highlighted = Column(Text, nullable=True)
 
     email = relationship("Email", back_populates="job")
     extract_results = relationship("ExtractResult", back_populates="job")

@@ -1,64 +1,67 @@
+import os 
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../")
 import json
-import os
 from typing import List
 from LLM.OllamaLLM import OllamaAI
+from database import schemas
 
 class Reviewer():
 
-    def __init__(self, ollama_client, source_questions):
-        if isinstance(source_questions, str) and os.path.exists(source_questions):
-            with open(source_questions, 'r') as f:
-                output = json.load(f)
-        
-        if output is None:
-            raise ValueError("Questions not found")
-          
-      
+    def __init__(self, ollama_client, extracted_questions: List[schemas.ExtractResult], answers: List[schemas.AnswerResult], generated_draft_email: schemas.DraftResult):
         self.model: OllamaAI = ollama_client
-        self.questions = output['extracted_questions']
-        self.answers = output['answers']
-        self.draft_email = output['generated_draft_email']
+        self.questions = extracted_questions
+        self.answers = answers
+        self.draft_email = generated_draft_email
         
-        
-        
+            
     def evaluate(self):
-        self.evaluate_answers( self.answers)
-        self.evaluate_draft_email(self.draft_email, self.answers)
+        answers_scores = self.evaluate_answers(self.questions, self.answers)
+        draft_score = self.evaluate_draft_email(self.draft_email, self.answers)
+        
+        return { 'answers': answers_scores, 'draft_email': draft_score }
     
       
-    def evaluate_answers(self, answers):
+    def evaluate_answers(self, questions: List[schemas.ExtractResult], answers: List[schemas.AnswerResult]):
+        scores = []
         for answer in answers:
-            question_text = answer['full_question']
-            answer_text = answer['answer']
+            question: schemas.ExtractResult = next((question for question in questions if question.id == answer.extract_result_id), None)
+            question_text = question.question_text
+            answer_text = answer.answer_text
+            
             pre_prompt = f"""
                 From this question:
                 Question: {question_text}
                 Does the following answers the question?
                 Answer: {answer_text}
             """
-            sources = answer['sources']
+            sources = json.load(answer.sources) if answer.sources else []
             bin_scores = self.binary_eval(pre_prompt, ["Answer of the question"])
             linkert_score = self.linkert_eval(pre_prompt)
             hallucination_score = self.hallucination_eval(answer, sources)
     
-            print({ 'binary_scores' : bin_scores, 'linkert' : linkert_score, 'hallucination' : hallucination_score})
-            return { 'binary_scores' : bin_scores, 'linkert' : linkert_score, 'hallucination' : hallucination_score}
+            scores.append({ "answer_id": answer.id, 'binary_scores' : bin_scores, 'linkert' : linkert_score, 'hallucination' : hallucination_score })
+
+        return scores
           
           
-    def evaluate_draft_email(self, response_email, answers):
-        all_sources = [source for answer in answers for source in answer['sources']]
-        bin_score = self.binary_eval(response_email, ["sayutation", "closing", "signature"])
+    def evaluate_draft_email(self, response_email, answers: List[schemas.AnswerResult]):
+        
+        
+        all_sources = [json.load(source) for answer in answers for source in answer.sources if answer.sources]
+        bin_score = self.binary_eval(response_email, ["salutation", "closing", "signature"])
         linkert_score = self.linkert_eval(response_email)
         draft_score = self.hallucination_eval(response_email, all_sources)
-        print({ 'binary' : bin_score, 'linkert' : linkert_score, 'hallucination' : draft_score})
-        return { 'binary' : bin_score, 'linkert' : linkert_score, 'hallucination' : draft_score}
+        print({ 'binary_scores' : bin_score, 'linkert' : linkert_score, 'hallucination' : draft_score})
+        return { 'binary_scores' : bin_score, 'linkert' : linkert_score, 'hallucination' : draft_score}
 
     
     def binary_eval(self, prompt:str, format_conditions: List[str]):
         counter = 0
         while counter < 3:
             try:
-                prompt = prompt + f"""
+                prompt = f"""
+                    {prompt}
                     Provide a score of 'useful', 'tone', and 'format' where:
                     0 means the answer is not useful, 1 means the answer is useful,
                     0 means the answer is not polite, 1 means the answer is polite,
@@ -82,7 +85,9 @@ class Reviewer():
         counter = 0
         while counter < 3:
             try:
-                prompt = prompt +  """
+                prompt ="""
+                    {prompt}
+                    
                     Provide in json format with a key of 'score' and a value of 0 to 5, where 
                     1 means the answer cannot be answered,
                     2 means the answer is not helpful and gives irrelevant information,

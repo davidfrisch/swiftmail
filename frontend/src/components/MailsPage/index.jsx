@@ -6,6 +6,7 @@ import "./MailsPage.css"; // Import the CSS file for custom styles
 export default function MailsPage({ handleView }) {
   const [mails, setMails] = useState([]);
   const [fetchingNewMails, setFetchingNewMails] = useState(false);
+  const [generatingJob, setGeneratingJob] = useState(null);
   const fetchNewMails = async () => {
     try {
       setFetchingNewMails(true);
@@ -37,7 +38,7 @@ export default function MailsPage({ handleView }) {
       await api.enquiries.toggleAsRead(email.id);
       message.success(`Marked email with ID: ${email.id} as read`);
       setMails((mails) =>
-        mails.map((mail) =>
+        mails.map(({ mail }) =>
           mail.id === email.id ? { ...mail, is_read: !mail.is_read } : mail
         )
       );
@@ -45,6 +46,24 @@ export default function MailsPage({ handleView }) {
     } catch (error) {
       console.error("Failed to mark as read:", error);
       message.error("Failed to mark job as read");
+    }
+  };
+
+  const handleGenerate = async (email) => {
+    try {
+      setGeneratingJob(email.id);
+      const { job } = await api.jobs.createJob(email.id);
+      message.success(`Generated job for email with ID: ${email.id}`);
+      setMails((mails) =>
+        mails.map(({ mail }) =>
+          mail.id === email.id ? { ...mail, job: job } : mail
+        )
+      );
+    } catch (error) {
+      console.error("Failed to generate job:", error);
+      message.error("Failed to generate job");
+    } finally {
+      setGeneratingJob(null);
     }
   };
 
@@ -73,13 +92,27 @@ export default function MailsPage({ handleView }) {
       key: "actions",
       render: (_, mail) => (
         <span>
-          <Button
-            type="link"
-            onClick={() => handleView(mail)}
-            style={{ marginRight: 8 }}
-          >
-            View
-          </Button>
+          <div>
+            {mail.job ? (
+              <Button
+                type="link"
+                onClick={() => handleView(mail)}
+                style={{ marginRight: 8 }}
+              >
+                View
+              </Button>
+            ) : (
+              <Button
+                type="link"
+                disabled={generatingJob}
+                onClick={() => handleGenerate(mail)}
+                style={{ marginRight: 8 }}
+              >
+                Generate
+                {generatingJob && mail.id === generatingJob && <Spin />}
+              </Button>
+            )}
+          </div>
           <Button type="link" onClick={() => handleMarkAsRead(mail)}>
             {mail.is_read ? "Mark as Unread" : "Mark as Read"}
           </Button>
@@ -104,7 +137,7 @@ export default function MailsPage({ handleView }) {
       </div>
       <Table
         columns={columns}
-        dataSource={mails}
+        dataSource={mails.map(({ mail, job }) => ({ ...mail, job }))}
         rowKey="id"
         pagination={{ pageSize: 5 }} // Disable pagination if you want to show all rows
         className="mails-table" // Add a custom class for styling

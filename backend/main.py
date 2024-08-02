@@ -6,6 +6,7 @@ from .database import crud, models, schemas
 from .database.create_database import SessionLocal, engine
 from .email_client.gmail import get_unread_enquiries
 from .Generater import Generater
+from .Reviewer import Reviewer
 from .LLM.OllamaLLM import OllamaAI
 from .LLM.AnythingLLM_client import AnythingLLMClient
 from datetime import datetime
@@ -57,9 +58,14 @@ async def refresh_enquiries(db: Session = Depends(get_db)):
             is_read=False
         )
         crud.create_email(db, new_enquiry)
+    
+    mails = []
+    for enquiry in new_enquiries:
+        job = crud.get_jobs_by_email_id(db, enquiry.id)
+        mails.append({ "mail": enquiry, "job": job[0] if job else None })
         
     enquiries = crud.get_emails(db)
-    return {"message": f"Found {len(new_enquiries)} new enquiries", "enquiries": enquiries}
+    return {"message": f"Found {len(new_enquiries)} new enquiries", "mails": mails}
 
 
 @app.get("/enquiries")
@@ -67,7 +73,13 @@ async def get_enquiries(db: Session = Depends(get_db)):
     enquiries = crud.get_emails(db)
     if not enquiries:
         raise HTTPException(status_code=404, detail="No enquiries found")
-    return enquiries
+
+    mails = []
+    for enquiry in enquiries:
+        job = crud.get_jobs_by_email_id(db, enquiry.id)
+        mails.append({ "mail": enquiry, "job": job[0] if job else None })
+            
+    return mails
   
 
 @app.get("/enquiries/{enquiry_id}")
@@ -153,9 +165,10 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     )
     job = crud.create_job(db, new_job)
     
-    results = start_job_generater(db, generator, enquiry, job)
+    new_job = start_job_generater(db, generator, enquiry, job)
+    crud.update_job(db, job)
 
-    return {"message": "Response generated successfully", "results": results}
+    return {"message": "Response generated successfully", "job": job}
 
   
 @app.get("/jobs/{job_id}/results")
@@ -177,7 +190,12 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
       "question" : next((extract.question_text for extract in extract_results if extract.id == answer.extract_result_id), None),
       "answer" : answer.answer_text,
       "question_id" : answer.extract_result_id,
-      "answer_id" : answer.id
+      "answer_id" : answer.id,
+      "scores": {
+        "binary_score": answer.binary_score if answer.binary_score else None,
+        "hallucination_score": answer.hallucination_score if answer.hallucination_score else None, 
+        "linkert_score": answer.linkert_score if answer.linkert_score else None
+      }
     } for answer in answers]
     
     return {
@@ -191,3 +209,45 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
         },
         "answers_questions": answers_questions
     }
+
+
+# Reviewer
+@app.get("/reviewer/{job_id}")
+async def review_job(job_id: int, db: Session = Depends(get_db)):
+    if not job_id:
+        raise HTTPException(status_code=400, detail="Job ID is required")
+      
+    job = crud.get_job(db, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    email = crud.get_email(db, job.email_id)
+    if not email:
+        raise HTTPException(status_code=404, detail="Email not found")
+      
+    extract_questions = crud.get_extract_results_by_job_id(db, job_id)
+    answers = crud.get_answer_results_by_job_id(db, job_id)
+    draft_email = crud.get_draft_results_by_job_id(db, job_id)
+    
+    reviewer = Reviewer(ollama_client, extract_questions, answers, draft_email)
+    
+    review = reviewer.evaluate()
+    review_answers = review['answers']
+    review_draft = review['draft_email']
+    
+    for review_answer in review_answers:
+        answer = crud.get_answer_result(db, review_answer['answer_id'])
+        answer.binary_score = review_answer['binary_scores']["useful"]
+        answer.linkert_score = review_answer['linkert']
+        answer.hallucination_score = review_answer['hallucination']
+        crud.update_answer_result(db, answer)
+    
+    draft = draft_email[0]
+    draft.binary_score = review_draft['binary_scores']["useful"]
+    draft.linkert_score = review_draft['linkert']
+    draft.hallucination_score = review_draft['hallucination']
+    crud.update_draft_result(db, draft)
+    
+    
+    
+    return {"message": "Review completed successfully", "job": job_id}

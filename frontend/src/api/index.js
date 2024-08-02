@@ -16,8 +16,8 @@ const jobs = {
     return response.data;
   },
 
-  createJob: async (job) => {
-    const response = await api.post('jobs', job);
+  createJob: async (emailId) => {
+    const response = await api.post('jobs', { email_id: emailId });
     return response.data;
   }
 }
@@ -34,7 +34,7 @@ const enquiries = {
 
   getNewEnquiries: async () => {
     const response = await api.get('enquiries/refresh');
-    return response.data.enquiries;
+    return response.data.mails;
   },
 
   getEnquiries: async () => {

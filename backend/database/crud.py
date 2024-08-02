@@ -3,7 +3,7 @@ from typing import List
 from . import models, schemas
 
 ## Emails
-def get_emails(db: Session, skip: int = 0, limit: int = 100):
+def get_emails(db: Session, skip: int = 0, limit: int = 100) -> List[schemas.Email]:
     return db.query(models.Email).offset(skip).limit(limit).all()
   
 def get_email(db: Session, email_id: int) -> schemas.Email:
@@ -80,7 +80,7 @@ def get_draft_result(db: Session, draft_result_id: int):
 def get_draft_results_by_email_id(db: Session, email_id: int):
     return db.query(models.DraftResult).filter(models.DraftResult.email_id == email_id).all()
 
-def get_draft_results_by_job_id(db: Session, job_id: int):
+def get_draft_results_by_job_id(db: Session, job_id: int) -> List[schemas.DraftResult]:
     return db.query(models.DraftResult).filter(models.DraftResult.job_id == job_id).all()
 
 def create_draft_result(db: Session, draft_result: schemas.DraftResult):

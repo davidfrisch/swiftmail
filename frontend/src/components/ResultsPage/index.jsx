@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
-import { Spin, theme, message, Input, Button } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import { Spin, theme, message, Input, Button, Tooltip } from "antd";
+import { EditOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import "./styles.css";
+import ScoreToolTip from "./ScoreToolTip";
 const { TextArea } = Input;
 
 export default function ResultsPage({ jobId }) {
@@ -19,7 +20,7 @@ export default function ResultsPage({ jobId }) {
     const parts = text.split(/(\*\*[^*]+\*\*)/g);
     return parts.map((part, index) => {
       if (part.match(/\*\*[^*]+\*\*/)) {
-        return <strong key={index}>{part.slice(2, -2)}</strong>;
+        return <mark key={index}>{part.slice(2, -2)}</mark>;
       }
       return part;
     });
@@ -143,28 +144,28 @@ export default function ResultsPage({ jobId }) {
           <>
             <h1>Results</h1>
             {results.answers_questions?.length > 0 ? (
-              results.answers_questions.map((extractQuestion, index) => (
+              results.answers_questions.map((answerQuestion, index) => (
                 <div key={index} className="question-container">
                   <div>
                     <h2>{`Question ${index + 1}: ${
-                      extractQuestion.question
+                      answerQuestion.question
                     }`}</h2>
                     {questionEdit[index] ? (
                       <TextArea
                         rows={4}
                         style={{
                           height: `${
-                            extractQuestion.answer.split("\n").length * 30
+                            answerQuestion.answer.split("\n").length * 30
                           }px`,
                           marginBottom: 16,
                         }}
-                        value={extractQuestion.answer}
+                        value={answerQuestion.answer}
                         onChange={(e) =>
                           setResults((prev) => ({
                             ...prev,
                             answers_questions: prev.answers_questions.map(
                               (item) =>
-                                item.answer_id === extractQuestion.answer_id
+                                item.answer_id === answerQuestion.answer_id
                                   ? { ...item, answer: e.target.value }
                                   : item
                             ),
@@ -173,7 +174,7 @@ export default function ResultsPage({ jobId }) {
                       />
                     ) : (
                       <div>
-                        <div>{extractQuestion.answer}</div>
+                        <div>{answerQuestion.answer}</div>
                       </div>
                     )}
                   </div>
@@ -194,18 +195,30 @@ export default function ResultsPage({ jobId }) {
                       justifyContent: "space-between",
                     }}
                   >
-                    <Button
-                      type="primary"
-                      onClick={() =>
-                        handleSubmitQuestionFeedback(
-                          index,
-                          extractQuestion.answer_id
-                        )
-                      }
-                      disabled={questionLoading[index]} // Disable button during loading
-                    >
-                      Regenerate answer
-                    </Button>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <Button
+                        type="primary"
+                        onClick={() =>
+                          handleSubmitQuestionFeedback(
+                            index,
+                            answerQuestion.answer_id
+                          )
+                        }
+                        disabled={questionLoading[index]} // Disable button during loading
+                      >
+                        Regenerate answer
+                      </Button>
+                      <Tooltip
+                        placement="top"
+                        title={ScoreToolTip(answerQuestion?.scores)}
+                      >
+                        <Button
+                          icon={<InfoCircleOutlined />}
+                          size={"medium"}
+                          style={{ marginLeft: 10 }}
+                        />
+                      </Tooltip>
+                    </div>
                     {questionLoading[index] && (
                       <Spin
                         size="small"
@@ -311,6 +324,11 @@ export default function ResultsPage({ jobId }) {
           )}
         </div>
       )}
+      <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}>
+        <Button type="primary" style={{ backgroundColor: "green" }}>
+          Confirm and Save
+        </Button>
+      </div>
     </div>
   );
 }
