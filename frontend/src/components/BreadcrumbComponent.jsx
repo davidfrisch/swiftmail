@@ -1,10 +1,10 @@
 import { Breadcrumb } from "antd";
 
-const BreadcrumbComponent = ({jobId, handleBack}) => {
+const BreadcrumbComponent = ({mailId, handleBack}) => {
   return (
     <Breadcrumb style={{ margin: "16px 0" }}>
-      <Breadcrumb.Item> {jobId ? <a onClick={handleBack}>Emails</a> : "Emails"}</Breadcrumb.Item>
-      {jobId && <Breadcrumb.Item>mail {jobId}</Breadcrumb.Item>}
+      <Breadcrumb.Item> {mailId ? <a onClick={handleBack}>Emails</a> : "Emails"}</Breadcrumb.Item>
+      {mailId && <Breadcrumb.Item>mail {mailId}</Breadcrumb.Item>}
     </Breadcrumb>
   );
 };

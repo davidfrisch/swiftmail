@@ -44,7 +44,8 @@ const enquiries = {
 
   getEnquiry: async (id) => {
     const response = await api.get(`enquiries/${id}`);
-    return response.data;
+    const { mail, job } = response.data;
+    return { ...mail, job };
   },
 
   toggleAsRead: async (enquiryId) => {

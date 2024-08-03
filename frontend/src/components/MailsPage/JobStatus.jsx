@@ -14,7 +14,6 @@ const colorsStatus = {
 export default function JobStatus({ job, onCancel, onRestart }) {
   // Function to handle job actions
   const handleJobAction = (job) => {
-    console.log(job.status);
     if (job.status !== "COMPLETED" && job.status !== "FAILED") {
       onCancel(job);
     } else if (job.status === "FAILED") {

@@ -89,7 +89,10 @@ async def get_enquiry(enquiry_id: int, db: Session = Depends(get_db)):
     enquiry = crud.get_email(db, enquiry_id)
     if not enquiry:
         raise HTTPException(status_code=404, detail="Enquiry not found")
-    return enquiry
+      
+    jobs = crud.get_jobs_by_email_id(db, enquiry_id)
+    
+    return { "mail": enquiry, "job": jobs[0] if jobs else None }
 
 
 @app.put("/enquiries/{enquiry_id}/toggle-read")

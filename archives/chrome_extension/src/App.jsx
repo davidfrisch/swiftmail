@@ -27,7 +27,6 @@ function App() {
   };
 
   const handleOnChange = (key, value) => {
-    console.log(key, value);
     setForm((prevForm) => ({
       ...prevForm,
       [key]: value,
