@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import "./App.css";
 import BreadcrumbComponent from "./components/BreadcrumbComponent";
 import MailsPage from "./components/MailsPage";
 import ResultsPage from "./components/ResultsPage";
 import { Layout } from "antd";
 import api from "./api";
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 
 function App() {
   const [currentMail, setCurrentMail] = useState(null);
@@ -25,7 +30,7 @@ function App() {
   const handleGetMail = async (mailId) => {
     const email = await api.enquiries.getEnquiry(mailId);
     setCurrentMail(email);
-  }
+  };
 
   useEffect(() => {
     const currentPath = window.location.pathname;
@@ -41,21 +46,26 @@ function App() {
   }, [currentMail, navigate]);
 
   return (
-    <Layout>
-      <Header style={{ display: "flex", alignItems: "center" }}>
-        <div className="demo-logo" />
-      </Header>
-      <Content style={{ padding: "0 64px" }}>
+    <Layout id="page-container">
+      <header id="header">
         <BreadcrumbComponent mailId={currentMail?.id} handleBack={handleBack} />
+      </header>
+      <Content id="content-wrap">
         <Routes>
           <Route path="/" element={<MailsPage handleView={handleView} />} />
-          <Route path="/mails" element={<MailsPage handleView={handleView} />} />
-          {currentMail && <Route path="/mails/:jobId" element={<ResultsPage jobId={currentMail?.job?.id} />} />}
+          <Route
+            path="/mails"
+            element={<MailsPage handleView={handleView} />}
+          />
+          {currentMail && (
+            <Route
+              path="/mails/:jobId"
+              element={<ResultsPage jobId={currentMail?.job?.id} />}
+            />
+          )}
         </Routes>
       </Content>
-      <Footer style={{ textAlign: "center" }}>
-        Swiftmail ©{new Date().getFullYear()}
-      </Footer>
+      <Footer id="footer">Swiftmail ©{new Date().getFullYear()}</Footer>
     </Layout>
   );
 }

@@ -80,7 +80,9 @@ async def get_enquiries(db: Session = Depends(get_db)):
         jobs = crud.get_jobs_by_email_id(db, enquiry.id)
         job = jobs[0] if jobs else None
         mails.append({ "mail": enquiry, "job": job })
-            
+    
+    # sort by mail date newest first
+    mails.sort(key=lambda x: x["mail"].sent_at, reverse=True)
     return mails
   
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Button, message, Spin } from "antd";
 import api from "../../api";
 import "./MailsPage.css";
@@ -7,6 +7,7 @@ import JobStatus from "./JobStatus";
 export default function MailsPage({ handleView }) {
   const [mails, setMails] = useState([]);
   const [fetchingNewMails, setFetchingNewMails] = useState(false);
+  const [numMailNoJob, setNumMailNoJob] = useState(null);
   const [generatingJob, setGeneratingJob] = useState(null);
   const fetchNewMails = async () => {
     try {
@@ -25,6 +26,8 @@ export default function MailsPage({ handleView }) {
     try {
       const mailsData = await api.enquiries.getEnquiries();
       setMails(mailsData);
+      const numNoJob = mailsData.filter(({ job }) => !job).length;
+      setNumMailNoJob(numNoJob);
     } catch (error) {
       console.error("Failed to fetch mails:", error);
     }
@@ -32,6 +35,8 @@ export default function MailsPage({ handleView }) {
 
   useEffect(() => {
     fetchMails();
+    const interval = setInterval(fetchMails, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleMarkAsRead = async (email) => {
@@ -40,10 +45,11 @@ export default function MailsPage({ handleView }) {
       message.success(`Marked email with ID: ${email.id} as read`);
       setMails((mails) =>
         mails.map(({ mail, job }) =>
-          mail.id === email.id ? { mail: { ...mail, is_read: !mail.is_read }, job } : { mail, job }
+          mail.id === email.id
+            ? { mail: { ...mail, is_read: !mail.is_read }, job }
+            : { mail, job }
         )
       );
-     
     } catch (error) {
       console.error("Failed to mark as read:", error);
       message.error("Failed to mark job as read");
@@ -53,13 +59,8 @@ export default function MailsPage({ handleView }) {
   const handleGenerate = async (email) => {
     try {
       setGeneratingJob(email.id);
-      const { newJob } = await api.jobs.createJob(email.id);
       message.success(`Generated job for email with ID: ${email.id}`);
-      setMails((mails) =>
-        mails.map(({ mail, job }) =>
-          mail.id === email.id ? { mail, job: newJob } : { mail, job }
-        )
-      );
+      fetchMails();
     } catch (error) {
       console.error("Failed to generate job:", error);
       message.error("Failed to generate job");
@@ -68,7 +69,6 @@ export default function MailsPage({ handleView }) {
     }
   };
 
- 
   const columns = [
     {
       title: "Is Completed",
@@ -112,7 +112,10 @@ export default function MailsPage({ handleView }) {
             ) : (
               <Button
                 type="link"
-                disabled={generatingJob || (mail?.job && mail?.job?.status !== "COMPLETED")}
+                disabled={
+                  generatingJob ||
+                  (mail?.job && mail?.job?.status !== "COMPLETED")
+                }
                 onClick={() => handleGenerate(mail)}
                 style={{ marginRight: 8 }}
               >
@@ -131,7 +134,12 @@ export default function MailsPage({ handleView }) {
   ];
   return (
     <div>
-      <h1>Mails</h1>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <h1>Mails</h1>
+        <h3 style={{ marginLeft: 20, paddingTop: 5 }}>
+          (Number of Mails without Job: {numMailNoJob})
+        </h3>
+      </div>
       <div
         style={{ display: "flex", marginBottom: 16, justifyContent: "start" }}
       >

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Tooltip, message } from "antd";
+import { Button, Progress, Tooltip, message } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 
 const colorsStatus = {
@@ -9,6 +9,15 @@ const colorsStatus = {
   EXTRACTING: "#faad14",
   ANSWERING: "#faad14",
   DRAFTING: "#faad14",
+};
+
+const progressStatus = {
+  FAILED: { status: "exception", percent: 100 },
+  PENDING: { status: "active", percent: 0 },
+  EXTRACTING: { status: "active", percent: 25 },
+  ANSWERING: { status: "active", percent: 50 },
+  DRAFTING: { status: "active", percent: 75 },
+  COMPLETED: { status: "success", percent: 100 },
 };
 
 export default function JobStatus({ job, onCancel, onRestart }) {
@@ -33,12 +42,14 @@ export default function JobStatus({ job, onCancel, onRestart }) {
         marginBottom: 8,
         padding: "4px 8px",
         borderRadius: "4px",
+        display: "flex",
         backgroundColor: job.status === "FAILED" ? "#ffe6e6" : "#e6f7ff", // Different backgrounds for statuses
         color: colorsStatus[job.status],
       }}
       onClick={() => handleJobAction(job)}
     >
       {job.status}
+      <Progress percent={progressStatus[job.status].percent} status={progressStatus[job.status].status} style={{ flex: 1, margin: "0 8px" }} />
     </div>
   );
 }
