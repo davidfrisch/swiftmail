@@ -51,39 +51,60 @@ async def root():
 
 @app.get("/enquiries/refresh")
 async def refresh_enquiries(db: Session = Depends(get_db)):
-    new_enquiries = get_unread_enquiries()
-    for enquiry in new_enquiries:
-        new_enquiry = schemas.EmailCreate(
-            subject=enquiry.subject,
-            body=enquiry.plain if enquiry.plain else "",
-            sent_at=enquiry.date,
-            is_read=False
-        )
-        crud.create_email(db, new_enquiry)
+    num_new_enquiries = 0
+    try:
+        new_enquiries = get_unread_enquiries()
+        current_enquiries = crud.get_emails(db)
+        for enquiry in new_enquiries:
+            if not enquiry or not enquiry.subject:
+                print("Enquiry has no subject")
+                continue
+          
+            if any(current_enquiry.subject == enquiry.subject for current_enquiry in current_enquiries):
+                print(f"Enquiry already exists: {enquiry.subject}")
+                continue
+              
+            new_enquiry = schemas.EmailCreate(
+                subject=enquiry.subject,
+                body=enquiry.plain if enquiry.plain else "",
+                sent_at=enquiry.date,
+                is_read=False
+            )
+            crud.create_email(db, new_enquiry)
+            num_new_enquiries += 1
+            
     
-    mails = []
-    for enquiry in new_enquiries:
-        job = crud.get_jobs_by_email_id(db, enquiry.id)
-        mails.append({ "mail": enquiry, "job": job[0] if job else None })
-        
-    return {"message": f"Found {len(new_enquiries)} new enquiries", "mails": mails}
+        mails = []
+        current_enquiries = crud.get_emails(db)
+        for enquiry in current_enquiries:
+            job = crud.get_jobs_by_email_id(db, enquiry.id)
+            mails.append({ "mail": enquiry, "job": job[0] if job else None })
+            
+        return {"message": f"Refreshed {num_new_enquiries} new enquiries", "mails": mails}
 
+    except Exception as e:
+        print(e)
+        return {"message": "An error occured while fetching enquiries"}
 
 @app.get("/enquiries")
 async def get_enquiries(db: Session = Depends(get_db)):
-    enquiries = crud.get_emails(db)
-    if not enquiries:
-        raise HTTPException(status_code=404, detail="No enquiries found")
+    try:
+        enquiries = crud.get_emails(db)
+        if not enquiries:
+            raise HTTPException(status_code=404, detail="No enquiries found")
 
-    mails = []
-    for enquiry in enquiries:
-        jobs = crud.get_jobs_by_email_id(db, enquiry.id)
-        job = jobs[0] if jobs else None
-        mails.append({ "mail": enquiry, "job": job })
-    
-    # sort by mail date newest first
-    mails.sort(key=lambda x: x["mail"].sent_at, reverse=True)
-    return mails
+        mails = []
+        for enquiry in enquiries:
+            jobs = crud.get_jobs_by_email_id(db, enquiry.id)
+            job = jobs[0] if jobs else None
+            mails.append({ "mail": enquiry, "job": job })
+        
+        # sort by mail date newest first
+        mails.sort(key=lambda x: x["mail"].sent_at, reverse=True)
+        return mails
+    except Exception as e:
+        print(e)
+        return {"message": "An error occured while fetching enquiries"}
   
 
 @app.get("/enquiries/{enquiry_id}")
