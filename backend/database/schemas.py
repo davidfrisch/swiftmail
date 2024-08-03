@@ -37,6 +37,8 @@ class EmailCreate(EmailBase):
 
 class ExtractResultBase(BaseModel):
     question_text: str
+    extract_text: str
+    problem_context: str
     extracted_at: datetime = datetime.now()
     is_answered: bool = False
     category: Optional[str] = None

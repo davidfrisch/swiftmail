@@ -91,7 +91,7 @@ async def get_enquiries(db: Session = Depends(get_db)):
     try:
         enquiries = crud.get_emails(db)
         if not enquiries:
-            raise HTTPException(status_code=404, detail="No enquiries found")
+            return {"message": "No enquiries found", "mails": []}
 
         mails = []
         for enquiry in enquiries:
@@ -101,7 +101,8 @@ async def get_enquiries(db: Session = Depends(get_db)):
         
         # sort by mail date newest first
         mails.sort(key=lambda x: x["mail"].sent_at, reverse=True)
-        return mails
+        return {"mails": mails, "message": "Enquiries fetched successfully"}
+      
     except Exception as e:
         print(e)
         return {"message": "An error occured while fetching enquiries"}
@@ -226,21 +227,26 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
     subject_draft = latest_draft.draft_body.split("\n\n")[0]
     body_draft = "\n\n".join(latest_draft.draft_body.split("\n\n")[1:])
     
-    
-    answers_questions = [{
-      "question" : next((extract.question_text for extract in extract_results if extract.id == answer.extract_result_id), None),
-      "answer" : answer.answer_text,
-      "question_id" : answer.extract_result_id,
-      "answer_id" : answer.id,
-      "scores": {
-        "binary_score": answer.binary_score if answer.binary_score else None,
-        "hallucination_score": answer.hallucination_score if answer.hallucination_score else None, 
-        "linkert_score": answer.linkert_score if answer.linkert_score else None
-      }
-    } for answer in answers]
+    answers_questions = []
+    for answer in answers:
+        extract_result = next((extract_result for extract_result in extract_results if extract_result.id == answer.extract_result_id), None)
+        answers_questions.append({
+            "question": extract_result.question_text,
+            "extract": extract_result.extract_text,
+            "problem_context": extract_result.problem_context,
+            "answer": answer.answer_text,
+            "question_id": extract_result.id,
+            "answer_id": answer.id,
+            "scores": {
+                "binary_score": answer.binary_score if answer.binary_score else None,
+                "hallucination_score": answer.hallucination_score if answer.hallucination_score else None,
+                "linkert_score": answer.linkert_score if answer.linkert_score else None
+            }
+        })
 
     other_jobs = crud.get_jobs_by_email_id(db, job.email_id)
-    
+
+    extracts_to_highlight = [answer_question['extract'] for answer_question in answers_questions]
     return {
         "email": email,
         "extract_results": extract_results,
@@ -251,7 +257,8 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
             "created_at": latest_draft.created_at,
         },
         "answers_questions": answers_questions,
-        "jobs": other_jobs
+        "jobs": other_jobs,
+        "extracts_to_highlight": extracts_to_highlight
     }
 
 

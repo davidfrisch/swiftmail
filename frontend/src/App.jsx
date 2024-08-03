@@ -41,9 +41,14 @@ function App() {
 
     if (currentPath.includes("/mails/")) {
       const mailId = currentPath.split("/mails/")[1];
-      handleGetMail(mailId);
+      if (!isNaN(mailId)) {
+        handleGetMail(mailId);
+      } else {
+        navigate("/mails");
+        setCurrentMail(null);
+      }
     }
-  }, [currentMail, navigate]);
+  }, [navigate]);
 
   return (
     <Layout id="page-container">

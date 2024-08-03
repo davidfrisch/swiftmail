@@ -26,7 +26,7 @@ export default function MailsPage({ handleView }) {
     try {
       const mailsData = await api.enquiries.getEnquiries();
       setMails(mailsData);
-      const numNoJob = mailsData.filter(({ job }) => !job).length;
+      const numNoJob = mailsData?.filter(({ job }) => !job).length || "N/A";
       setNumMailNoJob(numNoJob);
     } catch (error) {
       console.error("Failed to fetch mails:", error);
@@ -59,6 +59,7 @@ export default function MailsPage({ handleView }) {
   const handleGenerate = async (email) => {
     try {
       setGeneratingJob(email.id);
+      await api.jobs.createJob(email.id);
       message.success(`Generated job for email with ID: ${email.id}`);
       fetchMails();
     } catch (error) {

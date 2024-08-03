@@ -38,6 +38,8 @@ class ExtractResult(Base):
     email_id = Column(Integer, ForeignKey('emails.id'), nullable=False) 
     job_id = Column(Integer, ForeignKey('jobs.id'), nullable=False)  
     question_text = Column(String, nullable=False)
+    extract_text = Column(String, nullable=True)
+    problem_context = Column(String, nullable=True)
     extracted_at = Column(DateTime, default=datetime.utcnow)
     is_answered = Column(Boolean, default=False)
     category = Column(String, nullable=True)

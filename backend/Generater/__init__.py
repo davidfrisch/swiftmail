@@ -27,33 +27,34 @@ class Generater:
       
         extract_questions = self.extract_questions_from_text(email.body)
         self.dump_intermediate({'extracted_questions': extract_questions}, path_output)
-        extract_questions = [ExtractResult(
-              job_id=-1,
-              question_text=question['question_text'],
-              category=question['category'],
-              is_answered=False,
-              id=i,
-              extracted_at=datetime.now()
-           ) for i, question in enumerate(extract_questions)
-        ]
-        answers = self.answer_questions(extract_questions, with_interaction)
-        self.dump_intermediate({'answers': answers}, path_output)
         
-        answers_results: List[AnswerResult] = []
-        for answer in answers:
-            find_extract_result = next((x for x in extract_questions if x.question_text == answer['question']), None)
-            if find_extract_result:
-                answer_result = AnswerResultCreate(
-                    extract_result_id=find_extract_result.id,
-                    job_id=-1,
-                    answer_text = answer['answer'],
-                    sources = json.dumps(answer['sources']),
-                    answered_at = datetime.now()
-                )
+        # extract_questions = [ExtractResult(
+        #       job_id=-1,
+        #       question_text=question['question_text'],
+        #       category=question['category'],
+        #       is_answered=False,
+        #       id=i,
+        #       extracted_at=datetime.now()
+        #    ) for i, question in enumerate(extract_questions)
+        # ]
+        # answers = self.answer_questions(extract_questions, with_interaction)
+        # self.dump_intermediate({'answers': answers}, path_output)
+        
+        # answers_results: List[AnswerResult] = []
+        # for answer in answers:
+        #     find_extract_result = next((x for x in extract_questions if x.question_text == answer['question']), None)
+        #     if find_extract_result:
+        #         answer_result = AnswerResultCreate(
+        #             extract_result_id=find_extract_result.id,
+        #             job_id=-1,
+        #             answer_text = answer['answer'],
+        #             sources = json.dumps(answer['sources']),
+        #             answered_at = datetime.now()
+        #         )
                 
-                answers_results.append(answer_result)
-        generated_draft_email = self.generate_response_email(email, extract_questions,  answers_results)
-        self.dump_intermediate({'generated_draft_email': generated_draft_email}, path_output)
+        #         answers_results.append(answer_result)
+        # generated_draft_email = self.generate_response_email(email, extract_questions,  answers_results)
+        # self.dump_intermediate({'generated_draft_email': generated_draft_email}, path_output)
     
     
     def extract_questions_from_text(self, text:str) -> List[str]:
@@ -67,7 +68,12 @@ class Generater:
           
           Give it in a json format:
           questions: [ question ]
-          question = { { 'question_text': 'question_text', 'category': 'category', 'summary': 'summary' } }
+          question = { { 
+            'extract_text': 'What is the extract text from the email?',
+            'question_text': 'What is the question?',
+            'category': 'What is the category of the question?',
+            'problem_context': 'Explain what is the problem from the student',
+          } }
 
         """
         

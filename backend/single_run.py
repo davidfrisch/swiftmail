@@ -22,8 +22,8 @@ def main(email: schemas.Email, with_interaction: bool):
     
     generater.single_run_reply_to_email(email, output_path, with_interaction)
     
-    evaluator = Reviewer(ollama_client, output_path)
-    evaluator.evaluate()
+    # evaluator = Reviewer(ollama_client, output_path)
+    # evaluator.evaluate()
         
     
     
@@ -36,11 +36,10 @@ def arg_parser():
     
     
 if __name__ == '__main__':
-    
     args = arg_parser()
     
     
-    with open('../dataset/fake_email_1.json', 'r') as f:
+    with open('../dataset/fake_email_3.json', 'r') as f:
       fake_email = json.load(f)
     
     email_body = fake_email['email']

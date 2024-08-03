@@ -39,7 +39,7 @@ const enquiries = {
 
   getEnquiries: async () => {
     const response = await api.get('enquiries');
-    return response.data;
+    return response.data?.mails;
   },
 
   getEnquiry: async (id) => {
