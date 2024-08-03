@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Button, message, Spin } from "antd";
 import api from "../../api";
 import "./MailsPage.css";
-import JobsTooltip from "./JobsTooltip";
+import JobStatus from "./JobStatus";
 
 export default function MailsPage({ handleView }) {
   const [mails, setMails] = useState([]);
@@ -39,8 +39,8 @@ export default function MailsPage({ handleView }) {
       await api.enquiries.toggleAsRead(email.id);
       message.success(`Marked email with ID: ${email.id} as read`);
       setMails((mails) =>
-        mails.map(({ mail }) =>
-          mail.id === email.id ? { ...mail, is_read: !mail.is_read } : mail
+        mails.map(({ mail, job }) =>
+          mail.id === email.id ? { mail: { ...mail, is_read: !mail.is_read }, job } : { mail, job }
         )
       );
      
@@ -53,11 +53,11 @@ export default function MailsPage({ handleView }) {
   const handleGenerate = async (email) => {
     try {
       setGeneratingJob(email.id);
-      const { job } = await api.jobs.createJob(email.id);
+      const { newJob } = await api.jobs.createJob(email.id);
       message.success(`Generated job for email with ID: ${email.id}`);
       setMails((mails) =>
-        mails.map(({ mail }) =>
-          mail.id === email.id ? { ...mail, job: job } : mail
+        mails.map(({ mail, job }) =>
+          mail.id === email.id ? { mail, job: newJob } : { mail, job }
         )
       );
     } catch (error) {
@@ -89,10 +89,10 @@ export default function MailsPage({ handleView }) {
       key: "subject",
     },
     {
-      title: "Jobs",
-      dataIndex: "jobs",
-      key: "jobs",
-      render: (jobs) => <JobsTooltip jobs={jobs} />,
+      title: "Status",
+      dataIndex: "job",
+      key: "job",
+      render: (job) => <JobStatus job={job} />,
     },
     {
       title: "Actions",
@@ -100,10 +100,11 @@ export default function MailsPage({ handleView }) {
       render: (_, mail) => (
         <span>
           <div>
-            {mail.jobs.length > 0 ? (
+            {mail?.job ? (
               <Button
                 type="link"
                 onClick={() => handleView(mail)}
+                disabled={mail?.job?.status !== "COMPLETED"}
                 style={{ marginRight: 8 }}
               >
                 View
@@ -111,7 +112,7 @@ export default function MailsPage({ handleView }) {
             ) : (
               <Button
                 type="link"
-                disabled={generatingJob}
+                disabled={generatingJob || (mail?.job && mail?.job?.status !== "COMPLETED")}
                 onClick={() => handleGenerate(mail)}
                 style={{ marginRight: 8 }}
               >
@@ -144,7 +145,7 @@ export default function MailsPage({ handleView }) {
       </div>
       <Table
         columns={columns}
-        dataSource={mails.map(({ mail, jobs }) => ({ ...mail, jobs }))}
+        dataSource={mails.map(({ mail, job }) => ({ ...mail, job }))}
         rowKey="id"
         pagination={{ pageSize: 5 }}
         className="mails-table"

@@ -7,14 +7,14 @@ import { Layout } from "antd";
 const { Header, Content, Footer } = Layout;
 
 function App() {
-  const [currentJob, setCurrentJob] = useState(null);
+  const [currentMail, setCurrentMail] = useState(null);
 
-  const handleView = (job) => {
-    setCurrentJob(job.id);
+  const handleView = (mail) => {
+    setCurrentMail(mail);
   };
 
   const handleBack = () => {
-    setCurrentJob(null);
+    setCurrentMail(null);
   };
 
   return (
@@ -24,9 +24,9 @@ function App() {
           <div className="demo-logo" />
         </Header>
         <Content style={{ padding: "0 64px" }}>
-          <BreadcrumbComponent jobId={currentJob} handleBack={handleBack} />
-          {currentJob ? (
-            <ResultsPage jobId={currentJob} />
+          <BreadcrumbComponent jobId={currentMail?.job?.id} handleBack={handleBack} />
+          {currentMail?.job?.id ? (
+            <ResultsPage jobId={currentMail?.job?.id} />
           ) : (
             <MailsPage handleView={handleView} />
           )}

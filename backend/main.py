@@ -78,7 +78,8 @@ async def get_enquiries(db: Session = Depends(get_db)):
     mails = []
     for enquiry in enquiries:
         jobs = crud.get_jobs_by_email_id(db, enquiry.id)
-        mails.append({ "mail": enquiry, "jobs": jobs })
+        job = jobs[0] if jobs else None
+        mails.append({ "mail": enquiry, "job": job })
             
     return mails
   
@@ -164,6 +165,8 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
                 print(models.JobStatus.COMPLETED)
                 print(f"Job already in progress: {job}")
                 return {"message": "Job already in progress", "job": job}
+
+            return {"message": "Job already exists", "job": job}
 
     job_status = models.JobStatus.PENDING.name
     new_job = schemas.JobCreate(
