@@ -129,7 +129,37 @@ async def mark_enquiry_as_read(enquiry_id: int, db: Session = Depends(get_db)):
     return {"message": "Enquiry marked as read", "enquiry": enquiry}
 
 # Answers
-
+@app.put("/answers/{answer_id}/review")
+async def review_answer(answer_id: int, db: Session = Depends(get_db)):
+    if not answer_id:
+        raise HTTPException(status_code=400, detail="Answer ID is required")
+      
+    answer = crud.get_answer_result(db, answer_id)
+    if not answer:
+        raise HTTPException(status_code=404, detail="Answer not found")
+    
+    extract_result = crud.get_extract_result(db, answer.extract_result_id)
+    if not extract_result:
+        raise HTTPException(status_code=404, detail="Extract result not found")
+    
+    email = crud.get_email(db, extract_result.email_id)
+    if not email:
+        raise HTTPException(status_code=404, detail="Email not found")
+    
+    reviewer = Reviewer(ollama_client)
+    review = reviewer.evaluate_answers([extract_result], [answer])
+    
+    
+    answer.binary_score = review[answer_id]['binary_scores']["useful"]
+    answer.linkert_score = review[answer_id]['linkert']
+    answer.hallucination_score = review[answer_id]['hallucination']
+    
+    crud.update_answer_result(db, answer)
+    
+    return {"message": "Review completed successfully", "review": review}
+  
+  
+  
 @app.put("/answers/{answer_id}")
 async def retry_answer(answer_id: int, feedback: Feedback, db: Session = Depends(get_db)):
     if not answer_id:
@@ -145,7 +175,10 @@ async def retry_answer(answer_id: int, feedback: Feedback, db: Session = Depends
     return {"message": "Answer updated successfully", "answer": new_answer}
       
       
-    
+
+
+ 
+   
 @app.post("/drafts/{draft_id}")
 async def retry_draft(draft_id: int, feedback: Feedback, db: Session = Depends(get_db)):
     if not draft_id:
@@ -238,9 +271,9 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
             "question_id": extract_result.id,
             "answer_id": answer.id,
             "scores": {
-                "binary_score": answer.binary_score if answer.binary_score else None,
-                "hallucination_score": answer.hallucination_score if answer.hallucination_score else None,
-                "linkert_score": answer.linkert_score if answer.linkert_score else None
+                "binary_score": answer.binary_score if isinstance(answer.binary_score, int) else None,
+                "hallucination_score": answer.hallucination_score if isinstance(answer.hallucination_score, int) else None,
+                "linkert_score": answer.linkert_score if isinstance(answer.linkert_score, int) else None
             }
         })
 
@@ -305,13 +338,13 @@ async def review_job(job_id: int, db: Session = Depends(get_db)):
     answers = crud.get_answer_results_by_job_id(db, job_id)
     draft_email = crud.get_draft_results_by_job_id(db, job_id)
     
-    reviewer = Reviewer(ollama_client, extract_questions, answers, draft_email)
+    reviewer = Reviewer(ollama_client)
     
-    review = reviewer.evaluate()
-    review_answers = review['answers']
-    review_draft = review['draft_email']
+    review = reviewer.evaluate(extract_questions, answers, draft_email[0].draft_body)
+    review_answers = review['answers_score']
+    review_draft = review['draft_email_score']
     
-    for review_answer in review_answers:
+    for review_answer in review_answers.values():
         answer = crud.get_answer_result(db, review_answer['answer_id'])
         answer.binary_score = review_answer['binary_scores']["useful"]
         answer.linkert_score = review_answer['linkert']

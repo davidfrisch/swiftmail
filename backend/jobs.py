@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy import create_engine
 from contextlib import contextmanager
 from .Generater import Generater
+from .Reviewer import Reviewer
 from datetime import datetime
 import endpoints_models
 import logging
@@ -19,6 +20,8 @@ def extract_questions_from_email(db: Session, generater: Generater, email: schem
         new_extract_result = schemas.ExtractResultCreate(
             email_id=email.id,
             job_id=job.id,
+            extract_text=question['extract_text'],
+            problem_context=question['problem_context'],
             category=question['category'] if 'category' in question else None,
             question_text=question['question_text'],
             extracted_at=datetime.now(),
@@ -50,10 +53,14 @@ def answer_questions(db: Session, generater: Generater, job: schemas.Job):
 
 def update_answer(db: Session, generater: Generater, answer: schemas.AnswerResult, req_body: endpoints_models.Feedback):
     extract_result = crud.get_extract_result(db, answer.extract_result_id)
-    feedback = f"Previous answer was: \n -start- {answer.answer_text} -end-.\n The user feedback was: {req_body.feedback}.\n Retry the answer considering this feedback."
+    feedback = f"Previous answer was: \n -start- {answer.answer_text} -end-.\n The user feedback was: {req_body.feedback}.\n Retry the answer considering the user feedback."
     
     new_answer_text, _, _ = generater.answer_question(extract_result.question_text, feedback)
     answer.answer_text = new_answer_text
+    answer.binary_score = None
+    answer.linkert_score = None
+    answer.hallucination_score = None
+    
     new_answer = crud.update_answer_result(db, answer)
     
     return new_answer
@@ -101,7 +108,6 @@ def start_job_generater(ollama_client, anyllm_client, enquiry_id, job_id):
     try:
         logger.info("Starting job generator for enquiry_id: %s, job_id: %s", enquiry_id, job_id)
         generater = Generater(ollama_client, anyllm_client)
-        
         with get_db_session() as db:
             email = crud.get_email(db, enquiry_id)
             job = crud.get_job(db, job_id)
@@ -109,9 +115,6 @@ def start_job_generater(ollama_client, anyllm_client, enquiry_id, job_id):
             crud.update_job_status(db, job, JobStatus.EXTRACTING)
             crud.update_job(db, job)
             logger.info("Job status updated to EXTRACTING")
-            
-            # highlight_email = generater.highlight_email(email)
-            # job.email_highlighted = highlight_email
             
             extract_questions_from_email(db, generater, email, job)
             

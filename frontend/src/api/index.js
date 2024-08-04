@@ -63,6 +63,11 @@ const answers = {
   updateAnswer: async (answerId, feedback) => {
     const response = await api.put(`answers/${answerId}`, { feedback });
     return response.data;
+  },
+
+  reviewAnswer: async (answerId) => {
+    const response = await api.put(`answers/${answerId}/review`, {});
+    return response.data;
   }
 }
 

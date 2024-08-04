@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
 import { Spin, theme, message, Input, Button, Tooltip } from "antd";
-import { EditOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  InfoCircleOutlined,
+  RedoOutlined,
+} from "@ant-design/icons";
 import "./styles.css";
 import ScoreToolTip from "./ScoreToolTip";
 const { TextArea } = Input;
@@ -79,19 +83,20 @@ export default function ResultsPage({ jobId }) {
     return <div>{parts}</div>;
   };
 
+  const fetchResults = async () => {
+    try {
+      setLoading(true);
+      const res = await api.results.getResults(jobId);
+      setResults(res);
+    } catch (err) {
+      setError("Failed to load results. Please try again.");
+      message.error("Failed to load results.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        setLoading(true);
-        const res = await api.results.getResults(jobId);
-        setResults(res);
-      } catch (err) {
-        setError("Failed to load results. Please try again.");
-        message.error("Failed to load results.");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchResults();
   }, [jobId]);
 
@@ -148,10 +153,34 @@ export default function ResultsPage({ jobId }) {
       }));
 
       message.success(resMessage);
+      setFeedback((prev) => ({
+        ...prev,
+        [index]: "",
+      }));
       setHasRefreshedQuestions(true);
     } catch (err) {
       console.log(err);
       message.error("Failed to submit feedback. Please try again.");
+    } finally {
+      setQuestionLoading((prev) => ({
+        ...prev,
+        [index]: false,
+      }));
+    }
+  };
+
+  const handleReviewNewAnswer = async (index, answerId) => {
+    setQuestionLoading((prev) => ({
+      ...prev,
+      [index]: true,
+    }));
+
+    try {
+      await api.answers.reviewAnswer(answerId, feedback[index]);
+      fetchResults();
+      message.success("Answer reviewed successfully!");
+    } catch (err) {
+      message.error("Failed to review answer. Please try again.");
     } finally {
       setQuestionLoading((prev) => ({
         ...prev,
@@ -272,11 +301,33 @@ export default function ResultsPage({ jobId }) {
                         placement="top"
                         title={ScoreToolTip(answerQuestion?.scores)}
                       >
-                        <Button
-                          icon={<InfoCircleOutlined />}
-                          size={"medium"}
-                          style={{ marginLeft: 10 }}
-                        />
+                        <>
+                          {Object.values(answerQuestion?.scores).every(
+                            (value) => value === null
+                          ) ? (
+                            <Button
+                              icon={<RedoOutlined />}
+                              size={"medium"}
+                              style={{ marginLeft: 10 }}
+                              onClick={() =>
+                                handleReviewNewAnswer(
+                                  index,
+                                  answerQuestion.answer_id
+                                )
+                              }
+                              disabled={questionLoading[index]}
+                            >
+                              Review
+                            </Button>
+                          ) : (
+                            <Button
+                              icon={<InfoCircleOutlined />}
+                              size={"medium"}
+                              style={{ marginLeft: 10 }}
+                              disabled={questionLoading[index]}
+                            />
+                          )}
+                        </>
                       </Tooltip>
                     </div>
                     {questionLoading[index] && (

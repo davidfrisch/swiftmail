@@ -74,7 +74,7 @@ def update_answer_result(db: Session, answer_result: models.AnswerResult):
 def get_draft_results(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.DraftResult).offset(skip).limit(limit).all()
   
-def get_draft_result(db: Session, draft_result_id: int):
+def get_draft_result(db: Session, draft_result_id: int) -> schemas.DraftResult:
     return db.query(models.DraftResult).filter(models.DraftResult.id == draft_result_id).first()
 
 def get_draft_results_by_email_id(db: Session, email_id: int):

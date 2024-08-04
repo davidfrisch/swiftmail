@@ -8,22 +8,20 @@ from database import schemas
 
 class Reviewer():
 
-    def __init__(self, ollama_client, extracted_questions: List[schemas.ExtractResult], answers: List[schemas.AnswerResult], generated_draft_email: schemas.DraftResult):
+    def __init__(self, ollama_client):
         self.model: OllamaAI = ollama_client
-        self.questions = extracted_questions
-        self.answers = answers
-        self.draft_email = generated_draft_email
+ 
         
             
-    def evaluate(self):
-        answers_scores = self.evaluate_answers(self.questions, self.answers)
-        draft_score = self.evaluate_draft_email(self.draft_email, self.answers)
+    def evaluate(self, questions: List[schemas.ExtractResult], answers: List[schemas.AnswerResult], draft_email: str):
+        answers_scores = self.evaluate_answers(questions, answers)
+        draft_score = self.evaluate_draft_email(draft_email, answers)
         
-        return { 'answers': answers_scores, 'draft_email': draft_score }
+        return { 'answers_score': answers_scores, 'draft_email_score': draft_score }
     
       
     def evaluate_answers(self, questions: List[schemas.ExtractResult], answers: List[schemas.AnswerResult]):
-        scores = []
+        scores = {}
         for answer in answers:
             question: schemas.ExtractResult = next((question for question in questions if question.id == answer.extract_result_id), None)
             question_text = question.question_text
@@ -40,13 +38,12 @@ class Reviewer():
             linkert_score = self.linkert_eval(pre_prompt)
             hallucination_score = self.hallucination_eval(answer, sources)
     
-            scores.append({ "answer_id": answer.id, 'binary_scores' : bin_scores, 'linkert' : linkert_score, 'hallucination' : hallucination_score })
-
+            scores[answer.id] = { 'binary_scores' : bin_scores, 'linkert' : linkert_score, 'hallucination' : hallucination_score, "answer_id": answer.id}
+            
         return scores
           
           
     def evaluate_draft_email(self, response_email, answers: List[schemas.AnswerResult]):
-        
         
         all_sources = [json.load(source) for answer in answers for source in answer.sources if answer.sources]
         bin_score = self.binary_eval(response_email, ["salutation", "closing", "signature"])
