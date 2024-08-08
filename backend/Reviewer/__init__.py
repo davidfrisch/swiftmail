@@ -5,6 +5,7 @@ import json
 from typing import List
 from LLM.OllamaLLM import OllamaAI
 from database import schemas
+from time import time
 
 class Reviewer():
 
@@ -23,8 +24,11 @@ class Reviewer():
     def evaluate_answers(self, questions: List[schemas.ExtractResult], answers: List[schemas.AnswerResult]):
         scores = {}
         for answer in answers:
+            start_time = time()
             question: schemas.ExtractResult = next((question for question in questions if question.id == answer.extract_result_id), None)
             question_text = question.question_text
+            print(question_text)
+            print(answer.answer_text)
             answer_text = answer.answer_text
             
             pre_prompt = f"""
@@ -33,19 +37,31 @@ class Reviewer():
                 Does the following answers the question?
                 Answer: {answer_text}
             """
-            sources = json.load(answer.sources) if answer.sources else []
+            if answer.sources and isinstance(answer.sources, str):
+                sources = json.loads(answer.sources)
+            elif answer.sources:
+                sources = answer.sources 
+            else:
+                sources = []
             bin_scores = self.binary_eval(pre_prompt, ["Answer of the question"])
             linkert_score = self.linkert_eval(pre_prompt)
             hallucination_score = self.hallucination_eval(answer, sources)
     
-            scores[answer.id] = { 'binary_scores' : bin_scores, 'linkert' : linkert_score, 'hallucination' : hallucination_score, "answer_id": answer.id}
-            
+            scores[answer.id] = { 'binary_scores' : bin_scores, 'linkert' : linkert_score, 'hallucination' : hallucination_score, "answer_id": answer.id, "time": time() - start_time }
+            print(scores[answer.id])
         return scores
           
           
     def evaluate_draft_email(self, response_email, answers: List[schemas.AnswerResult]):
+        all_sources = []
+        for source in answers:
+            if source.sources and isinstance(source.sources, str):
+                all_sources = json.loads(source.sources)
+            elif source.sources:
+                all_sources = source.sources 
+            else:
+                all_sources = []
         
-        all_sources = [json.load(source) for answer in answers for source in answer.sources if answer.sources]
         bin_score = self.binary_eval(response_email, ["salutation", "closing", "signature"])
         linkert_score = self.linkert_eval(response_email)
         draft_score = self.hallucination_eval(response_email, all_sources)

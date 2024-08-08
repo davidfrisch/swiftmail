@@ -25,15 +25,17 @@ def run_benchmark(generater: Generater, data: dict):
 
         answer = schemas.AnswerResult(
             answer_text=answer_text,
-            id= i,
+            id=i,
             job_id=-1,
             extract_result_id=i,
             
         )
         question = schemas.ExtractResult(
             question_text=question_text,
-            id= i,
+            id=i,
             job_id=-1,
+            problem_context="",
+            extract_text=question_text,
         )
         question.answer = answer
         
@@ -61,7 +63,7 @@ def main():
     os.makedirs(os.path.dirname(benchmark_file_path.replace('benchmark_results_responses.json', '')), exist_ok=True)
     start_time = time()
     
-    for filename in os.listdir(path_folder)[:1]:
+    for filename in os.listdir(path_folder):
         filename_path = os.path.join(path_folder, filename)
         if filename_path.endswith('.json') and "fake" in filename:
             print(f"Running benchmark for {filename}")
