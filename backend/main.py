@@ -14,6 +14,7 @@ from .jobs import start_job_generater, update_answer, update_draft_email
 from .endpoints_models import Feedback, NewJob
 from multiprocessing import Process
 import os, signal
+import json
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -270,6 +271,7 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
             "answer": answer.answer_text,
             "question_id": extract_result.id,
             "answer_id": answer.id,
+            "sources": json.loads(answer.sources) if answer.sources else [],
             "scores": {
                 "binary_score": answer.binary_score if isinstance(answer.binary_score, int) else None,
                 "hallucination_score": answer.hallucination_score if isinstance(answer.hallucination_score, int) else None,

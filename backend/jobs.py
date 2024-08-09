@@ -8,6 +8,7 @@ from .Reviewer import Reviewer
 from datetime import datetime
 import endpoints_models
 import logging
+import json
 
 
 logging.basicConfig(level=logging.INFO)
@@ -41,6 +42,7 @@ def answer_questions(db: Session, generater: Generater, job: schemas.Job):
             new_answer_result = schemas.AnswerResultCreate(
                 extract_result_id=find_extract_result.id,
                 job_id=job.id,
+                sources=json.dumps(answer['sources']),
                 answer_text=answer['answer'],
                 answered_at=datetime.now()
             )
@@ -55,8 +57,10 @@ def update_answer(db: Session, generater: Generater, answer: schemas.AnswerResul
     extract_result = crud.get_extract_result(db, answer.extract_result_id)
     feedback = f"Previous answer was: \n -start- {answer.answer_text} -end-.\n The user feedback was: {req_body.feedback}.\n Retry the answer considering the user feedback."
     
-    new_answer_text, _, _ = generater.answer_question(extract_result.question_text, feedback)
+    new_answer_text, unique_sources, _ = generater.answer_question(extract_result.question_text, feedback)
     answer.answer_text = new_answer_text
+    answer.sources = json.dumps(unique_sources)
+    answer.answered_at = datetime.now()
     answer.binary_score = None
     answer.linkert_score = None
     answer.hallucination_score = None

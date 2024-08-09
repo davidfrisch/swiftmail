@@ -106,14 +106,14 @@ class Generater:
           
             if not with_interaction:
                 full_question = question.question_text +" \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
-                answer, sources, total_sim_distance = self.answer_question(full_question, additional_context, category, False)
+                answer, unique_sources, total_sim_distance = self.answer_question(full_question, additional_context, category, False)
             
             else:
                 tries = 0
                 while tries < 3:
                     full_question = question.question_text + "--- \n Additional context: "+ additional_context +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
                     has_additional_context = True if additional_context != "" else False
-                    answer, sources, total_sim_distance = self.answer_question(full_question, category, has_additional_context)
+                    answer, unique_sources, total_sim_distance = self.answer_question(full_question, category, has_additional_context)
                     print("-----------------")
                     print("Question: ", full_question)
                     print("Answer: \n ", answer)
@@ -132,7 +132,7 @@ class Generater:
                 'question': question.question_text,
                 'full_question': full_question,
                 'answer': answer,
-                'sources': sources,
+                'sources': unique_sources,
                 'total_sim_distance': total_sim_distance
             })
             
@@ -168,9 +168,10 @@ class Generater:
           
         total_sim_distance = sum([source['_distance'] if '_distance' in source else 0 for source in sources]) / len(sources) if len(sources) > 0 else 0
         chunk_sources = [source['chunkSource'].replace("link://", "") for source in sources if 'chunkSource' in source]
+        unique_sources = list(set(chunk_sources))
       
         print(f"Total Sim Distance: {total_sim_distance}")
-        return answer, sources, total_sim_distance
+        return answer, unique_sources, total_sim_distance
       
       
 

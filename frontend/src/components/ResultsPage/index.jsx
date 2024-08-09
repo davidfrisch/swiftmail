@@ -5,6 +5,7 @@ import {
   EditOutlined,
   InfoCircleOutlined,
   RedoOutlined,
+  LinkOutlined,
 } from "@ant-design/icons";
 import "./styles.css";
 import ScoreToolTip from "./ScoreToolTip";
@@ -28,6 +29,7 @@ export default function ResultsPage({ jobId }) {
   const [questionLoading, setQuestionLoading] = useState({});
   const [questionEdit, setQuestionEdit] = useState({});
   const [hasRefreshedQuestions, setHasRefreshedQuestions] = useState(false);
+  const [sourceOpen, setSourceOpen] = useState({});
 
   const parseTextDraftResponse = (text) => {
     const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -266,11 +268,59 @@ export default function ResultsPage({ jobId }) {
                         <div>{answerQuestion.answer}</div>
                       </div>
                     )}
+                    <div className="source-links">
+                      <Tooltip>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
+                            margin: 10,
+                          }}
+                        >
+                          <Button
+                            icon={<LinkOutlined />}
+                            size={"medium"}
+                            onClick={() =>
+                              setSourceOpen((prev) => ({
+                                ...prev,
+                                [index]: !prev[index],
+                              }))
+                            }
+                          >
+                            Source
+                          </Button>
+                        </div>
+                        {sourceOpen[index] && (
+                          <div>
+                            {answerQuestion?.sources &&
+                              answerQuestion.sources.map((source, index) => (
+                                <div key={index}>
+                                  <a
+                                    href={source}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    {source}
+                                  </a>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </Tooltip>
+                      <Tooltip placement="top" title="Edit answer">
+                        <Button
+                          icon={<EditOutlined />}
+                          size={"medium"}
+                          type={questionEdit[index] ? "primary" : "default"}
+                          onClick={() => handleQuestionEdit(index)}
+                        />
+                      </Tooltip>
+                    </div>
                   </div>
                   <TextArea
                     disabled={questionLoading[index]}
                     rows={4}
-                    placeholder="Provide your feedback here..."
+                    placeholder="Tell Swiftmail what to change in the answer..."
                     value={feedback[index] || ""}
                     onChange={(e) =>
                       handleFeedbackChange(index, e.target.value)
@@ -333,11 +383,6 @@ export default function ResultsPage({ jobId }) {
                     {questionLoading[index] && (
                       <Spin size="small" style={{ marginLeft: 10 }} />
                     )}
-                    <Button
-                      icon={<EditOutlined />}
-                      size={"medium"}
-                      onClick={() => handleQuestionEdit(index)}
-                    />
                   </div>
                 </div>
               ))
@@ -396,11 +441,13 @@ export default function ResultsPage({ jobId }) {
                 fontSize: "25px",
               }}
             >
-              <Button
-                icon={<EditOutlined />}
-                size={"large"}
-                onClick={() => handleQuestionEdit("draft")}
-              />
+              <Tooltip title="Edit draft">
+                <Button
+                  icon={<EditOutlined />}
+                  size={"large"}
+                  onClick={() => handleQuestionEdit("draft")}
+                />
+              </Tooltip>
             </div>
           </div>
 
