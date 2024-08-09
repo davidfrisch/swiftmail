@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
-import { Spin, theme, message, Input, Button, Tooltip } from "antd";
+import {
+  Spin,
+  theme,
+  message,
+  Input,
+  Button,
+  Tooltip,
+  Popconfirm,
+  Checkbox,
+} from "antd";
 import {
   EditOutlined,
   InfoCircleOutlined,
   RedoOutlined,
   LinkOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import "./styles.css";
 import ScoreToolTip from "./ScoreToolTip";
 const { TextArea } = Input;
@@ -21,6 +31,7 @@ const highlightColors = {
 };
 
 export default function ResultsPage({ jobId }) {
+  const navigate = useNavigate();
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,6 +41,8 @@ export default function ResultsPage({ jobId }) {
   const [questionEdit, setQuestionEdit] = useState({});
   const [hasRefreshedQuestions, setHasRefreshedQuestions] = useState(false);
   const [sourceOpen, setSourceOpen] = useState({});
+  const [showPopconfirm, setShowPopconfirm] = useState(false);
+  const [saveInDB, setSaveInDB] = useState(false);
 
   const parseTextDraftResponse = (text) => {
     const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -188,6 +201,23 @@ export default function ResultsPage({ jobId }) {
         ...prev,
         [index]: false,
       }));
+    }
+  };
+
+  const handleSaveAndConfirm = async () => {
+    try {
+      await api.enquiries.saveAndConfirm(
+        results.email.id,
+        jobId,
+        results.draft_result.body,
+        results.answers_questions,
+        saveInDB
+      );
+      message.success("Draft saved successfully!");
+      setShowPopconfirm(false);
+      navigate("/mails");
+    } catch (err) {
+      message.error("Failed to save draft. Please try again.");
     }
   };
 
@@ -484,9 +514,34 @@ export default function ResultsPage({ jobId }) {
         </div>
       )}
       <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}>
-        <Button type="primary" style={{ backgroundColor: "green" }}>
-          Confirm and Save
-        </Button>
+        <Popconfirm
+          title={() => (
+            <div style={{ width: 300 }}>
+              <h3> Save and confirm the answers? </h3>
+              <div style={{ display: "flex", justifyContent: "end" }}>
+                <Checkbox
+                  onChange={(e) => setSaveInDB(e.target.checked)}
+                  checked={saveInDB}
+                >
+                  Save in database
+                </Checkbox>
+              </div>
+            </div>
+          )}
+          onConfirm={handleSaveAndConfirm}
+          open={showPopconfirm}
+          onCancel={() => setShowPopconfirm(false)}
+          okText="Yes"
+          cancelText="Cancel"
+        >
+          <Button
+            type="primary"
+            style={{ backgroundColor: "green" }}
+            onClick={() => setShowPopconfirm(true)}
+          >
+            Confirm and Save
+          </Button>
+        </Popconfirm>
       </div>
     </div>
   );

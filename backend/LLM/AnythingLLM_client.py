@@ -1,9 +1,10 @@
 import requests
 from .anything_llm_utils import extract_urls
 from logging import getLogger
+import shutil 
 logger = getLogger(__name__)
 logger.setLevel("INFO")
-
+import os
 class AnythingLLMClient:
   def __init__(self, base_url, token):
     self.base_url = base_url
@@ -43,7 +44,7 @@ class AnythingLLMClient:
     return response["localFiles"]
 
 
-  def get_document(self, document_name: str):
+  def get_folder(self, document_name: str):
     documents = self.see_local_files()
     folders = documents["items"]
     for folder in folders:
@@ -196,7 +197,7 @@ class AnythingLLMClient:
     else:
         logger.info(f"[SUCCESS] Adding URL {url} to local files")
         self.__upload_link_to_workspace(slug, url)
-    document = self.get_document("custom-documents")
+    document = self.get_folder("custom-documents")
     url_elem = self.get_url_from_folder(document, url)
     elem_to_add = "custom-documents/"+url_elem["name"]
     self.embed_document_into_workspace(slug, adds=[elem_to_add])
@@ -216,4 +217,22 @@ class AnythingLLMClient:
     }
     response = self._make_request("POST", f"v1/workspace/{slug_workspace}/chat", payload)
     return response
+  
+  def save_draft_in_db(self, enquiry_id, draft):
+    workspace_slug = self.get_workspace_slug("General")
+    
+    filename = f"email-{enquiry_id}.txt"
+    with open(filename, "w") as f:
+      f.write(draft)
+    
+    filepath = os.path.abspath(filename)
+    self.upload_document_to_workspace(workspace_slug, filepath)
+    os.remove(filename)
+    
+    folder = self.get_folder("custom-documents")
+    document_name = next(item["name"] for item in folder["items"] if item["title"] == filename)
+    if not document_name:
+      raise ValueError(f"Document {filename} not found in custom-documents folder")
+    elem_to_add = "custom-documents/"+document_name
+    self.embed_document_into_workspace(workspace_slug, adds=[elem_to_add])
   

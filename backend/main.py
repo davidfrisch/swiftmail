@@ -11,7 +11,7 @@ from .LLM.OllamaLLM import OllamaAI
 from .LLM.AnythingLLM_client import AnythingLLMClient
 from datetime import datetime
 from .jobs import start_job_generater, update_answer, update_draft_email
-from .endpoints_models import Feedback, NewJob
+from .endpoints_models import Feedback, NewJob, FinalDraft
 from multiprocessing import Process
 import os, signal
 import json
@@ -129,6 +129,38 @@ async def mark_enquiry_as_read(enquiry_id: int, db: Session = Depends(get_db)):
     enquiry.is_read = not enquiry.is_read
     crud.update_email(db, enquiry)
     return {"message": "Enquiry marked as read", "enquiry": enquiry}
+
+
+@app.post("/enquiries/{enquiry_id}/save-and-confirm")
+async def save_and_confirm_enquiry(enquiry_id: int,  body: FinalDraft, db: Session = Depends(get_db)):
+    if not enquiry_id:
+        raise HTTPException(status_code=400, detail="Enquiry ID is required")
+
+    job_id = body.job_id
+    new_answers = body.answers
+    new_draft = body.draft
+    save_in_db = bool(body.save_in_db)
+    job = crud.get_job(db, body.job_id)
+    
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+      
+    for new_answer in new_answers:
+        answer = crud.get_answer_result(db, new_answer['answer_id'])
+        answer.answer_text = new_answer['answer']
+        crud.update_answer_result(db, answer)
+    
+    drafts = crud.get_draft_results_by_job_id(db, job_id)
+    draft = drafts[0]
+    draft.draft_body = new_draft
+    crud.update_draft_result(db, draft)
+    
+    email = crud.get_email(db, enquiry_id)
+    email.is_read = True
+    crud.update_email(db, email)
+    if save_in_db:  
+        anyllm_client.save_draft_in_db(email.id, new_draft)
+    
 
 # Answers
 @app.put("/answers/{answer_id}/review")

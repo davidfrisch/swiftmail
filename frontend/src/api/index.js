@@ -52,6 +52,18 @@ const enquiries = {
     const response = await api.put(`enquiries/${enquiryId}/toggle-read`);
     return response.data;
   },
+
+  saveAndConfirm: async (enquiryId, jobId, finalDraft, finalAnswers, saveInDatabase) => {
+    const response = await api.post(`enquiries/${enquiryId}/save-and-confirm`,
+      {
+        job_id: jobId,
+        draft: finalDraft,
+        answers: finalAnswers,
+        save_in_db: saveInDatabase,
+      }
+    );
+    return response.data;
+  }
 }
 
 const answers = {
