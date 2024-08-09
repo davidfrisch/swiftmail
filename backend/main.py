@@ -78,8 +78,9 @@ async def refresh_enquiries(db: Session = Depends(get_db)):
         mails = []
         current_enquiries = crud.get_emails(db)
         for enquiry in current_enquiries:
-            job = crud.get_jobs_by_email_id(db, enquiry.id)
-            mails.append({ "mail": enquiry, "job": job[0] if job else None })
+            jobs = crud.get_jobs_by_email_id(db, enquiry.id)
+            latest_job = max(jobs, key=lambda x: x.id) if jobs else None
+            mails.append({ "mail": enquiry, "job": latest_job })
             
         return {"message": f"Refreshed {num_new_enquiries} new enquiries", "mails": mails}
 
@@ -97,8 +98,8 @@ async def get_enquiries(db: Session = Depends(get_db)):
         mails = []
         for enquiry in enquiries:
             jobs = crud.get_jobs_by_email_id(db, enquiry.id)
-            job = jobs[0] if jobs else None
-            mails.append({ "mail": enquiry, "job": job })
+            latest_job = max(jobs, key=lambda x: x.id) if jobs else None
+            mails.append({ "mail": enquiry, "job": latest_job })
         
         # sort by mail date newest first
         mails.sort(key=lambda x: x["mail"].sent_at, reverse=True)
@@ -116,8 +117,8 @@ async def get_enquiry(enquiry_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Enquiry not found")
       
     jobs = crud.get_jobs_by_email_id(db, enquiry_id)
-    
-    return { "mail": enquiry, "job": jobs[0] if jobs else None }
+    latest_job = max(jobs, key=lambda x: x.id) if jobs else None
+    return { "mail": enquiry, "job": latest_job }
 
 
 @app.put("/enquiries/{enquiry_id}/toggle-read")
@@ -223,11 +224,12 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     if old_jobs:
         for job in old_jobs:
             if job.status != models.JobStatus.COMPLETED and job.status != models.JobStatus.FAILED:
-                print(models.JobStatus.COMPLETED)
+                print(job.status == models.JobStatus.FAILED and job.status == models.JobStatus.COMPLETED)
                 print(f"Job already in progress: {job}")
                 return {"message": "Job already in progress", "job": job}
 
-            return {"message": "Job already exists", "job": job}
+            if job.status == models.JobStatus.COMPLETED:
+                return {"message": "Job already exists", "job": job}
 
     job_status = models.JobStatus.PENDING.name
     new_job = schemas.JobCreate(
@@ -236,8 +238,10 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
       started_at= datetime.now(),
     )
     job = crud.create_job(db, new_job)
+    workspace_slug = anyllm_client.get_workspace_slug("General")
+    new_thread = anyllm_client.new_thread(workspace_slug, "email-"+str(enquiry.id))
     
-    process = Process(target=start_job_generater, args=(ollama_client, anyllm_client, enquiry_id, job.id))
+    process = Process(target=start_job_generater, args=(ollama_client, anyllm_client, enquiry_id, job.id, new_thread['slug']))
     process.start()
     
     job.process_id = process.pid
@@ -272,6 +276,7 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
             "question_id": extract_result.id,
             "answer_id": answer.id,
             "sources": json.loads(answer.sources) if answer.sources else [],
+            "unique_sources": json.loads(answer.unique_sources) if answer.unique_sources else [],
             "scores": {
                 "binary_score": answer.binary_score if isinstance(answer.binary_score, int) else None,
                 "hallucination_score": answer.hallucination_score if isinstance(answer.hallucination_score, int) else None,
@@ -297,7 +302,7 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
     }
 
 
-@app.put("/jobs/{job_id}/cancel")
+@app.delete("/jobs/{job_id}/cancel")
 async def cancel_job(job_id: int, db: Session = Depends(get_db)):
     if not job_id:
         raise HTTPException(status_code=400, detail="Job ID is required")

@@ -33,9 +33,9 @@ def extract_questions_from_email(db: Session, generater: Generater, email: schem
     return extract_questions
 
 
-def answer_questions(db: Session, generater: Generater, job: schemas.Job):
+def answer_questions(db: Session, generater: Generater, email: schemas.Email, job: schemas.Job, thread_slug):
     extract_results = crud.get_extract_results_by_job_id(db, job.id)
-    answers = generater.answer_questions(extract_results)
+    answers = generater.answer_questions(email, extract_results, thread_slug)
     for answer in answers:
         find_extract_result = next((x for x in extract_results if x.question_text == answer['question']), None)
         if find_extract_result:
@@ -43,6 +43,7 @@ def answer_questions(db: Session, generater: Generater, job: schemas.Job):
                 extract_result_id=find_extract_result.id,
                 job_id=job.id,
                 sources=json.dumps(answer['sources']),
+                unique_sources=json.dumps(answer['unique_sources']),
                 answer_text=answer['answer'],
                 answered_at=datetime.now()
             )
@@ -108,7 +109,7 @@ def get_db_session():
     finally:
         session.close()
 
-def start_job_generater(ollama_client, anyllm_client, enquiry_id, job_id):
+def start_job_generater(ollama_client, anyllm_client, enquiry_id, job_id, thread_slug):
     try:
         logger.info("Starting job generator for enquiry_id: %s, job_id: %s", enquiry_id, job_id)
         generater = Generater(ollama_client, anyllm_client)
@@ -124,7 +125,7 @@ def start_job_generater(ollama_client, anyllm_client, enquiry_id, job_id):
             
             crud.update_job_status(db, job, JobStatus.ANSWERING)
             logger.info("Job status updated to ANSWERING")
-            answer_questions(db, generater, job)
+            answer_questions(db, generater, email, job, thread_slug)
             
             crud.update_job_status(db, job, JobStatus.DRAFTING)
             logger.info("Job status updated to DRAFTING")

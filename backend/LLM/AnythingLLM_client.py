@@ -14,8 +14,12 @@ class AnythingLLMClient:
       "Authorization": f"Bearer {self.token}"
     }
     url = f"{self.base_url}/{endpoint}"
-    response = requests.request(method, url, headers=headers, json=payload, files=files)
-    return response.json()
+    try:
+        response = requests.request(method, url, headers=headers, json=payload, files=files)
+        return response.json()
+    except Exception as e:
+        logger.error(f"[ERROR] {e}")
+        raise e
 
   def ping_alive(self):
     response = self._make_request("GET", "ping")
@@ -119,6 +123,42 @@ class AnythingLLMClient:
     response = self._make_request("POST", f"workspace/{slug}/update", payload)
     return response
 
+  def get_threads(self, slug):
+    response = self._make_request("GET", f"workspace/{slug}/threads")
+    threads = response["threads"]
+    return threads
+  
+  def update_thread(self, slug_workspace, slug_thread, payload):
+    self._make_request("POST", f"v1/workspace/{slug_workspace}/thread/{slug_thread}/update", payload)
+    
+  
+  def new_thread(self, slug_workspace, name):
+    print(f"Creating new thread with name: {name} in workspace: {slug_workspace}")
+    self._make_request("POST", f"v1/workspace/{slug_workspace}/thread/new")
+    threads = self.get_threads(slug_workspace)
+    thread_with_same_name = [thread for thread in threads if thread["name"].split("-copy-")[0] == name]
+    if len(thread_with_same_name) == 1:
+        name = name + "-copy-1"
+    elif len(thread_with_same_name) > 1:
+        biggest_number = max([int(thread["name"].split("-copy-")[1]) if "-copy-" in thread["name"] else 0 for thread in thread_with_same_name])
+        name = name + "-copy-" + str(biggest_number+1)
+    
+    latest_thread = sorted(threads, key=lambda x: x["createdAt"], reverse=True)[0]
+    self.update_thread(slug_workspace, latest_thread["slug"], {"name": name})
+    return latest_thread
+  
+  
+  def chat_with_thread(self, slug_workspace, slug_thread, message, mode: str = "chat"):
+    if mode not in ["chat", "query"]:
+      raise ValueError("mode must be either 'chat' or 'query'")
+    
+    payload = {
+      "message": message,
+      "mode": mode
+    }
+    response = self._make_request("POST", f"v1/workspace/{slug_workspace}/thread/{slug_thread}/chat", payload)
+    return response
+  
   def upload_document_to_workspace(self, slug, file_path):
     files = {
       "file": open(file_path, 'rb')
@@ -166,7 +206,7 @@ class AnythingLLMClient:
     response = self._make_request("DELETE", f"workspace/{slug}")
     return response
 
-  def chat_with_workspace(self, slug, message, mode: str = "chat"):
+  def chat_with_workspace(self, slug_workspace, message, mode: str = "chat"):
     if mode not in ["chat", "query"]:
       raise ValueError("mode must be either 'chat' or 'query'")
     
@@ -174,6 +214,6 @@ class AnythingLLMClient:
       "message": message,
       "mode": mode
     }
-    response = self._make_request("POST", f"v1/workspace/{slug}/chat", payload)
+    response = self._make_request("POST", f"v1/workspace/{slug_workspace}/chat", payload)
     return response
   

@@ -12,7 +12,7 @@ from database import schemas
 import json
 
 
-def main(email: schemas.Email, with_interaction: bool):
+def main(email: schemas.Email):
     ollama_client = OllamaAI('http://localhost:11434', 'llama3:instruct')
     anything_llm_client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")
     output_path = '../outputs/response.json'
@@ -20,7 +20,7 @@ def main(email: schemas.Email, with_interaction: bool):
     
     generater = Generater(ollama_client=ollama_client, anyllm_client=anything_llm_client)
     
-    generater.single_run_reply_to_email(email, output_path, with_interaction)
+    generater.single_run_reply_to_email(email, output_path)
     
     # evaluator = Reviewer(ollama_client, output_path)
     # evaluator.evaluate()
@@ -28,16 +28,8 @@ def main(email: schemas.Email, with_interaction: bool):
     
     
 
-def arg_parser():
-    parser = argparse.ArgumentParser(prog="main.py", description="Process email body and generate response")
-    parser.add_argument('-w', action='store_true', help="Whether to interact with the user to improve the answer", default=False)
-    args = parser.parse_args()
-    return args     
-    
     
 if __name__ == '__main__':
-    args = arg_parser()
-    
     
     with open('../dataset/fake_email_3.json', 'r') as f:
       fake_email = json.load(f)
@@ -51,5 +43,5 @@ if __name__ == '__main__':
         id=-1,
         is_read=False,
     )
-    main(new_email, args.w)
+    main(new_email)
     

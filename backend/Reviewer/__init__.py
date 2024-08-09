@@ -27,8 +27,6 @@ class Reviewer():
             start_time = time()
             question: schemas.ExtractResult = next((question for question in questions if question.id == answer.extract_result_id), None)
             question_text = question.question_text
-            print(question_text)
-            print(answer.answer_text)
             answer_text = answer.answer_text
             
             pre_prompt = f"""
@@ -40,7 +38,7 @@ class Reviewer():
             if answer.sources and isinstance(answer.sources, str):
                 sources = json.loads(answer.sources)
             elif answer.sources:
-                sources = answer.sources 
+                sources = answer.sources
             else:
                 sources = []
             bin_scores = self.binary_eval(pre_prompt, ["Answer of the question"])
@@ -48,7 +46,7 @@ class Reviewer():
             hallucination_score = self.hallucination_eval(answer, sources)
     
             scores[answer.id] = { 'binary_scores' : bin_scores, 'linkert' : linkert_score, 'hallucination' : hallucination_score, "answer_id": answer.id, "time": time() - start_time }
-            print(scores[answer.id])
+
         return scores
           
           
@@ -80,8 +78,7 @@ class Reviewer():
                     0 means the answer is not polite, 1 means the answer is polite,
                     0 means the answer is not well formatted, 1 means the answer is well formatted.
                     
-                    To be well formatted, the answer should contain the following:
-                    {" ".join(format_conditions)}
+                    
                     ---
                     format has to be in json format:
                     {{ "useful": int, "tone": int, "format": int }}

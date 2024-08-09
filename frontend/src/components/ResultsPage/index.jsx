@@ -277,33 +277,37 @@ export default function ResultsPage({ jobId }) {
                             margin: 10,
                           }}
                         >
-                          <Button
-                            icon={<LinkOutlined />}
-                            size={"medium"}
-                            onClick={() =>
-                              setSourceOpen((prev) => ({
-                                ...prev,
-                                [index]: !prev[index],
-                              }))
-                            }
-                          >
-                            Source
-                          </Button>
+                          {answerQuestion?.unique_sources && (
+                            <Button
+                              icon={<LinkOutlined />}
+                              size={"medium"}
+                              onClick={() =>
+                                setSourceOpen((prev) => ({
+                                  ...prev,
+                                  [index]: !prev[index],
+                                }))
+                              }
+                            >
+                              Source
+                            </Button>
+                          )}
                         </div>
                         {sourceOpen[index] && (
                           <div>
-                            {answerQuestion?.sources &&
-                              answerQuestion.sources.map((source, index) => (
-                                <div key={index}>
-                                  <a
-                                    href={source}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                  >
-                                    {source}
-                                  </a>
-                                </div>
-                              ))}
+                            {answerQuestion?.unique_sources &&
+                              answerQuestion.unique_sources.map(
+                                (source, index) => (
+                                  <div key={index}>
+                                    <a
+                                      href={source}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      {source}
+                                    </a>
+                                  </div>
+                                )
+                              )}
                           </div>
                         )}
                       </Tooltip>

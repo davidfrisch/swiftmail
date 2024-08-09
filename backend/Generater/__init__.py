@@ -21,40 +21,53 @@ class Generater:
         self.generated_draft_email = ""
         
 
-    def single_run_reply_to_email(self, email: Email, path_output:str, with_interaction:bool=False):
+    def single_run_reply_to_email(self, email: Email, path_output:str=None):
         with open(path_output, 'w') as f:
             json.dump({}, f)
-      
+
+        workspace_slug = self.anyllm_client.get_workspace_slug("General")
+        new_thread = self.anyllm_client.new_thread(workspace_slug, "test123")
+        thread_slug = new_thread['slug']
+                
         extract_questions = self.extract_questions_from_text(email.body)
         self.dump_intermediate({'extracted_questions': extract_questions}, path_output)
         
-        # extract_questions = [ExtractResult(
-        #       job_id=-1,
-        #       question_text=question['question_text'],
-        #       category=question['category'],
-        #       is_answered=False,
-        #       id=i,
-        #       extracted_at=datetime.now()
-        #    ) for i, question in enumerate(extract_questions)
-        # ]
-        # answers = self.answer_questions(extract_questions, with_interaction)
-        # self.dump_intermediate({'answers': answers}, path_output)
+        extract_questions = [ExtractResult(
+              job_id=-1,
+              question_text=question['question_text'],
+              category=question['category'],
+              is_answered=False,
+              problem_context=question['problem_context'] if 'problem_context' in question else "",
+              extract_text=question['extract_text'],
+              id=i,
+              extracted_at=datetime.now()
+           ) for i, question in enumerate(extract_questions)
+        ]
+        answers = self.answer_questions(email, extract_questions, thread_slug)
+        self.dump_intermediate({'answers': answers}, path_output)
         
-        # answers_results: List[AnswerResult] = []
-        # for answer in answers:
-        #     find_extract_result = next((x for x in extract_questions if x.question_text == answer['question']), None)
-        #     if find_extract_result:
-        #         answer_result = AnswerResultCreate(
-        #             extract_result_id=find_extract_result.id,
-        #             job_id=-1,
-        #             answer_text = answer['answer'],
-        #             sources = json.dumps(answer['sources']),
-        #             answered_at = datetime.now()
-        #         )
+        answers_results: List[AnswerResult] = []
+        for answer in answers:
+            find_extract_result = next((x for x in extract_questions if x.question_text == answer['question']), None)
+            if find_extract_result:
+                answer_result = AnswerResultCreate(
+                    extract_result_id=find_extract_result.id,
+                    job_id=-1,
+                    answer_text = answer['answer'],
+                    sources = json.dumps(answer['sources']),
+                    answered_at = datetime.now()
+                )
                 
-        #         answers_results.append(answer_result)
-        # generated_draft_email = self.generate_response_email(email, extract_questions,  answers_results)
-        # self.dump_intermediate({'generated_draft_email': generated_draft_email}, path_output)
+                answers_results.append(answer_result)
+        generated_draft_email = self.generate_response_email(email, extract_questions,  answers_results)
+        self.dump_intermediate({'generated_draft_email': generated_draft_email}, path_output)
+        
+        return {
+            'email': email,
+            'extracted_questions': extract_questions,
+            'generated_answers': answers_results,
+            'generated_draft_email': generated_draft_email
+        }
     
     
     def extract_questions_from_text(self, text:str) -> List[str]:
@@ -97,60 +110,49 @@ class Generater:
       
 
 
-    def answer_questions(self, questions: List[ExtractResult], with_interaction: bool=False):
+    def answer_questions(self, email: Email, questions: List[ExtractResult], slug_thread=None):
         self.answers = []
         for question in questions:
             full_question = question.question_text
             category = question.category
-            additional_context = ""
           
-            if not with_interaction:
-                full_question = question.question_text +" \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
-                answer, unique_sources, total_sim_distance = self.answer_question(full_question, additional_context, category, False)
-            
-            else:
-                tries = 0
-                while tries < 3:
-                    full_question = question.question_text + "--- \n Additional context: "+ additional_context +" \n --- \n  In your answer put in ** all qualitative information (words, date, numbers, time)" 
-                    has_additional_context = True if additional_context != "" else False
-                    answer, unique_sources, total_sim_distance = self.answer_question(full_question, category, has_additional_context)
-                    print("-----------------")
-                    print("Question: ", full_question)
-                    print("Answer: \n ", answer)
-                    print("-----------------")
-                    print(f"Are you satisfied with the answer? tries: {tries}")
-                    response = input()
-                    if response.strip() in ['yes', 'Yes', 'YES', 'y', 'Y']:
-                        break
-                    else:
-                        tries += 1
-                        additional_context = additional_context + "\n" + response
-            
-            
+            full_question = question.question_text  
+            answer, unique_sources, sources = self.answer_question(
+              email_text=email.body,
+              question=question.question_text,
+              feedback="",
+              slug_thread=slug_thread,
+              category=category,
+            )
             
             self.answers.append({
                 'question': question.question_text,
                 'full_question': full_question,
                 'answer': answer,
-                'sources': unique_sources,
-                'total_sim_distance': total_sim_distance
+                'sources': sources,
+                'unique_sources': unique_sources
             })
             
         return self.answers
 
 
 
-    def answer_question(self, question:str, feedback:str, category="general", has_additional_context=False):
+    def answer_question(self, email_text, question:str, feedback:str, category="general", has_additional_context=False, slug_thread=None):
         prompt = f"""
-          You are a Program Administrator at UCL. You only have access to the following information.
-          If you don't have an answer, just say "I don't have an answer for this question".
-          Answer the following question:
+          email: {email_text} \n
+          category: {category}
+          ---
+          Answer the following question: \n
           Question: {question} \n
-          Additional context: {feedback} \n
-          Category: {category}
+          {("Additional information:\n"+ feedback) if feedback else ""}
         """
-        slug = self.anyllm_client.get_workspace_slug("General")
-        res = self.anyllm_client.chat_with_workspace(slug, prompt)
+        slug_workspace = self.anyllm_client.get_workspace_slug("General")
+        
+        if slug_thread:
+            res = self.anyllm_client.chat_with_thread(slug_workspace, slug_thread, prompt)
+        else:
+            res = self.anyllm_client.chat_with_workspace(slug_workspace, prompt)
+            
         answer = res['textResponse']
         sources = res['sources']
         
@@ -171,7 +173,7 @@ class Generater:
         unique_sources = list(set(chunk_sources))
       
         print(f"Total Sim Distance: {total_sim_distance}")
-        return answer, unique_sources, total_sim_distance
+        return answer, unique_sources, sources
       
       
 
@@ -198,9 +200,8 @@ class Generater:
         {''.join(questions_answers)}
         
         Reply to the student's email with the answers to their questions.
-        Keep the ** that highlight the answers.
         
-        {"Additional information:"+ additional_context if additional_context else ""}
+        {("Additional information:"+ additional_context) if additional_context else ""}
         """
         
         generated_email = self.olllama_client.predict(prompt)

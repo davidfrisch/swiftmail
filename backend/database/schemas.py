@@ -65,6 +65,7 @@ class AnswerResultBase(BaseModel):
     linkert_score: Optional[int] = None
     hallucination_score: Optional[int] = None
     sources: str = "" 
+    unique_sources: str = ""
 
 
 class AnswerResult(AnswerResultBase):
