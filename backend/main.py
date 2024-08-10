@@ -263,6 +263,7 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
             if job.status == models.JobStatus.COMPLETED:
                 return {"message": "Job already exists", "job": job}
 
+ 
     job_status = models.JobStatus.PENDING.name
     new_job = schemas.JobCreate(
       email_id=enquiry_id,
@@ -277,6 +278,8 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     process.start()
     
     job.process_id = process.pid
+    job.slug_workspace = workspace_slug
+    job.slug_thread = new_thread['slug']
     print(f"Process started with PID: {process.pid}")
     crud.update_job(db, job)
 
@@ -294,8 +297,11 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
     answers = crud.get_answer_results_by_job_id(db, job_id)
     draft_result = crud.get_draft_results_by_job_id(db, job_id)
     latest_draft = draft_result[0]
-    subject_draft = latest_draft.draft_body.split("\n\n")[0]
-    body_draft = "\n\n".join(latest_draft.draft_body.split("\n\n")[1:])
+    
+    body_draft = latest_draft.draft_body
+    if "Subject:" in latest_draft.draft_body:
+        body_draft = "\n\n".join(latest_draft.draft_body.split("\n\n")[1:])
+        
     
     answers_questions = []
     for answer in answers:
@@ -324,7 +330,6 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
         "extract_results": extract_results,
         "answers": answers,
         "draft_result": {
-            "subject": subject_draft,
             "body": body_draft,
             "created_at": latest_draft.created_at,
         },

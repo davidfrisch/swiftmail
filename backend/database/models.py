@@ -102,7 +102,8 @@ class Job(Base):
     status = Column(Enum(JobStatus), default=JobStatus.PENDING, nullable=False)
     started_at = Column(DateTime, default=datetime.now())
     completed_at = Column(DateTime, nullable=True)
-    email_highlighted = Column(Text, nullable=True)
+    slug_workspace = Column(String, nullable=True)
+    slug_thread = Column(String, nullable=True)
 
     email = relationship("Email", back_populates="job")
     extract_results = relationship("ExtractResult", back_populates="job")

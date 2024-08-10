@@ -114,6 +114,8 @@ class Job(JobBase):
     id: int
     process_id: Optional[int] = None
     email: Optional[Email] = None
+    slug_workspace: Optional[str] = None
+    slug_thread: Optional[str] = None
     extract_results: List[ExtractResult] = []
     answer_results: List[AnswerResult] = []
 

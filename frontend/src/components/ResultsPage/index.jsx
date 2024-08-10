@@ -136,9 +136,9 @@ export default function ResultsPage({ jobId }) {
         draft: true,
       }));
       const feedback = isRefreshFeedback ? "" : draftFeedback;
+      setHasRefreshedQuestions(false);
       await api.drafts.updateDrafts(jobId, feedback);
       message.success("Feedback submitted successfully!");
-      setHasRefreshedQuestions(false);
     } catch (err) {
       message.error("Failed to submit feedback. Please try again.");
     } finally {
@@ -341,18 +341,22 @@ export default function ResultsPage({ jobId }) {
                           </div>
                         )}
                       </Tooltip>
-                      <Tooltip placement="top" title="Edit answer">
-                        <Button
-                          icon={<EditOutlined />}
-                          size={"medium"}
-                          type={questionEdit[index] ? "primary" : "default"}
-                          onClick={() => handleQuestionEdit(index)}
-                        />
-                      </Tooltip>
+                      {!questionEdit[index] && (
+                        <Tooltip placement="top" title="Edit answer">
+                          <Button
+                            icon={<EditOutlined />}
+                            size={"medium"}
+                            type={questionEdit[index] ? "primary" : "default"}
+                            onClick={() => handleQuestionEdit(index)}
+                          />
+                        </Tooltip>
+                      )}
                     </div>
                   </div>
                   <TextArea
-                    disabled={questionLoading[index]}
+                    disabled={Object.values(questionLoading).some(
+                      (value) => value === true
+                    )}
                     rows={4}
                     placeholder="Tell Swiftmail what to change in the answer..."
                     value={feedback[index] || ""}
@@ -377,7 +381,9 @@ export default function ResultsPage({ jobId }) {
                             answerQuestion.answer_id
                           )
                         }
-                        disabled={questionLoading[index]}
+                        disabled={Object.values(questionLoading).some(
+                          (value) => value === true
+                        ) || !feedback[index]?.trim().length}
                       >
                         Regenerate answer
                       </Button>
@@ -399,7 +405,9 @@ export default function ResultsPage({ jobId }) {
                                   answerQuestion.answer_id
                                 )
                               }
-                              disabled={questionLoading[index]}
+                              disabled={Object.values(questionLoading).some(
+                                (value) => value === true
+                              )}
                             >
                               Review
                             </Button>
@@ -408,7 +416,9 @@ export default function ResultsPage({ jobId }) {
                               icon={<InfoCircleOutlined />}
                               size={"medium"}
                               style={{ marginLeft: 10 }}
-                              disabled={questionLoading[index]}
+                              disabled={Object.values(questionLoading).some(
+                                (value) => value === true
+                              )}
                             />
                           )}
                         </>
@@ -436,55 +446,79 @@ export default function ResultsPage({ jobId }) {
           }}
         >
           <h1>Generated Draft</h1>
-          <h2>Subject: {results.draft_result.subject}</h2>
-          <div className="draft-body">
-            {" "}
-            {questionLoading?.draft ? (
-              <Spin size="large" />
-            ) : (
-              <div>
-                {questionEdit["draft"] ? (
-                  <TextArea
-                    rows={4}
-                    style={{
-                      height: `${
-                        results.draft_result.body.split("\n").length * 30
-                      }px`,
-                      marginBottom: 16,
-                    }}
-                    value={results.draft_result.body}
-                    onChange={(e) =>
-                      setResults((prev) => ({
-                        ...prev,
-                        draft_result: {
-                          ...prev.draft_result,
-                          body: e.target.value,
-                        },
-                      }))
-                    }
-                  />
-                ) : (
-                  parseTextDraftResponse(results.draft_result.body)
-                )}
-              </div>
+          <div style={{ position: "relative" }}>
+            {hasRefreshedQuestions && (
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => handleSubmitDraftFeedback(true)}
+                style={{
+                  marginTop: 24,
+                  backgroundColor: "#00dd00",
+                  position: "absolute",
+                  zIndex: 999,
+                  top: `calc(30% + 24px)`,
+                  right: `calc(50% - 50px)`,
+                }}
+              >
+                Refresh Draft
+              </Button>
             )}
             <div
-              style={{
-                display: "flex",
-                justifyContent: "end",
-                fontSize: "25px",
-              }}
+              className={`draft-body ${
+                hasRefreshedQuestions ? "draft-blur" : ""
+              }`}
+              style={{ pointerEvents: hasRefreshedQuestions ? "none" : "auto" }}
             >
-              <Tooltip title="Edit draft">
-                <Button
-                  icon={<EditOutlined />}
-                  size={"large"}
-                  onClick={() => handleQuestionEdit("draft")}
-                />
-              </Tooltip>
+              {" "}
+              {questionLoading?.draft ? (
+                <Spin size="large" />
+              ) : (
+                <div>
+                  {questionEdit["draft"] ? (
+                    <TextArea
+                      rows={4}
+                      style={{
+                        height: `${
+                          results.draft_result.body.split("\n").length * 30
+                        }px`,
+                        marginBottom: 16,
+                      }}
+                      value={results.draft_result.body}
+                      onChange={(e) =>
+                        setResults((prev) => ({
+                          ...prev,
+                          draft_result: {
+                            ...prev.draft_result,
+                            body: e.target.value,
+                          },
+                        }))
+                      }
+                    />
+                  ) : (
+                    parseTextDraftResponse(results.draft_result.body)
+                  )}
+                </div>
+              )}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "end",
+                  fontSize: "25px",
+                }}
+              >
+                {(questionLoading?.draft || !hasRefreshedQuestions) && (
+                  <Tooltip title="Edit draft">
+                    <Button
+                      icon={<EditOutlined />}
+                      size={"large"}
+                      onClick={() => handleQuestionEdit("draft")}
+                    />
+                  </Tooltip>
+                )}
+              </div>
             </div>
           </div>
-
           <div className="draft-feedback-container">
             <TextArea
               disabled={questionLoading?.draft}
@@ -499,18 +533,10 @@ export default function ResultsPage({ jobId }) {
             type="primary"
             onClick={() => handleSubmitDraftFeedback(false)}
             style={{ marginTop: 24 }}
+            disabled={draftFeedback?.trim().length === 0}
           >
             Submit Draft Feedback
           </Button>
-          {hasRefreshedQuestions && (
-            <Button
-              type="primary"
-              onClick={() => handleSubmitDraftFeedback(true)}
-              style={{ marginTop: 24, backgroundColor: "#00dd00" }}
-            >
-              Refresh Draft
-            </Button>
-          )}
         </div>
       )}
       <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}>

@@ -293,3 +293,4 @@ client_secret.json
 gmail_token.json
 outputs
 *_env
+backend/saved_results

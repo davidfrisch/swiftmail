@@ -26,7 +26,8 @@ def run_benchmark(generater: Generater, data: dict):
         question_text = question['question']
         gold_answer = get_gold_answer(question_text)
         category = question['category']
-        answer, sources, total_sim_distance = generater.answer_question(question_text, category)
+        # TODO do not pass empty string for problem context
+        answer, sources, total_sim_distance = generater.answer_question("", question_text, "", category)
         try: 
             answer = answer.split("?\n")[1].strip()
         except:

@@ -118,7 +118,7 @@ class Generater:
           
             full_question = question.question_text  
             answer, unique_sources, sources = self.answer_question(
-              email_text=email.body,
+              problem_context=question.problem_context,
               question=question.question_text,
               feedback="",
               slug_thread=slug_thread,
@@ -137,9 +137,9 @@ class Generater:
 
 
 
-    def answer_question(self, email_text, question:str, feedback:str, category="general", has_additional_context=False, slug_thread=None):
+    def answer_question(self, problem_context: str, question:str, feedback:str, category="general", has_additional_context=False, slug_thread=None):
         prompt = f"""
-          email: {email_text} \n
+          problem context: {problem_context}
           category: {category}
           ---
           Answer the following question: \n

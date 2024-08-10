@@ -55,10 +55,13 @@ def answer_questions(db: Session, generater: Generater, email: schemas.Email, jo
 
 
 def update_answer(db: Session, generater: Generater, answer: schemas.AnswerResult, req_body: endpoints_models.Feedback):
+    
+    job = crud.get_job(db, answer.job_id)
+    
     extract_result = crud.get_extract_result(db, answer.extract_result_id)
     feedback = f"Previous answer was: \n -start- {answer.answer_text} -end-.\n The user feedback was: {req_body.feedback}.\n Retry the answer considering the user feedback."
     
-    new_answer_text, unique_sources, _ = generater.answer_question(extract_result.question_text, feedback)
+    new_answer_text, unique_sources, _ = generater.answer_question(extract_result.problem_context, extract_result.question_text, feedback, job.slug_thread)
     answer.answer_text = new_answer_text
     answer.sources = json.dumps(unique_sources)
     answer.answered_at = datetime.now()

@@ -220,19 +220,20 @@ class AnythingLLMClient:
   
   def save_draft_in_db(self, enquiry_id, draft):
     workspace_slug = self.get_workspace_slug("General")
-    
+    folder_name = "./saved_results"
+    os.makedirs(folder_name, exist_ok=True)
     filename = f"email-{enquiry_id}.txt"
-    with open(filename, "w") as f:
+    fullpath = f"{folder_name}/{filename}"
+    with open(fullpath, "w") as f:
       f.write(draft)
     
-    filepath = os.path.abspath(filename)
+    filepath = os.path.abspath(fullpath)
     self.upload_document_to_workspace(workspace_slug, filepath)
-    os.remove(filename)
     
     folder = self.get_folder("custom-documents")
     document_name = next(item["name"] for item in folder["items"] if item["title"] == filename)
     if not document_name:
-      raise ValueError(f"Document {filename} not found in custom-documents folder")
+      raise ValueError(f"Document {fullpath} not found in custom-documents folder")
     elem_to_add = "custom-documents/"+document_name
     self.embed_document_into_workspace(workspace_slug, adds=[elem_to_add])
   
