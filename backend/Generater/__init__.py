@@ -22,15 +22,17 @@ class Generater:
         
 
     def single_run_reply_to_email(self, email: Email, path_output:str=None):
-        with open(path_output, 'w') as f:
-            json.dump({}, f)
+        
+        if path_output:
+            with open(path_output, 'w') as f:
+                json.dump({}, f)
 
         workspace_slug = self.anyllm_client.get_workspace_slug("General")
         new_thread = self.anyllm_client.new_thread(workspace_slug, "test123")
         thread_slug = new_thread['slug']
                 
         extract_questions = self.extract_questions_from_text(email.body)
-        self.dump_intermediate({'extracted_questions': extract_questions}, path_output)
+        path_output and self.dump_intermediate({'extracted_questions': extract_questions}, path_output)
         
         extract_questions = [ExtractResult(
               job_id=-1,
@@ -44,7 +46,7 @@ class Generater:
            ) for i, question in enumerate(extract_questions)
         ]
         answers = self.answer_questions(email, extract_questions, thread_slug)
-        self.dump_intermediate({'answers': answers}, path_output)
+        path_output and self.dump_intermediate({'answers': answers}, path_output)
         
         answers_results: List[AnswerResult] = []
         for answer in answers:
@@ -60,8 +62,8 @@ class Generater:
                 
                 answers_results.append(answer_result)
         generated_draft_email = self.generate_response_email(email, extract_questions,  answers_results)
-        self.dump_intermediate({'generated_draft_email': generated_draft_email}, path_output)
-        
+        path_output and self.dump_intermediate({'generated_draft_email': generated_draft_email}, path_output)
+        self.anyllm_client.delete_thread(workspace_slug, thread_slug)
         return {
             'email': email,
             'extracted_questions': extract_questions,

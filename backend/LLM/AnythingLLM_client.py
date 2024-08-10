@@ -148,7 +148,13 @@ class AnythingLLMClient:
     self.update_thread(slug_workspace, latest_thread["slug"], {"name": name})
     return latest_thread
   
-  
+  def delete_thread(self, slug_workspace, slug_thread):
+    try:
+        self._make_request("DELETE", f"workspace/{slug_workspace}/thread/{slug_thread}")
+    except Exception as e:
+        logger.error(f"[ERROR] {e}")
+        return False
+    
   def chat_with_thread(self, slug_workspace, slug_thread, message, mode: str = "chat"):
     if mode not in ["chat", "query"]:
       raise ValueError("mode must be either 'chat' or 'query'")
