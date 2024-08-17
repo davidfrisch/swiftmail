@@ -35,7 +35,6 @@ def run_benchmark(generater: Generater, data: dict):
             id=i,
             job_id=-1,
             problem_context="",
-            extract_text=question_text,
         )
         question.answer = answer
         

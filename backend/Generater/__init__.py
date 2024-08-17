@@ -28,19 +28,18 @@ class Generater:
                 json.dump({}, f)
 
         workspace_slug = self.anyllm_client.get_workspace_slug("General")
-        new_thread = self.anyllm_client.new_thread(workspace_slug, "test123")
+        new_thread = self.anyllm_client.new_thread(workspace_slug, "new_thread")
         thread_slug = new_thread['slug']
                 
         extract_questions = self.extract_questions_from_text(email.body)
+        
         path_output and self.dump_intermediate({'extracted_questions': extract_questions}, path_output)
         
         extract_questions = [ExtractResult(
               job_id=-1,
-              question_text=question['question_text'],
-              category=question['category'],
+              question_text=question['extract_text'],
               is_answered=False,
               problem_context=question['problem_context'] if 'problem_context' in question else "",
-              extract_text=question['extract_text'],
               id=i,
               extracted_at=datetime.now()
            ) for i, question in enumerate(extract_questions)
@@ -74,21 +73,19 @@ class Generater:
     
     def extract_questions_from_text(self, text:str) -> List[str]:
         prompt = f"""
-          Extract the questions from the following email:
+          Split the full email into multiple contextual segments
           Email:
-          {text}
+          {text.strip()}
           
-          For each question, provide the question asked and the category of the question.
-          Possible categories are: {''.join([f'{category} ' for category in categories])}.
-          
-          Give it in a json format:
-          questions: [ question ]
-          question = { { 
+          ---
+          - The type can only be either a "question" or "information" or "not_information"!
+          - If a question is composed of multiple sentences, keep it as one question.
+           
+          Give the ouptut in a json format:
+          segments = [{{
+            'type': question/information/not_information,
             'extract_text': 'What is the extract text from the email?',
-            'question_text': 'What is the question?',
-            'category': 'What is the category of the question?',
-            'problem_context': 'Explain what is the problem from the student',
-          } }
+          }}, ...]
 
         """
         
@@ -99,9 +96,16 @@ class Generater:
             try:
                 res = self.olllama_client.predict(prompt, format="json")
                 res_json = json.loads(res)
-                questions = res_json['questions']
+                segments = res_json['segments']
+                questions = [segment for segment in segments if segment['type'] == 'question']
+                all_informations = " ".join([segment['extract_text'] for segment in segments if segment['type'] == 'information'])
+                
+                for question in questions:
+                    question['problem_context'] = "Information about the email: \n " + all_informations + "\n --- \n"
+                    
                 if len(questions) == 0:
-                    raise Exception("No questions extracted")
+                    raise Exception("No segments extracted")
+                  
                 self.questions = questions
                 return questions
             except:
@@ -116,7 +120,6 @@ class Generater:
         self.answers = []
         for question in questions:
             full_question = question.question_text
-            category = question.category
           
             full_question = question.question_text  
             answer, unique_sources, sources = self.answer_question(
@@ -124,7 +127,6 @@ class Generater:
               question=question.question_text,
               feedback="",
               slug_thread=slug_thread,
-              category=category,
             )
             
             self.answers.append({
@@ -139,10 +141,9 @@ class Generater:
 
 
 
-    def answer_question(self, problem_context: str, question:str, feedback:str, category="general", has_additional_context=False, slug_thread=None):
+    def answer_question(self, problem_context: str, question:str, feedback:str, has_additional_context=False, slug_thread=None):
         prompt = f"""
           problem context: {problem_context}
-          category: {category}
           ---
           Answer the following question: \n
           Question: {question} \n
@@ -160,8 +161,7 @@ class Generater:
         
         if len(sources) == 0 and not has_additional_context:
             print(f"No sources found for question: {question}")
-            default_response = NO_ANSWERS_TEMPLATE.get(category) if category in NO_ANSWERS_TEMPLATE else NO_ANSWERS_TEMPLATE.get("general")
-            answer = "WARNING: No answer found for this question. Here is a generic response:\n\n" + default_response
+            answer = "WARNING: No answer found for this question." 
             return answer, [], 0
           
         if len(sources) == 0 and has_additional_context:
@@ -191,7 +191,7 @@ class Generater:
             question_text = question.question_text
             answer_text = next((answer.answer_text for answer in answers if answer.extract_result_id == question.id), "I don't have an answer for this question")
             questions_answers.append(f"Question: {question_text}\nAnswer: {answer_text} \n-------\n")
-        
+        print(questions_answers)
         prompt = f"""
         You are {program_administrator_name}, the program administrator for the {program_name} program.
         You have received an email from a student asking the following questions:

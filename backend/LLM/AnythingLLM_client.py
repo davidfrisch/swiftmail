@@ -105,10 +105,10 @@ class AnythingLLMClient:
     response = self._make_request("GET", f"workspace/{slug}")
     return response
   
-  def get_workspace_slug(self, category):
+  def get_workspace_slug(self, name):
     workspaces = self.get_all_workspaces()['workspaces']
     for workspace in workspaces:
-        if workspace['name'] == category:
+        if workspace['name'] == name:
             return workspace['slug']
     return None
 
@@ -116,11 +116,15 @@ class AnythingLLMClient:
     response = self._make_request("GET", f"workspace/{slug}/chats")
     return response
 
-  def update_workspace(self, slug, name, openAiTemp):
-    payload = {
-      "name": name,
-      "openAiTemp": openAiTemp
-    }
+  def update_workspace(self, slug, payload):
+    """
+    "chatProvider"
+    "chatMode"
+    "openAiHistory"
+    "openAiPrompt"
+    "queryRefusalResponse"
+    "openAiTemp"
+    """
     response = self._make_request("POST", f"workspace/{slug}/update", payload)
     return response
 

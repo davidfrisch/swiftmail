@@ -21,9 +21,7 @@ def extract_questions_from_email(db: Session, generater: Generater, email: schem
         new_extract_result = schemas.ExtractResultCreate(
             email_id=email.id,
             job_id=job.id,
-            extract_text=question['extract_text'],
             problem_context=question['problem_context'],
-            category=question['category'] if 'category' in question else None,
             question_text=question['question_text'],
             extracted_at=datetime.now(),
             is_answered=False

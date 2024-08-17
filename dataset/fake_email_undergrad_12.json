@@ -1,0 +1,21 @@
+{
+  "email": "Subject: Undergraduate Programme Application - Queries and Clarifications\n\nDear UCL Admissions Team,\n\nI am writing to express my interest in applying for the undergraduate programme in Computer Science at University College London (UCL). As a local student, I am excited about the opportunity to study at one of the world's leading universities.\n\nHowever, I do have some questions regarding the application process that I hope you can clarify. Firstly, could you please inform me when I can expect to receive a decision on my fee status? I understand that as an EU citizen, my fee status may be subject to review, and I would like to know approximately how long this process takes.\n\nSecondly, will UCL accept a mix of qualifications in support of my application? As I have completed A-levels, but also possess some equivalent qualifications from another education system (e.g. International Baccalaureate), I am unsure whether these can be combined to meet the programme's entry requirements.\n\nLastly, is it possible for me to apply for more than one undergraduate programme at UCL? I am interested in exploring other fields within the Computer Science department and would like to know if I can submit multiple applications simultaneously.\n\nThank you for your time and assistance with my queries. I look forward to hearing back from you soon.\n\nBest regards,\n\nLewis Smith",
+  "questions": [
+    {
+      "question": "When can I expect to receive a decision on my fee status?",
+      "answer": "UCL aims to provide the outcome of your fee status assessment before you need to make your Firm and Insurance decisions. However, if additional information is required, UCL may email you a Fee Status Questionnaire to complete.",
+      "category": "Fee status"
+    },
+    {
+      "question": "Will you accept a mix of qualifications?",
+      "answer": "While UCL typically prefers applicants to offer qualifications in line with advertised requirements, it may be possible to consider your application with a mix of different qualifications, such as A levels and Cambridge Pre-U or A levels and Advanced Highers.",
+      "category": "Before you apply"
+    },
+    {
+      "question": "Can I apply for more than one undergraduate programme?",
+      "answer": "Yes, you can submit more than one application to UCL, but each programme will take up one of your five UCAS choices. Multiple applications to the same programme or department do not increase your chances of admission. Most programmes at UCL do not accept an additional personal statement.",
+      "category": "Before you apply"
+    }
+  ],
+  "prompt": "\n      Your name is Lewis Smith and you are applying for a undergraduate program in Computer Science at UCL.\n      You are a local student that is interested in the program.\n      \n      Write an email to UCL admissions asking the following questions:\n \n      When can I expect to receive a decision on my fee status? \n Will you accept a mix of qualifications? \n Can I apply for more than one undergraduate programme?\n      \n    "
+}

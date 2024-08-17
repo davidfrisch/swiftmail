@@ -1,1 +1,220 @@
-{"extracted_questions": [{"extract_text": "Application Entry requirements", "question_text": "As an international student, do I need to take a recognized English language proficiency test (e.g., IELTS or TOEFL) prior to applying for the MSc program in Software Engineering? If so, are there any specific scores required?", "category": "Entry requirements", "problem_context": "The student is unsure if they need to take an English language proficiency test and what scores are required."}, {"extract_text": "Student Visa", "question_text": "Can international students like myself work part-time during their studies at UCL? Are there any restrictions or guidelines that I should be aware of regarding employment during my graduate program?", "category": "International students", "problem_context": "The student is unsure if they can work part-time and what restrictions apply."}, {"extract_text": "Application fees", "question_text": "Do I need to pay an application fee for each master's degree program that I apply to, including the MSc in Software Engineering? If so, what is the amount of the application fee and are there any exemptions available?", "category": "Application fees", "problem_context": "The student is unsure if they need to pay an application fee for each master's degree program."}], "answers": [{"question": "As an international student, do I need to take a recognized English language proficiency test (e.g., IELTS or TOEFL) prior to applying for the MSc program in Software Engineering? If so, are there any specific scores required?", "full_question": "As an international student, do I need to take a recognized English language proficiency test (e.g., IELTS or TOEFL) prior to applying for the MSc program in Software Engineering? If so, are there any specific scores required? \n  In your answer put in ** all qualitative information (words, date, numbers, time)", "answer": "**The English language requirements for a programme are stated on the programme\u2019s prospectus page.**\n\nUCL's English language policy details all of the ways in which you can demonstrate your English proficiency.\n\nPlease check the **entry requirements** section of your programme's prospectus page or visit our **English language requirements** webpage for specific information on English language tests and scores required.", "sources": ["https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions"], "total_sim_distance": 0.39253494143486023}, {"question": "Can international students like myself work part-time during their studies at UCL? Are there any restrictions or guidelines that I should be aware of regarding employment during my graduate program?", "full_question": "Can international students like myself work part-time during their studies at UCL? Are there any restrictions or guidelines that I should be aware of regarding employment during my graduate program? \n  In your answer put in ** all qualitative information (words, date, numbers, time)", "answer": "**As an international student at UCL, you are allowed to work part-time.**\n\nPlease visit our **Student Fee Status webpages** for more information on your fee status and the implications of working during your studies.\n\nAdditionally, it is recommended that you check with your academic department or supervisor for any specific guidelines or restrictions related to employment during your graduate program.", "sources": ["https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions"], "total_sim_distance": 0.5035082548856735}, {"question": "Do I need to pay an application fee for each master's degree program that I apply to, including the MSc in Software Engineering? If so, what is the amount of the application fee and are there any exemptions available?", "full_question": "Do I need to pay an application fee for each master's degree program that I apply to, including the MSc in Software Engineering? If so, what is the amount of the application fee and are there any exemptions available? \n  In your answer put in ** all qualitative information (words, date, numbers, time)", "answer": "**You may submit applications for a maximum of two taught graduate programmes for entry to the 2024/25 academic year.**\n\nFor full details on application fees, please visit our **Application fees webpages**.\n\nIn general, a standard application processing fee applies for most graduate taught programmes, with a small number of exceptions.", "sources": ["https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions"], "total_sim_distance": 0.41801171004772186}], "generated_draft_email": "Subject: Re: Application Questions for MSc in Software Engineering at UCL\n\nDear John,\n\nThank you for your interest in our Master's degree program in Software Engineering at University College London (UCL). I'm happy to help clarify some essential details before submitting your application.\n\n**Regarding your first question:** As an international student, you do need to demonstrate English language proficiency. Please check the entry requirements section of your programme's prospectus page or visit our English language requirements webpage for specific information on English language tests and scores required.\n\n**For your second question:** As an international student at UCL, you are allowed to work part-time. You can find more information on your fee status and the implications of working during your studies by visiting our Student Fee Status webpages. Additionally, please check with your academic department or supervisor for any specific guidelines or restrictions related to employment during your graduate program.\n\n**Finally, regarding your third question:** You may submit applications for a maximum of two taught graduate programmes for entry to the 2024/25 academic year. For full details on application fees, please visit our Application fees webpages. In general, a standard application processing fee applies for most graduate taught programmes, with a small number of exceptions.\n\nI hope this helps clarify things for you. If you have any further questions or concerns, please don't hesitate to reach out to me at [your email address] or +[phone number].\n\nBest regards,\nDavid\nProgram Administrator, MSc Software Engineering"}
+{
+  "extracted_questions": [
+    {
+      "extract_text": "As an international student, do I need to take a recognized English language proficiency test (e.g., IELTS or TOEFL) prior to applying for the MSc program in Software Engineering? If so, are there any specific scores required?",
+      "question_text": "Do I need to take a recognized English language proficiency test prior to applying for the MSc program in Software Engineering?",
+      "category": "Entry requirements",
+      "problem_context": "The student is unsure if they need to take an English language proficiency test as an international student and wants to know if there are any specific scores required."
+    },
+    {
+      "extract_text": "Can international students like myself work part-time during their studies at UCL? Are there any restrictions or guidelines that I should be aware of regarding employment during my graduate program?",
+      "question_text": "Can international students work part-time during their studies?",
+      "category": "Student visas",
+      "problem_context": "The student is concerned about their ability to work part-time during their studies as an international student and wants to know if there are any restrictions or guidelines."
+    },
+    {
+      "extract_text": "Do I need to pay an application fee for each master's degree program that I apply to, including the MSc in Software Engineering? If so, what is the amount of the application fee and are there any exemptions available?",
+      "question_text": "Do I need to pay an application fee for each master's degree program I apply to?",
+      "category": "Application fees",
+      "problem_context": "The student wants to know if they need to pay an application fee for each program they apply to and if there are any exemptions available."
+    }
+  ],
+  "answers": [
+    {
+      "question": "Do I need to take a recognized English language proficiency test prior to applying for the MSc program in Software Engineering?",
+      "full_question": "Do I need to take a recognized English language proficiency test prior to applying for the MSc program in Software Engineering?",
+      "answer": "According to UCL's website, you may be required to meet one of UCL's five levels of English language proficiency, or obtain specific scores in a UCL-recognised test. It is recommended that you check the programme's prospectus page for the specific English language requirements.\n\nHowever, it is possible to submit your application without taking the test initially. If you do not provide evidence of English language proficiency with your application, admission will be conditional upon providing such evidence. This condition will be clearly indicated on the offer letter and must be fulfilled before enrolment at UCL.",
+      "sources": [
+        {
+          "id": "cd17cc04-442a-4a95-9dbf-e4d11d2389a7",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nThe English language requirements for a programme are stated on the programme\u2019s prospectus page. You may be required to meet one of UCL\u2019s five levels of English language proficiency, or obtain specific scores in a UCL-recognised test. UCL\u2019s English language policy details all of the ways in which you can meet the minimum English language requirement for your chosen programme of study.\n\nDo I need to take a recognised English test before I apply for my graduate programme?\n\nThe required evidence should, if possible, be included with the complete application. However, you can submit your application before you have taken a test. If either unsatisfactory or no evidence of English language proficiency has been provided with the application, admission will be conditional upon the provision of such evidence. This condition will be clearly indicated on the offer letter and must be fulfilled before enrolment at UCL.\n\nWill I need to attend an interview for my graduate programme?",
+          "_distance": 0.30688267946243286,
+          "score": 0.6931173205375671
+        },
+        {
+          "id": "8c2bb517-34a1-4630-9e04-785b67b622d9",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nWe advise that you contact the academic department before submitting your application to identify a supervisor who will be available to supervise your research.\n\nMy university will only provide my transcript directly to UCL. What should I do?\n\nThe transcript section of the application form is mandatory. If you would like to send your transcript to us securely through your University\u2019s transcript service, please upload a word document to your application confirming that you will submit your application through your University\u2019s transcript service.\n\nOnce you have submitted your application please have your University\u2019s transcript service send your transcript to transcripts.pgadmissions@ucl.ac.uk.\n\nPlease note that this email address can only be used to provide transcripts directly from your University\u2019s transcript service.\n\nEntry requirements\nWhat are the English language requirements for my graduate programme?",
+          "_distance": 0.5546985864639282,
+          "score": 0.4453014135360718
+        },
+        {
+          "id": "d109be50-ecee-429c-9e56-c0dc65e5f891",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nIf Recognition of Prior Learning (RPL) is approved this may impact on how your degree classification for your UCL programme of study is calculated. Credits accrued at UCL and awarded via RPL will be counted as part of the qualification requirements and included in the calculation of the degree classification. However, credit awarded by any institution other than UCL will be counted as part of the qualification requirements but will be excluded from the calculation of the classification. Please see Chapter 1, Section 2.8 of the Academic Manual for further details. Additional information on the degree classification rules for postgraduate taught degrees at UCL can be found in Chapter 4, Section 10.6 of the Academic Manual. If you have any questions regarding the impact RPL will have on the classification of your degree please contact your academic department or the Graduate Admissions team.",
+          "_distance": 0.5689343214035034,
+          "score": 0.4310656785964966
+        },
+        {
+          "id": "e28116b4-9641-4cc6-9fb2-1a880a99c3f2",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nThe degree-level qualification(s) undertaken by the applicant is/are below, or projected to be below, the minimum entry requirement for the programme of study\u00a0\nThe degree-level qualification(s) undertaken by the applicant is/are not in a relevant subject for the programme of study applied for\u00a0\nEntry to the programme of study is very competitive and the number of applications received exceeds the number of places available\u00a0\nThere is insufficient relevant work experience to compensate for not meeting the minimum academic entry requirement\u00a0\nThere is insufficient relevant professional experience (where this is required by the admitting department)\u00a0\nIf you contact the academic department directly,\u202fthey may be able to provide you with further feedback.",
+          "_distance": 0.589765727519989,
+          "score": 0.410234272480011
+        }
+      ],
+      "unique_sources": [
+        "https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions"
+      ]
+    },
+    {
+      "question": "Can international students work part-time during their studies?",
+      "full_question": "Can international students work part-time during their studies?",
+      "answer": "Unfortunately, I couldn't find a specific answer to this question in the provided contexts. However, I can suggest that you check the UCL's student visa webpages or contact them directly for information on working part-time as an international student.",
+      "sources": [
+        {
+          "id": "dee5f0b7-4404-4da8-9f35-378e24d6ec5b",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nIf you would like to apply for a different programme, you will need to submit a new application for the programme you wish to be considered for. Please be aware that you may submit applications for a maximum of two graduate programmes for entry to the 2024/25\u00a0academic year.\n\nHow do I change my mode of attendance?\n\nIf you have submitted your application and received an email inviting you to your applicant portal you will need to\u00a0contact us. Please ensure that you are only requesting to change to a mode of attendance which is available. You can check this by visiting the prospectus page of your chosen programme of study. \u00a0\n\nImportant: If you are intending to study at UCL on a Student Visa you will only be permitted to study on a full-time basis.\n\nI\u2019m a research student, how do I change the start date I have applied to?",
+          "_distance": 0.6673498153686523,
+          "score": 0.33265018463134766
+        },
+        {
+          "id": "b4cee38e-9a99-4376-a8a9-559bcaf15aa3",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nIf you are UK national, Republic of Ireland national, a citizen of a Crown Dependency or have Pre-settled or Settled status you will not require a visa to study at UCL. \u00a0\n\nMost other students will usually require a student visa to study at UCL if they are coming to study in the UK for more than 6 months. However, a number of different UK visas will still allow you to study in the UK so please visit our\u00a0student visa webpages\u00a0to check which visa you will need.\u00a0\n\nMy programme is less than 6 months in duration. What visa will I need?\n\nThe standard visitor visa can be used for those coming to the UK for short periods of study (up to 6 months). Details of how to apply for a standard visitor visa can be found on our\u00a0visas and immigration webpages.\u00a0\n\nHow do I apply for a student visa?\n\nYou can only apply for a student visa once you hold an unconditional offer. For more information about applying for a student visa please visit our Offer Holder FAQs.\n\nGraduate Admissions",
+          "_distance": 0.6748027801513672,
+          "score": 0.3251972198486328
+        },
+        {
+          "id": "c3161dec-128b-4aec-b381-2d2895bb07c0",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nDo I need to pay a tuition fee deposit?\n\nIt will be stated in your offer letter if your programme requires you to pay a tuition fee deposit to secure your place. You do not need to pay a tuition fee deposit unless you have received an offer of admission. More information about paying your tuition fee deposit can be found on the\u00a0Offer Holder FAQs.\n\nAs a graduate student, will I be eligible for Home or International tuition fees?\n\nUCL will only make an assessment of your fee status at the point of offer. However, we provide details of how UCL assesses your fee status on our\u00a0Student Fee Status webpages. You can also obtain independent guidance from the UK Council for International Student Affairs (UKCISA).\u00a0\n\nHow do I appeal my fee status?\n\nFor information about appealing your fee status please go to the\u00a0Offer Holder FAQs.\u00a0\n\nStudent visas\nDo I require a visa to study at UCL?",
+          "_distance": 0.690211296081543,
+          "score": 0.30978870391845703
+        }
+      ],
+      "unique_sources": [
+        "https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions"
+      ]
+    },
+    {
+      "question": "Do I need to pay an application fee for each master's degree program I apply to?",
+      "full_question": "Do I need to pay an application fee for each master's degree program I apply to?",
+      "answer": "According to the provided contexts, yes, you do need to pay an application processing fee for most graduate taught programmes at UCL. However, there may be some exceptions. For full details on Application fees, please read more about it.",
+      "sources": [
+        {
+          "id": "62d3a0bb-295d-46f4-a31d-d66e569f2b6c",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nRecognition of Prior Learning (RPL) will reduce the number of credits you are studying at UCL and therefore this may impact on your mode of attendance, liability for tuition fees, eligibility for forms of student finance and the final degree classification you are able to achieve. Please be aware that if your request for recognition for prior learning is approved you will not be eligible for the Postgraduate Student Loan.\n\nBefore making an application for RPL you should contact our Fees or Funding teams or your student loan provider to confirm what impact gaining accreditation for prior learning could have on your tuition fees, mode of attendance and student loan eligibility.\n\nApplication fees\nDo I need to pay an application fee?\n\nA standard application processing fee applies for most graduate taught programmes, with a small number of exceptions.\n\nFor full details, read more about Application fees.\n\nDo I have to pay an application fee for each application I make?",
+          "_distance": 0.4430292248725891,
+          "score": 0.5569707751274109
+        },
+        {
+          "id": "1c467319-b884-4a53-8a70-04872bbd39be",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nOnce you have completed payment, an application fee receipt will be available in your Portico account once you return to it from Flywire.\n\nI have submitted my application but did not pay the application fee, how can I pay it?\n\nIf your programme requires an\u00a0application fee then your application cannot be considered until the payment is made successfully. When you submitted your application, you should have been directed to the payment page. If you closed the browser before making a payment, or the payment was not successful,\u00a0you should receive an email from us within 24 hours of submitting your application which will contain a link to pay.\n\nCan I apply for a (graduate) application fee waiver?",
+          "_distance": 0.45682066679000854,
+          "score": 0.5431793332099915
+        },
+        {
+          "id": "21ea7b64-0922-4e16-a9d8-9adcc5805349",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nSkip to main content\nSearch\n\nMenu\n\n Home\nFrequently Asked Questions\n\nBelow are the most frequently asked questions for applicants applying to graduate taught and research programmes at UCL (excluding PGCE programmes).\n\nApplications\nHow many graduate programmes can I apply for?\n\nYou may submit applications for a maximum of two\u00a0taught graduate programmes for entry to the 2024/25\u00a0academic year. The applications must be for different programmes. Please note that if an application fee is charged, it will be charged per application.\n\nSpecific advice about applying to some departments is outlined below:",
+          "_distance": 0.49323350191116333,
+          "score": 0.5067664980888367
+        },
+        {
+          "id": "8fefafa2-462d-4b95-8652-1818432dfb20",
+          "url": "file://www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "title": "www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html",
+          "docAuthor": "no author found",
+          "description": "No description found.",
+          "docSource": "URL link uploaded by the user.",
+          "chunkSource": "link://https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+          "published": "8/6/2024, 3:34:52 PM",
+          "wordCount": 3929,
+          "token_count_estimate": 4952,
+          "text": "<document_metadata>\nsourceDocument: www_ucl.ac.uk-prospective-studentsgraduatefrequently-asked-questions.html\npublished: 8/6/2024, 3:34:52 PM\n</document_metadata>\n\nUCL acknowledges that prospective students living in conflict zones, or affected by displacement, may face considerable difficulties in paying the application fee. UCL is firmly committed to making the application process accessible to individuals disadvantaged by such circumstances and would be pleased to consider written requests for suspension of the application fee.\n\nShould you wish to make such a request, please\u00a0contact Graduate Admissions.\n\nPlease do not change the subject from Application Fee Waiver Request.\u00a0\n\nCan I have my application fee refunded if I no longer wish to be considered or am unsuccessful?\n\nApplication fees are non-refundable.\u00a0\n\nReferences\nAm I required to provide references with my application?\n\nMost programmes require you to provide the details of referees who can be contacted to provide references. The section \u201cApplication and next steps\u201d of your programme\u2019s prospectus page will confirm how many references are required.",
+          "_distance": 0.5215239524841309,
+          "score": 0.47847604751586914
+        }
+      ],
+      "unique_sources": [
+        "https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions"
+      ]
+    }
+  ],
+  "generated_draft_email": "Subject: Re: Application Questions for MSc in Software Engineering at UCL\n\nDear John,\n\nThank you for your email and for considering the MSc in Software Engineering at University College London (UCL). I'm happy to help clarify some essential details before submitting your application.\n\nRegarding your questions:\n\n1. English Language Proficiency Test:\nAccording to UCL's website, you may be required to meet one of UCL's five levels of English language proficiency, or obtain specific scores in a UCL-recognised test (such as IELTS or TOEFL). It is recommended that you check the programme's prospectus page for the specific English language requirements. If you do not provide evidence of English language proficiency with your application, admission will be conditional upon providing such evidence. This condition will be clearly indicated on the offer letter and must be fulfilled before enrolment at UCL.\n\n2. Part-time Work:\nRegarding part-time work during studies, I couldn't find a specific answer in our contexts. However, I suggest checking UCL's student visa webpages or contacting them directly for information on working part-time as an international student. They will be able to provide you with the most up-to-date and accurate information.\n\n3. Application Fee:\nAccording to our guidelines, yes, you do need to pay an application processing fee for most graduate taught programmes at UCL. However, there may be some exceptions. For full details on Application fees, please refer to our website or contact us directly.\n\nPlease feel free to reach out if you have any further questions or concerns. I'm more than happy to assist you in the application process.\n\nBest regards,\n\nDavid\nProgram Administrator for MSc Software Engineering at UCL"
+}

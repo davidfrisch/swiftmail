@@ -147,3 +147,97 @@ ucl_questions = [
   }
 ]
 
+
+
+ucl_questions_undergrad = [
+  {
+    "question": "Does UCL accept Extra or Late applications?",
+    "answer": "Typically, UCL only has a small number of programmes open to Late or Extra applications. These are clearly indicated on the UCAS website. If UCAS shows the message 'This course is not accepting applications at this time. Please contact the provider to find out more.', UCL will not consider any late or extra applications for that programme. UCL encourages early applications, ideally by the UCAS Equal Consideration Deadline of 31 January 2024. Where late applications are considered, this will be shown on the UCAS website.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "Does UCL offer integrated foundation courses (Year 0 entry)?",
+    "answer": "UCL offers a small number of integrated Engineering Foundation programmes, aimed at UK state school students who aspire to become engineers but do not meet the standard entry requirements for UCL's undergraduate engineering degrees. The programme content is the same for all specialisms, so multiple applications are not advised. The UCL Centre for Language and International Education also offers an Undergraduate Preparatory Certificate (International Foundation) for international students.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "I am currently studying at another university but want to transfer to UCL. How do I apply?",
+    "answer": "UCL considers transfers into the second year of an undergraduate programme for a limited number of programmes. Entry into year 3 is not considered. Applications should be made via UCAS by the UCAS equal consideration deadline and include a reference from your current institution. Applicants must meet UCL's first-year entrance requirements as detailed in the prospectus.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "Can I apply for more than one undergraduate programme?",
+    "answer": "Yes, you can submit more than one application to UCL, but each programme will take up one of your five UCAS choices. Multiple applications to the same programme or department do not increase your chances of admission. Most programmes at UCL do not accept an additional personal statement.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "I am currently completing a Foundation programme. Can I apply to UCL?",
+    "answer": "UCL considers a small number of Foundation programmes. It is recommended to contact UCL directly for guidance before applying. Particular attention should be paid to subject-specific requirements for your programmes of choice.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "I am studying more than 3 A levels, how will you view my application?",
+    "answer": "UCL will consider your 3 highest grades, including any required or preferred subjects. If you are studying more than three A levels, your offer may be based on the three most relevant subjects for your programme.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "Will you accept a mix of qualifications?",
+    "answer": "While UCL typically prefers applicants to offer qualifications in line with advertised requirements, it may be possible to consider your application with a mix of different qualifications, such as A levels and Cambridge Pre-U or A levels and Advanced Highers.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "Do you consider applications from mature students?",
+    "answer": "Yes, UCL welcomes applications from mature students. If you are a mature student and have questions about your eligibility, you are encouraged to read the guidance for mature students before applying.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "Does UCL make contextual offers?",
+    "answer": "Access UCL is UCL's contextual offer scheme for students from underrepresented groups. Eligible students who receive an offer will receive one lower than the standard UCL requirements for the programme. Eligibility criteria can be found on the Access UCL scheme webpage.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "I am resitting my examinations, can I still apply for an undergraduate programme?",
+    "answer": "Resits are generally considered for most UCL programmes. Any programmes that do not consider resits will outline this on their department webpages. Multiple resit attempts may put you at a disadvantage due to the competitive nature of admissions.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "My grades don't meet the requirements, but they are equivalent. Would you consider me?",
+    "answer": "UCL typically requires applicants to meet the full requirements. Acceptance of equivalent grades depends on the competition for places. For example, if a programme requires AAA at A-Level, UCL may not accept A*AB. Applicants are recommended to apply to programmes where they meet the requirements.",
+    "category": "Before you apply"
+  },
+  {
+    "question": "Do I need to send any additional documents or information in support of my application?",
+    "answer": "UCL will request any missing information required to support an application. Do not send information that has not been requested. If additional documents are needed, UCL will contact you by email and ask you to upload them securely to Portico.",
+    "category": "After you have applied"
+  },
+  {
+    "question": "Can I make changes to the qualifications on my UCAS application after submission?",
+    "answer": "UCL may not accept qualifications added to your UCAS application form after submission, and they may not be accepted for meeting offer conditions. Qualifications data submitted via UCAS must reflect your full academic history and the qualifications you are currently taking.",
+    "category": "After you have applied"
+  },
+  {
+    "question": "I've been told my application is in a gathered field, what does this mean?",
+    "answer": "A 'gathered field' approach allows UCL to assess all applications in the same fair and consistent manner, whether they are received in October or January. This means UCL will wait until they have enough comparable applications to make a final decision.",
+    "category": "After you have applied"
+  },
+  {
+    "question": "When will I receive a decision on my application?",
+    "answer": "UCL aims to make decisions by the end of April but is working hard to send decisions sooner. Processing may take time due to the high number of well-qualified applicants. UCL will communicate their decision as soon as possible.",
+    "category": "After you have applied"
+  },
+  {
+    "question": "What will my fee status be?",
+    "answer": "UCL determines fee status in line with regulations published by the UK government. Further information is provided by the UK Council for International Student Affairs (UKCISA). UCL cannot comment on your fee status until they have received and assessed your application.",
+    "category": "Fee status"
+  },
+  {
+    "question": "When can I expect to receive a decision on my fee status?",
+    "answer": "UCL aims to provide the outcome of your fee status assessment before you need to make your Firm and Insurance decisions. However, if additional information is required, UCL may email you a Fee Status Questionnaire to complete.",
+    "category": "Fee status"
+  },
+  {
+    "question": "Does UCL offer scholarships?",
+    "answer": "UCL offers a range of scholarships and funding opportunities. You can use the UCL scholarships finder to search for awards that you might be eligible for.",
+    "category": "Fee status"
+  }
+]

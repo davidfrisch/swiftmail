@@ -33,7 +33,6 @@ for email in answer_questions_data["results"]:
         answer_id += 1
         
         extracted_questions.append(schemas.ExtractResult(
-          category=data["category"],
           question_text=question,
           id=question_id,
           extract_text=question,

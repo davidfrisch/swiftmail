@@ -24,10 +24,10 @@ def run_benchmark(generater: Generater, data: dict):
     for question in questions:
         start_time = time()
         question_text = question['question']
+        problem_context = question['problem_context']
         gold_answer = get_gold_answer(question_text)
-        category = question['category']
-        # TODO do not pass empty string for problem context
-        answer, sources, total_sim_distance = generater.answer_question("", question_text, "", category)
+
+        answer, sources, total_sim_distance = generater.answer_question(problem_context, question_text, "")
         try: 
             answer = answer.split("?\n")[1].strip()
         except:
@@ -35,7 +35,6 @@ def run_benchmark(generater: Generater, data: dict):
         result = {
             "question": question_text,
             "gold_answer": gold_answer,
-            "category": category,
             "generated_answer": answer,
             "sources": sources,
             "total_sim_distance": total_sim_distance,

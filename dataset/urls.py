@@ -2,6 +2,7 @@
 
 UCL_URLS = [
 "https://www.ucl.ac.uk/prospective-students/graduate/frequently-asked-questions",
+"https://www.ucl.ac.uk/prospective-students/undergraduate/frequently-asked-questions",
 "https://www.ucl.ac.uk/students/fees/pay-your-fees/how-to-pay",
 "https://www.ucl.ac.uk/students/fees-and-funding/pay-your-fees/fee-schedules/2024-2025/postgraduate-taught-fees-2024-2025",
 "https://www.ucl.ac.uk/students/fees-and-funding/pay-your-fees/fee-schedules/student-fee-status",
