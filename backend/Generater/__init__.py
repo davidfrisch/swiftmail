@@ -201,6 +201,7 @@ class Generater:
         Here are the questions that the student asked with the answers:
         {''.join(questions_answers)}
         
+        ---
         Reply to the student's email with the answers to their questions.
         
         {("Additional information:"+ additional_context) if additional_context else ""}
@@ -210,7 +211,28 @@ class Generater:
         self.generated_draft_email = generated_email
         
         return generated_email
+    
+    
+    def regenerate_response_email(self,  original_draft, corrections):
+        prompt = f"""
+        {original_draft}
         
+        ---
+        
+        Apply the following corrections:
+        {corrections}
+        
+        """
+
+        print(prompt)
+        generated_email = self.olllama_client.predict(prompt)
+        
+        is_column_on_first_line = generated_email.split("\n")[0].strip().find(":")
+        if is_column_on_first_line != -1:
+            generated_email = "\n".join(generated_email.split("\n")[1:])
+            
+        self.generated_draft_email = generated_email.strip()
+        return generated_email.strip()
       
     def response_to_markdown(self, output_path):
       response_email = self.generated_draft_email

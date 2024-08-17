@@ -22,7 +22,7 @@ def extract_questions_from_email(db: Session, generater: Generater, email: schem
             email_id=email.id,
             job_id=job.id,
             problem_context=question['problem_context'],
-            question_text=question['question_text'],
+            question_text=question['extract_text'],
             extracted_at=datetime.now(),
             is_answered=False
         )
@@ -88,12 +88,9 @@ def generate_draft_email(db: Session, generater: Generater, email: schemas.Email
     return draft_response
     
 
-def update_draft_email(db: Session, generater: Generater, draft: schemas.DraftResult, feedback: endpoints_models.Feedback):
-    email = crud.get_email(db, draft.email_id)
-    questions = crud.get_extract_results_by_job_id(db, draft.job_id)
-    answers = crud.get_answer_results_by_job_id(db, draft.job_id)
-    
-    draft_response = generater.generate_response_email(email, questions, answers, feedback.feedback) 
+def retry_draft_email(db: Session, generater: Generater, draft: schemas.DraftResult, feedback: endpoints_models.Feedback):
+    original_draft = draft.draft_body
+    draft_response = generater.regenerate_response_email(original_draft, feedback.feedback) 
     draft.draft_body = draft_response
     new_draft = crud.update_draft_result(db, draft)
     
@@ -137,6 +134,10 @@ def start_job_generater(ollama_client, anyllm_client, enquiry_id, job_id, thread
     
     except Exception as e:
         logger.error("An error occurred: %s", e, exc_info=True)
+        with get_db_session() as db:
+            job = crud.get_job(db, job_id)
+            crud.update_job_status(db, job, JobStatus.FAILED)
+            logger.info("Job status updated to FAILED")
         
     
     

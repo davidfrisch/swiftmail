@@ -137,8 +137,18 @@ export default function ResultsPage({ jobId }) {
       }));
       const feedback = isRefreshFeedback ? "" : draftFeedback;
       setHasRefreshedQuestions(false);
-      await api.drafts.updateDrafts(jobId, feedback);
       message.success("Feedback submitted successfully!");
+      const newDraftBody = await api.drafts.updateDrafts(jobId, feedback);
+      console.log(newDraftBody);
+      setResults((prev) => ({
+        ...prev,
+        draft_result: {
+          ...prev.draft_result,
+          body: newDraftBody,
+        },
+      }));
+      message.success("Draft updated successfully!");
+      setDraftFeedback("");
     } catch (err) {
       message.error("Failed to submit feedback. Please try again.");
     } finally {
@@ -248,7 +258,7 @@ export default function ResultsPage({ jobId }) {
         </div>
       </div>
 
-      <div
+      {/* <div
         style={{
           background: colorBgContainer,
           minHeight: 280,
@@ -435,7 +445,7 @@ export default function ResultsPage({ jobId }) {
             )}
           </>
         )}
-      </div>
+      </div> */}
 
       {results?.draft_result && (
         <div
@@ -507,7 +517,7 @@ export default function ResultsPage({ jobId }) {
                   fontSize: "25px",
                 }}
               >
-                {(questionLoading?.draft || !hasRefreshedQuestions) && (
+                {!questionLoading?.draft && (
                   <Tooltip title="Edit draft">
                     <Button
                       icon={<EditOutlined />}

@@ -14,7 +14,7 @@ query_params = {
     "newer_than": (1, "year"),
 }
 
-llm = OllamaAI('http://localhost:11434', 'gemma:2b')
+llm = OllamaAI('http://localhost:11434', 'llama3.1:latest')
 messages = gmail.get_unread_inbox()
 print(f"Found {len(messages)} unread messages")
 start_time = time.time()
@@ -31,7 +31,7 @@ for message in messages:
       {message.plain[:500] if message.plain else ""}
       
       ---
-      expected output is a JSON object with the following structure:
+      output is a JSON object with the following structure:
       {{
         "is_university_enquiry": boolean,
       }}

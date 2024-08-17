@@ -19,6 +19,11 @@ const jobs = {
   createJob: async (emailId) => {
     const response = await api.post('jobs', { email_id: emailId });
     return response.data;
+  },
+
+  retryJob: async (emailId) => {
+    const response = await api.post('jobs/retry', { email_id: emailId });
+    return response.data;
   }
 }
 
@@ -34,6 +39,14 @@ const enquiries = {
 
   getNewEnquiries: async () => {
     const response = await api.get('enquiries/refresh');
+
+    if (!response.data?.mails) {
+      throw new Error('Failed to fetch new mails');
+    }
+
+    if (response.data.mails.length === 0) {
+      return [];
+    }
     return response.data.mails;
   },
 
@@ -84,9 +97,9 @@ const answers = {
 }
 
 const drafts = {
-  updateDrafts: async (draftId, feedback) => {
-    const response = await api.post(`drafts/${draftId}`, { feedback });
-    return response.data;
+  updateDrafts: async (jobId, feedback) => {
+    const response = await api.post(`drafts/retry`, { job_id: jobId, feedback });
+    return response.data.draft.draft_body;
   }
 }
 

@@ -17,6 +17,7 @@ export default function MailsPage({ handleView }) {
       message.success("Fetched new mails successfully");
     } catch (error) {
       console.error("Failed to fetch mails:", error);
+      message.error("Failed to fetch new mails");
     } finally {
       setFetchingNewMails(false);
     }
@@ -70,6 +71,55 @@ export default function MailsPage({ handleView }) {
     }
   };
 
+  const handleRetryGenerate = async (email) => {
+    try {
+      setGeneratingJob(email.id);
+      await api.jobs.retryJob(email.id);
+      message.success(`Retrying generation for email with ID: ${email.id}`);
+      fetchMails();
+    } catch (error) {
+      console.error("Failed to retry generating job:", error);
+      message.error("Failed to retry generating job");
+    } finally {
+      setGeneratingJob(null);
+    }
+  }
+
+  const renderActions = (mail) => {
+    switch (mail?.job?.status) {
+      case "COMPLETED":
+        return (
+          <Button
+            type="link"
+            onClick={() => handleView(mail)}
+            style={{ marginRight: 8 }}
+          >
+            View
+          </Button>
+        );
+      case "FAILED":
+        return (
+          <Button
+            type="link"
+            onClick={() => handleRetryGenerate(mail)}
+            style={{ marginRight: 8 }}
+          >
+            Retry
+          </Button>
+        );
+      default:
+        return (
+          <Button
+            disabled
+            type="link"
+            style={{ marginRight: 8 }}
+          >
+            Generating
+          </Button>
+        );
+    }
+  };
+
   const columns = [
     {
       title: "Is Completed",
@@ -102,14 +152,9 @@ export default function MailsPage({ handleView }) {
         <span>
           <div>
             {mail?.job ? (
-              <Button
-                type="link"
-                onClick={() => handleView(mail)}
-                disabled={mail?.job?.status !== "COMPLETED"}
-                style={{ marginRight: 8 }}
-              >
-                View
-              </Button>
+              <div>
+                {renderActions(mail)}
+              </div>
             ) : (
               <Button
                 type="link"

@@ -3,9 +3,11 @@ from typing import List
 
 class Feedback(BaseModel):
     feedback: str
+    job_id: int = None
     
 class NewJob(BaseModel):
     email_id: int
+    force: bool = False
 
 class FinalDraft(BaseModel):
     job_id: int

@@ -10,7 +10,7 @@ from .Reviewer import Reviewer
 from .LLM.OllamaLLM import OllamaAI
 from .LLM.AnythingLLM_client import AnythingLLMClient
 from datetime import datetime
-from .jobs import start_job_generater, update_answer, update_draft_email
+from .jobs import start_job_generater, update_answer, retry_draft_email
 from .endpoints_models import Feedback, NewJob, FinalDraft
 from multiprocessing import Process
 import os, signal
@@ -213,17 +213,27 @@ async def retry_answer(answer_id: int, feedback: Feedback, db: Session = Depends
 
  
    
-@app.post("/drafts/{draft_id}")
-async def retry_draft(draft_id: int, feedback: Feedback, db: Session = Depends(get_db)):
-    if not draft_id:
-        raise HTTPException(status_code=400, detail="Draft ID is required")
+@app.post("/drafts/retry")
+async def retry_draft(feedback: Feedback, db: Session = Depends(get_db)):
+    job_id = feedback.job_id
+    if not job_id:
+        raise HTTPException(status_code=400, detail="Job ID is required")
       
-    draft = crud.get_draft_result(db, draft_id)
+    job = crud.get_job(db, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+      
+    drafts = crud.get_draft_results_by_job_id(db, job_id)
+    if not drafts:
+        raise HTTPException(status_code=404, detail="Draft not found")
+    
+    draft = drafts[0]
     if not draft:
         raise HTTPException(status_code=404, detail="Draft not found")
     
     generator = Generater(ollama_client, anyllm_client)
-    new_draft = update_draft_email(db, generator, draft, feedback) 
+    new_draft = retry_draft_email(db, generator, draft, feedback) 
+    
   
     return {"message": "Draft updated successfully", "draft": new_draft} 
   
@@ -308,7 +318,7 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
         extract_result = next((extract_result for extract_result in extract_results if extract_result.id == answer.extract_result_id), None)
         answers_questions.append({
             "question": extract_result.question_text,
-            "extract": extract_result.extract_text,
+            "extract": extract_result.question_text,
             "problem_context": extract_result.problem_context,
             "answer": answer.answer_text,
             "question_id": extract_result.id,
@@ -362,6 +372,40 @@ async def cancel_job(job_id: int, db: Session = Depends(get_db)):
     crud.update_job(db, job)
     
     return {"message": "Job cancelled successfully", "job": job_id}
+
+
+@app.post("/jobs/retry")
+async def retry_job(body: NewJob, db: Session = Depends(get_db)):
+    email_id = body.email_id
+    email = crud.get_email(db, email_id)
+    if not email:
+        raise HTTPException(status_code=404, detail="Email not found")
+    
+    old_jobs = crud.get_jobs_by_email_id(db, email_id)
+    if old_jobs:
+        for job in old_jobs:
+            if job.status != models.JobStatus.COMPLETED and job.status != models.JobStatus.FAILED:
+                print(f"Job already in progress: {job}")
+                return {"message": "Job already in progress", "job": job}
+
+            if job.status == models.JobStatus.COMPLETED and not body.force:
+                return {"message": "Job already completed", "job": job}
+              
+            if job.status == models.JobStatus.FAILED:
+                job.status = models.JobStatus.PENDING
+                crud.update_job(db, job)
+                workspace_slug = anyllm_client.get_workspace_slug("General")
+                new_thread = anyllm_client.new_thread(workspace_slug, "email-"+str(email.id))
+                process = Process(target=start_job_generater, args=(ollama_client, anyllm_client, email_id, job.id, new_thread['slug']))
+                process.start()
+                job.process_id = process.pid
+                job.slug_workspace = workspace_slug
+                job.slug_thread = new_thread['slug']
+
+                crud.update_job(db, job)
+                return {"message": "Job restarted successfully", "job": job}
+              
+    raise HTTPException(status_code=404, detail="Job not found")
 
 
 # Reviewer
