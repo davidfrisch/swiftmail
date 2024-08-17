@@ -16,7 +16,8 @@ class Reviewer():
             
     def evaluate(self, questions: List[schemas.ExtractResult], answers: List[schemas.AnswerResult], draft_email: str):
         answers_scores = self.evaluate_answers(questions, answers)
-        draft_score = self.evaluate_draft_email(draft_email, answers)
+        sources = [source for answer in answers for source in answer.sources]
+        draft_score = self.evaluate_draft_email(draft_email, sources)
         
         return { 'answers_score': answers_scores, 'draft_email_score': draft_score }
     
@@ -50,9 +51,9 @@ class Reviewer():
         return scores
           
           
-    def evaluate_draft_email(self, response_email, answers: List[schemas.AnswerResult]):
+    def evaluate_draft_email(self, response_email, sources):
         all_sources = []
-        for source in answers:
+        for source in sources:
             if source.sources and isinstance(source.sources, str):
                 all_sources = json.loads(source.sources)
             elif source.sources:
@@ -81,7 +82,7 @@ class Reviewer():
                     
                     ---
                     format has to be in json format:
-                    {{ "useful": int, "tone": int, "format": int }}
+                    {{ "useful": int }}
                 """
                 result = self.model.predict(prompt, format="json")
                 res = json.loads(result)
@@ -91,12 +92,12 @@ class Reviewer():
                 counter += 1
                 continue
     
-    def linkert_eval(self, prompt:str):
+    def linkert_eval(self, base_prompt:str):
         counter = 0
         while counter < 3:
             try:
-                prompt ="""
-                    {prompt}
+                prompt =f"""
+                    {base_prompt}
                     
                     Provide in json format with a key of 'score' and a value of 0 to 5, where 
                     1 means the answer cannot be answered,
@@ -116,13 +117,13 @@ class Reviewer():
                 counter += 1
                 continue
       
-    def hallucination_eval(self, prompt:str, sources):
+    def hallucination_eval(self, base_prompt:str, sources):
         retrieve_text = [source["text"].split("</document_metadata>\n\n")[1] for source in sources]
         retrieve_text = "\n".join(retrieve_text)
         retrieve_text = retrieve_text.replace("\xa0", "\n")
        
-        total_prompt = f"""
-          {prompt}
+        prompt = f"""
+          {base_prompt}
           Is the above answer only based on the context?
 
           -Beginning of the context--
@@ -133,10 +134,10 @@ class Reviewer():
           where 0 means the answer is based on the context and 
           1 means the answer is not based on the context.
       
-          schema: 
+          the format has to be in json format:
           {{ "hallucination": int }}
         """
         
-        result = self.model.predict(total_prompt, format="json")
+        result = self.model.predict(prompt, format="json")
         res = json.loads(result)['hallucination']
         return int(res)

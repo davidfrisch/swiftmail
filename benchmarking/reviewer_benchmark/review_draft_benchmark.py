@@ -10,14 +10,13 @@ from datetime import datetime
 from database import schemas
 
 # Load the questions
-answer_questions_path = "/Users/david/development/ucl/res_project/swiftmail/benchmarking/answer_questions/results/benchmar_results_responses_2.json"
-draft_generated_path = "../draft_emails/results/benchmark_0808.json"
+#draft_generated_path = "../draft_emails/results/benchmark_0808.json"
+draft_generated_path = "../one_vs_multi_shots/results"
 
-with open(answer_questions_path, 'r') as f:
-    answer_questions_data = json.load(f)
     
 with open(draft_generated_path, 'r') as f:
     draft_generated_data = json.load(f)
+
 
 generated_answers: schemas.AnswerResult = []
 generated_draft = []
