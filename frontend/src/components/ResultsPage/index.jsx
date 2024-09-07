@@ -534,7 +534,7 @@ export default function ResultsPage({ jobId }) {
               disabled={questionLoading?.draft}
               rows={4}
               className="draft-feedback"
-              placeholder="Provide feedback on the draft here..."
+              placeholder="Tell Swiftmail what to change in the draft..."
               value={draftFeedback}
               onChange={(e) => setDraftFeedback(e.target.value)}
             />

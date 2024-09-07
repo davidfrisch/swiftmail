@@ -241,3 +241,12 @@ ucl_questions_undergrad = [
     "category": "Fee status"
   }
 ]
+
+
+categories = [ cat['category'] for cat in ucl_questions ]
+categories = list(set(categories))
+categories_2 = [ cat['category'] for cat in ucl_questions_undergrad ]
+categories_2 = list(set(categories_2))
+
+categories = list(set(categories + categories_2))
+print(len(categories))

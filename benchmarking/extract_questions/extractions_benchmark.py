@@ -28,13 +28,13 @@ def main():
     generater = Generater(ollama_client=llm)
     path_folder = '../../dataset'
     benchmark_results = {"results": {}}
-    benchmark_file_path = './results/benchmark_results.json'
+    benchmark_file_path = './results/benchmark_results_undergrad.json'
     os.makedirs(os.path.dirname(benchmark_file_path.replace('benchmark_results.json', '')), exist_ok=True)
     start_time = time()
     
     for filename in os.listdir(path_folder):
         filename_path = os.path.join(path_folder, filename)
-        if filename_path.endswith('.json') and "fake" in filename:
+        if filename_path.endswith('.json') and "fake" and "undergrad" in filename:
             print(f"Running benchmark for {filename}")
             with open(filename_path, 'r') as f:
                 data = json.load(f)

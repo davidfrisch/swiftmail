@@ -1,0 +1,138 @@
+[
+  {
+    "question": "What are the English language requirements for my graduate programme?",
+    "bleu": 76.81970169212396
+  },
+  {
+    "question": "If my request to gain accreditation for prior learning is approved, what impact will this have on my studies at UCL?",
+    "bleu": 0.0024844879142946414
+  },
+  {
+    "question": "My programme requires a portfolio, how do I submit it?",
+    "bleu": 0.6497564506467233
+  },
+  {
+    "question": "Why is my application fee payment not going through?",
+    "bleu": 0.4617174258662276
+  },
+  {
+    "question": "Do I need to take a recognised English test before I apply for my graduate programme?",
+    "bleu": 2.4162661479316525
+  },
+  {
+    "question": "Will I need to attend an interview for my graduate programme?",
+    "bleu": 0.35903032628025283
+  },
+  {
+    "question": "I need a Student visa, when should I apply?",
+    "bleu": 4.725198046764961
+  },
+  {
+    "question": "When can I request a CAS?",
+    "bleu": 0.45992580962155544
+  },
+  {
+    "question": "If I have received an offer, can I request to defer it to the next academic year?",
+    "bleu": 0.3364663647018656
+  },
+  {
+    "question": "I am an international student, can I work during my studies?",
+    "bleu": 2.975943299840436
+  },
+  {
+    "question": "I'm an international student and have received a conditional offer, should I provide a financial guarantee with my application?",
+    "bleu": 0.28470670133532283
+  },
+  {
+    "question": "When will I receive a decision on my application?",
+    "bleu": 6.5184659265952085
+  },
+  {
+    "question": "What should I do if I have not yet accepted my offer?",
+    "bleu": 0.02494369654613873
+  },
+  {
+    "question": "Do I need to take a recognised English test before I apply for my graduate programme?",
+    "bleu": 2.4162661479316525
+  },
+  {
+    "question": "What happens if my visa is delayed?",
+    "bleu": 0.44336171055508855
+  },
+  {
+    "question": "I'm an international student and have received a conditional offer, should I provide a financial guarantee with my application?",
+    "bleu": 0.2732052239623287
+  },
+  {
+    "question": "What happens if my visa is delayed?",
+    "bleu": 0.44336171055508855
+  },
+  {
+    "question": "When should I apply?",
+    "bleu": 38.17600676133757
+  },
+  {
+    "question": "Do I need to pay an application fee?",
+    "bleu": 1.0677593676487713
+  },
+  {
+    "question": "What should I do if I have accepted my offer but can no longer attend?",
+    "bleu": 0.7355452329627983
+  },
+  {
+    "question": "My application has been unsuccessful, can I appeal?",
+    "bleu": 1.0362677433002339
+  },
+  {
+    "question": "I am an international student, can I work during my studies?",
+    "bleu": 0.01853510613304127
+  },
+  {
+    "question": "My application has been unsuccessful, can I appeal?",
+    "bleu": 1.0362677433002339
+  },
+  {
+    "question": "When can I request a CAS?",
+    "bleu": 0.2580793088161416
+  },
+  {
+    "question": "If I have received an offer, can I request to defer it to the next academic year?",
+    "bleu": 0.02039918948635326
+  },
+  {
+    "question": "How many graduate programmes can I apply for?",
+    "bleu": 7.355248120503747
+  },
+  {
+    "question": "I want to gain accreditation for prior learning, can I do this?",
+    "bleu": 0.4515220461782653
+  },
+  {
+    "question": "What should I do if I have accepted my offer but can no longer attend?",
+    "bleu": 0.9843183261140945
+  },
+  {
+    "question": "Do I need to take a recognised English test before I apply for my graduate programme?",
+    "bleu": 2.0301537435492047
+  },
+  {
+    "question": "I am an international student, can I work during my studies?",
+    "bleu": 0.7874910757718484
+  },
+  {
+    "question": "Do I have to pay an application fee for each application I make?",
+    "bleu": 71.40573910176909
+  },
+  {
+    "question": "My university will only provide my transcript directly to UCL. What should I do?",
+    "bleu": 0.01686336972004214
+  },
+  {
+    "question": "What should I do if I have accepted my offer but can no longer attend?",
+    "bleu": 0.7843772989359644
+  },
+  {
+    "question": "Why is my application fee payment not going through?",
+    "bleu": 0.2278773181422593
+  }
+]
