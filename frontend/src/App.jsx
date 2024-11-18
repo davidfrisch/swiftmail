@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import BreadcrumbComponent from "./components/BreadcrumbComponent";
-import MailsPage from "./components/MailsPage";
+import EmailsPage from "./components/EmailsPage";
 import ResultsPage from "./components/ResultsPage";
 import { Layout } from "antd";
 import api from "./api";
@@ -57,10 +57,10 @@ function App() {
       </header>
       <Content id="content-wrap">
         <Routes>
-          <Route path="/" element={<MailsPage handleView={handleView} />} />
+          <Route path="/" element={<EmailsPage handleView={handleView} />} />
           <Route
             path="/mails"
-            element={<MailsPage handleView={handleView} />}
+            element={<EmailsPage handleView={handleView} />}
           />
           {currentMail && (
             <Route

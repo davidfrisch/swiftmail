@@ -3,7 +3,7 @@ import { Breadcrumb } from "antd";
 const BreadcrumbComponent = ({mailId, handleBack}) => {
   return (
     <Breadcrumb style={{ margin: "16px 0" }}>
-      <Breadcrumb.Item> {mailId ? <a onClick={handleBack}>Emails</a> : "Emails"}</Breadcrumb.Item>
+      <Breadcrumb.Item> SwiftMail {mailId ? <a onClick={handleBack}> - Emails</a> : ""}</Breadcrumb.Item>
       {mailId && <Breadcrumb.Item>mail {mailId}</Breadcrumb.Item>}
     </Breadcrumb>
   );

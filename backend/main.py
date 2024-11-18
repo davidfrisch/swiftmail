@@ -64,10 +64,10 @@ async def get_mails(db: Session = Depends(get_db)):
         for email in emails:
             jobs = crud.get_jobs_by_email_id(db, email.id)
             latest_job = max(jobs, key=lambda x: x.id) if jobs else None
-            emails.append({ "mail": email, "job": latest_job })
+            emails.append({ "email": email, "job": latest_job })
         
         # sort by mail date newest first
-        emails.sort(key=lambda x: x["mail"].sent_at, reverse=True)
+        emails.sort(key=lambda x: x["email"].sent_at, reverse=True)
         return {"emails": emails, "message": "emails fetched successfully"}
       
     except Exception as e:
@@ -90,7 +90,7 @@ async def get_email(email_id: int, db: Session = Depends(get_db)):
       
     jobs = crud.get_jobs_by_email_id(db, email_id)
     latest_job = max(jobs, key=lambda x: x.id) if jobs else None
-    return { "mail": email, "job": latest_job }
+    return { "email": email, "job": latest_job }
 
 
 
@@ -344,3 +344,7 @@ async def retry_job(body: NewJob, db: Session = Depends(get_db)):
     raise HTTPException(status_code=404, detail="Job not found")
 
 
+@app.get("/workspaces")
+async def get_workspaces():
+    workspaces = anyllm_client.get_all_workspaces()
+    return workspaces["workspaces"]

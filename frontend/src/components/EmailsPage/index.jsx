@@ -1,34 +1,21 @@
 import { useEffect, useState } from "react";
 import { Table, Button, message, Spin } from "antd";
 import api from "../../api";
-import "./MailsPage.css";
+import "./EmailsPage.css";
 import JobStatus from "./JobStatus";
+import NewJobModal from "../NewJobModal";
 
-export default function MailsPage({ handleView }) {
-  const [mails, setMails] = useState([]);
-  const [fetchingNewMails, setFetchingNewMails] = useState(false);
-  const [numMailNoJob, setNumMailNoJob] = useState(null);
+export default function EmailsPage({ handleView }) {
+  const [emails, setEmails] = useState([]);
+  const [isCreatingJob, setIsCreatingJob] = useState(false);
   const [generatingJob, setGeneratingJob] = useState(null);
-  const fetchNewMails = async () => {
-    try {
-      setFetchingNewMails(true);
-      const mailsData = await api.enquiries.getNewEnquiries();
-      setMails(mailsData);
-      message.success("Fetched new mails successfully");
-    } catch (error) {
-      console.error("Failed to fetch mails:", error);
-      message.error("Failed to fetch new mails");
-    } finally {
-      setFetchingNewMails(false);
-    }
-  };
+
 
   const fetchMails = async () => {
     try {
-      const mailsData = await api.enquiries.getEnquiries();
-      setMails(mailsData);
-      const numNoJob = mailsData?.filter(({ job }) => !job).length || "N/A";
-      setNumMailNoJob(numNoJob);
+      const mailsData = await api.emails.getEmails();
+      console.log(mailsData);
+      setEmails(mailsData);
     } catch (error) {
       console.error("Failed to fetch mails:", error);
     }
@@ -40,22 +27,6 @@ export default function MailsPage({ handleView }) {
     return () => clearInterval(interval);
   }, []);
 
-  const handleMarkAsRead = async (email) => {
-    try {
-      await api.enquiries.toggleAsRead(email.id);
-      message.success(`Marked email with ID: ${email.id} as read`);
-      setMails((mails) =>
-        mails.map(({ mail, job }) =>
-          mail.id === email.id
-            ? { mail: { ...mail, is_read: !mail.is_read }, job }
-            : { mail, job }
-        )
-      );
-    } catch (error) {
-      console.error("Failed to mark as read:", error);
-      message.error("Failed to mark job as read");
-    }
-  };
 
   const handleGenerate = async (email) => {
     try {
@@ -170,9 +141,6 @@ export default function MailsPage({ handleView }) {
               </Button>
             )}
           </div>
-          <Button type="link" onClick={() => handleMarkAsRead(mail)}>
-            {mail.is_read ? "Mark as Unread" : "Mark as Read"}
-          </Button>
         </span>
       ),
       width: 200,
@@ -181,25 +149,23 @@ export default function MailsPage({ handleView }) {
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <h1>Mails</h1>
-        <h3 style={{ marginLeft: 20, paddingTop: 5 }}>
-          (Number of Mails without Job: {numMailNoJob})
-        </h3>
+        <h1>Jobs</h1>
+        
       </div>
       <div
         style={{ display: "flex", marginBottom: 16, justifyContent: "start" }}
       >
-        {fetchingNewMails ? (
-          <Spin />
+        {isCreatingJob ? (
+          <NewJobModal open={isCreatingJob} setOpen={setIsCreatingJob} />
         ) : (
-          <Button type="primary" onClick={fetchNewMails}>
-            Fetch New Mails
+          <Button type="primary" onClick={() => setIsCreatingJob(true)}>
+            Create New Job
           </Button>
         )}
       </div>
       <Table
         columns={columns}
-        dataSource={mails.map(({ mail, job }) => ({ ...mail, job }))}
+        dataSource={emails.map(({ email, job }) => ({ ...email, job }))}
         rowKey="id"
         pagination={{ pageSize: 5 }}
         className="mails-table"

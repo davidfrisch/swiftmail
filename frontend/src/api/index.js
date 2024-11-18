@@ -24,7 +24,16 @@ const jobs = {
   retryJob: async (emailId) => {
     const response = await api.post('jobs/retry', { email_id: emailId });
     return response.data;
-  }
+  },
+
+  getWorkspaces: async () => {
+    const response = await api.get(`workspaces`);
+    const workspaces = response.data.map((workspace) => ({
+      value: workspace.slug,
+      label: workspace.name,
+    }));
+    return workspaces;
+  },
 }
 
 const results = {
@@ -35,10 +44,10 @@ const results = {
 }
 
 
-const enquiries = {
+const emails = {
 
-  getNewEnquiries: async () => {
-    const response = await api.get('enquiries/refresh');
+  getNewEmails: async () => {
+    const response = await api.get('emails/refresh');
 
     if (!response.data?.mails) {
       throw new Error('Failed to fetch new mails');
@@ -50,24 +59,24 @@ const enquiries = {
     return response.data.mails;
   },
 
-  getEnquiries: async () => {
-    const response = await api.get('enquiries');
-    return response.data?.mails;
+  getEmails: async () => {
+    const response = await api.get('emails');
+    return response.data?.emails;
   },
 
-  getEnquiry: async (id) => {
-    const response = await api.get(`enquiries/${id}`);
+  getEmail: async (id) => {
+    const response = await api.get(`emails/${id}`);
     const { mail, job } = response.data;
     return { ...mail, job };
   },
 
-  toggleAsRead: async (enquiryId) => {
-    const response = await api.put(`enquiries/${enquiryId}/toggle-read`);
+  toggleAsRead: async (emailId) => {
+    const response = await api.put(`emails/${emailId}/toggle-read`);
     return response.data;
   },
 
-  saveAndConfirm: async (enquiryId, jobId, finalDraft, finalAnswers, saveInDatabase) => {
-    const response = await api.post(`enquiries/${enquiryId}/save-and-confirm`,
+  saveAndConfirm: async (emailId, jobId, finalDraft, finalAnswers, saveInDatabase) => {
+    const response = await api.post(`emails/${emailId}/save-and-confirm`,
       {
         job_id: jobId,
         draft: finalDraft,
@@ -80,8 +89,8 @@ const enquiries = {
 }
 
 const answers = {
-  getAnswers: async (enquiryId) => {
-    const response = await api.get(`enquiries/${enquiryId}/answers`);
+  getAnswers: async (emailId) => {
+    const response = await api.get(`emails/${emailId}/answers`);
     return response.data;
   },
 
@@ -107,5 +116,5 @@ const drafts = {
 
 
 
-export default { jobs, results, enquiries, answers, drafts };
+export default { jobs, results, emails, answers, drafts };
 
