@@ -18,16 +18,18 @@ class Email(Base):
     __tablename__ = 'emails'
 
     id = Column(Integer, primary_key=True)
-    subject = Column(String(255), nullable=True)
-    body = Column(Text, nullable=True)
+    subject = Column(String(255))
+    body = Column(Text)
+    workspace_name = Column(String)
     created_at = Column(DateTime, default=datetime.now())
+    
     
     questions = relationship("ExtractResult", back_populates="email")
     drafts = relationship("DraftResult", back_populates="email")
     job = relationship("Job", uselist=False, back_populates="email")
 
     def __repr__(self):
-        return f"<Email(id={self.id}, subject={self.subject}, body={self.body})>"
+        return f"<Email(id={self.id}, subject={self.subject}, body={self.body}), created_at={self.created_at}), workspace_name={self.workspace_name})>"
 
 class ExtractResult(Base):
     __tablename__ = 'extract_results'

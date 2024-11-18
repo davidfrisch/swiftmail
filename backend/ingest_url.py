@@ -6,7 +6,7 @@ from LLM.OllamaLLM import OllamaAI
 from dataset.urls import UCL_URLS
 
 anythingllm_client = AnythingLLMClient(ANYTHING_LLM_BASE_URL, ANYTHING_LLM_TOKEN)
-WORKSPACE_NAME="first_workspace"
+WORKSPACE_NAME="second_workspace"
 
 workspaces = anythingllm_client.get_all_workspaces()['workspaces']
 workspaces_names = [workspace['name'] for workspace in workspaces]
@@ -15,7 +15,7 @@ workspaces_names = [workspace['name'] for workspace in workspaces]
 
 def add_url_to_workspace(workspace_name, url):
     if workspace_name not in workspaces_names:
-        return f"Workspace {workspace_name} does not exist"
+        raise f"Workspace {workspace_name} does not exist"
       
     workspace_slug = get_workspace_slug(workspace_name)
     anythingllm_client.add_url_to_workspace(workspace_slug, url)

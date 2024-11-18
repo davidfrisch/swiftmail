@@ -7,11 +7,11 @@ class Feedback(BaseModel):
     
 class NewJob(BaseModel):
     email_id: int
-    workspace_name: str
     force: bool = False
 
 class FinalDraft(BaseModel):
     job_id: int
     answers: List[dict]
     draft: str
+    workspace_name: str
     save_in_db: bool = False

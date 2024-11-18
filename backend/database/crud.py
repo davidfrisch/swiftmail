@@ -10,7 +10,7 @@ def get_email(db: Session, email_id: int) -> schemas.Email:
     return db.query(models.Email).filter(models.Email.id == email_id).first()
 
 def create_email(db: Session, email: schemas.Email):
-    db_email = models.Email(subject=email.subject, body=email.body)
+    db_email = models.Email(subject=email.subject, body=email.body, workspace_name=email.workspace_name)
     db.add(db_email)
     db.commit()
     db.refresh(db_email)

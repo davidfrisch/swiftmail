@@ -32,7 +32,7 @@ app.add_middleware(
 )
 
 
-ollama_client = OllamaAI('http://localhost:11434', 'llama3:instruct')
+ollama_client = OllamaAI('http://localhost:11434', 'llama3.2:latest')
 anyllm_client = AnythingLLMClient(ANYTHING_LLM_BASE_URL, ANYTHING_LLM_TOKEN)
 
 def get_db():
@@ -102,6 +102,7 @@ async def save_and_confirm_email(email_id: int,  body: FinalDraft, db: Session =
     job_id = body.job_id
     new_answers = body.answers
     new_draft = body.draft
+    workspace_name = body.workspace_name
     save_in_db = bool(body.save_in_db)
     job = crud.get_job(db, body.job_id)
     
@@ -122,7 +123,7 @@ async def save_and_confirm_email(email_id: int,  body: FinalDraft, db: Session =
     email.is_read = True
     crud.update_email(db, email)
     if save_in_db:  
-        anyllm_client.save_draft_in_db(email.id, new_draft)
+        anyllm_client.save_draft_in_db(workspace_name, email.id, new_draft)
     
 
 # Answers 
@@ -189,7 +190,6 @@ async def get_jobs(db: Session = Depends(get_db)):
 async def generate_response(body: NewJob, db: Session = Depends(get_db)):
 
     email_id = body.email_id
-    workspace_name = body.workspace_name
     
     email = crud.get_email(db, email_id)
     if not email:
@@ -214,9 +214,9 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
       started_at= datetime.now(),
     )
     job = crud.create_job(db, new_job)
-    workspace_slug = anyllm_client.get_workspace_slug(workspace_name)
+    workspace_slug = anyllm_client.get_workspace_slug(email.workspace_name)
     if not workspace_slug:
-        return {"message": f"Workspace {workspace_name} not found", "job": job}
+        return {"message": f"Workspace {email.workspace_name} not found", "job": job}
 
     new_thread = anyllm_client.new_thread(workspace_slug, "email-"+str(email.id))
     
@@ -330,7 +330,7 @@ async def retry_job(body: NewJob, db: Session = Depends(get_db)):
             if job.status == models.JobStatus.FAILED:
                 job.status = models.JobStatus.PENDING
                 crud.update_job(db, job)
-                workspace_slug = anyllm_client.get_workspace_slug("General")
+                workspace_slug = anyllm_client.get_workspace_slug("second_workspace")
                 new_thread = anyllm_client.new_thread(workspace_slug, "email-"+str(email.id))
                 process = Process(target=start_job_generater, args=(ollama_client, anyllm_client, email_id, job.id, new_thread['slug']))
                 process.start()

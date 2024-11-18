@@ -231,11 +231,11 @@ class AnythingLLMClient:
     response = self._make_request("POST", f"v1/workspace/{slug_workspace}/chat", payload)
     return response
   
-  def save_draft_in_db(self, enquiry_id, draft):
-    workspace_slug = self.get_workspace_slug("General")
+  def save_draft_in_db(self, workspace_name, email_id, draft):
+    workspace_slug = self.get_workspace_slug(workspace_name)
     folder_name = "./saved_results"
     os.makedirs(folder_name, exist_ok=True)
-    filename = f"email-{enquiry_id}.txt"
+    filename = f"email-{email_id}.txt"
     fullpath = f"{folder_name}/{filename}"
     with open(fullpath, "w") as f:
       f.write(draft)

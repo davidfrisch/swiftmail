@@ -20,13 +20,13 @@ class Generater:
         self.generated_draft_email = ""
         
 
-    def single_run_reply_to_email(self, email: Email, path_output:str=None):
+    def single_run_reply_to_email(self, email: Email, workspace_name, path_output:str=None):
         
         if path_output:
             with open(path_output, 'w') as f:
                 json.dump({}, f)
 
-        workspace_slug = self.anyllm_client.get_workspace_slug("General")
+        workspace_slug = self.anyllm_client.get_workspace_slug(workspace_name)
         new_thread = self.anyllm_client.new_thread(workspace_slug, "new_thread")
         thread_slug = new_thread['slug']
                 
@@ -122,7 +122,7 @@ class Generater:
           
             full_question = question.question_text  
             answer, unique_sources, sources = self.answer_question(
-              problem_context=question.problem_context,
+              workspace_name=email.workspace_name,
               question=question.question_text,
               feedback="",
               slug_thread=slug_thread,
@@ -140,15 +140,13 @@ class Generater:
 
 
 
-    def answer_question(self, problem_context: str, question:str, feedback:str, has_additional_context=False, slug_thread=None):
+    def answer_question(self, workspace_name: str, question:str, feedback:str, has_additional_context=False, slug_thread=None):
         prompt = f"""
-          problem context: {problem_context}
-          ---
           Answer the following question: \n
           Question: {question} \n
           {("Additional information:\n"+ feedback) if feedback else ""}
         """
-        slug_workspace = self.anyllm_client.get_workspace_slug("General")
+        slug_workspace = self.anyllm_client.get_workspace_slug(workspace_name)
         
         if slug_thread:
             res = self.anyllm_client.chat_with_thread(slug_workspace, slug_thread, prompt)

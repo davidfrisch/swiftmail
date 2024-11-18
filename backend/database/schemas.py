@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Dict
+from typing import List, Optional
 from pydantic import BaseModel
 from enum import Enum
 
@@ -15,8 +15,9 @@ class JobStatus(str, Enum):
 
 
 class EmailBase(BaseModel):
-    subject: Optional[str] = None
-    body: Optional[str] = None
+    subject: str = None
+    body: str = None
+    workspace_name: str = None
     created_at: datetime = datetime.now()
 
 
