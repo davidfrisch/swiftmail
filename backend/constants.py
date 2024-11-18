@@ -16,34 +16,3 @@ ANYTHING_LLM_BASE_URL = "http://localhost:3001/api"
 
 OLLAMA_API_URL = ENV_OLLAMA_API_URL
 
-
-NO_ANSWERS_TEMPLATE = {
-  "general": "Default GENERAL response",
-  "Applications": "Sorry, I don't have an answer for this question. Category: Applications",
-  "Entry requirements": "Sorry, I don't have an answer for this question. Category: Entry requirements",
-  "Application fees": "Sorry, I don't have an answer for this question. Category: Application fees",
-  "References for application": "Sorry, I don't have an answer for this question. Category: References for application",
-  "Updating your application": "Sorry, I don't have an answer for this question. Category: Updating your application",
-  "Application status": "Sorry, I don't have an answer for this question. Category: Application status",
-  "Offers of admission": "Sorry, I don't have an answer for this question. Category: Offers of admission",
-  "Tuition fees": "Sorry, I don't have an answer for this question. Category: Tuition fees",
-  "Student visas": "Sorry, I don't have an answer for this question. Category: Student visas",
-  "Others": "Sorry, I don't have an answer for this question. Category: Others"
-}
-
-
-WORKSPACE_CATEGORIES = [
-  "Applications",
-  "Entry requirements",
-  "Application fees",
-  "References for application",
-  "Updating your application",
-  "Application status",
-  "Offers of admission",
-  "Tuition fees",
-  "Student visas",
-  "Accommodation",
-  "After applying",
-  "International students",
-  "General"
-]
