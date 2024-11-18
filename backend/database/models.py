@@ -20,16 +20,14 @@ class Email(Base):
     id = Column(Integer, primary_key=True)
     subject = Column(String(255), nullable=True)
     body = Column(Text, nullable=True)
-    sent_at = Column(DateTime, default=datetime.now())
-    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.now())
     
     questions = relationship("ExtractResult", back_populates="email")
     drafts = relationship("DraftResult", back_populates="email")
     job = relationship("Job", uselist=False, back_populates="email")
 
     def __repr__(self):
-        return f"<Email(id={self.id}, " \
-               f"subject={self.subject}, sent_at={self.sent_at}, is_read={self.is_read})>"
+        return f"<Email(id={self.id}, subject={self.subject}, body={self.body})>"
 
 class ExtractResult(Base):
     __tablename__ = 'extract_results'

@@ -11,12 +11,15 @@ class AnythingLLMClient:
     self.token = token
 
   def _make_request(self, method, endpoint, payload=None, files=None):
+
     headers = {
       "Authorization": f"Bearer {self.token}"
     }
     url = f"{self.base_url}/{endpoint}"
     try:
         response = requests.request(method, url, headers=headers, json=payload, files=files)
+        if response.status_code != 200:
+            logger.error(f"{response.json()}")
         return response.json()
     except Exception as e:
         logger.error(f"[ERROR] {e}")
@@ -98,7 +101,7 @@ class AnythingLLMClient:
     return response
 
   def get_all_workspaces(self):
-    response = self._make_request("GET", "workspaces")
+    response = self._make_request("GET", "v1/workspaces")
     return response
 
   def get_workspace(self, slug):
@@ -113,7 +116,7 @@ class AnythingLLMClient:
     return None
 
   def get_workspace_chats(self, slug):
-    response = self._make_request("GET", f"workspace/{slug}/chats")
+    response = self._make_request("GET", f"v1/workspace/{slug}/chats")
     return response
 
   def update_workspace(self, slug, payload):

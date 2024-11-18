@@ -7,6 +7,7 @@ class Feedback(BaseModel):
     
 class NewJob(BaseModel):
     email_id: int
+    workspace_name: str
     force: bool = False
 
 class FinalDraft(BaseModel):

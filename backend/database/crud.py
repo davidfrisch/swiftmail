@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List
 from . import models, schemas
-
+from time import time
 ## Emails
 def get_emails(db: Session, skip: int = 0, limit: int = 100) -> List[schemas.Email]:
     return db.query(models.Email).offset(skip).limit(limit).all()
@@ -10,7 +10,7 @@ def get_email(db: Session, email_id: int) -> schemas.Email:
     return db.query(models.Email).filter(models.Email.id == email_id).first()
 
 def create_email(db: Session, email: schemas.Email):
-    db_email = models.Email(subject=email.subject, body=email.body, sent_at=email.sent_at, is_read=email.is_read)
+    db_email = models.Email(subject=email.subject, body=email.body)
     db.add(db_email)
     db.commit()
     db.refresh(db_email)

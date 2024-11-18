@@ -17,8 +17,7 @@ class JobStatus(str, Enum):
 class EmailBase(BaseModel):
     subject: Optional[str] = None
     body: Optional[str] = None
-    sent_at: datetime = datetime.now()
-    is_read: bool = False
+    created_at: datetime = datetime.now()
 
 
 class Email(EmailBase):

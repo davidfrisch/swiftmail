@@ -46,6 +46,11 @@ def get_db():
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+  
+@app.get("/health")
+async def health():
+    anything_llm_health = anyllm_client.ping_alive()
+    return {"message": "Service is up and running", "anything_llm": anything_llm_health}
 
 # emails
 @app.get("/emails")
@@ -56,10 +61,10 @@ async def get_mails(db: Session = Depends(get_db)):
             return {"message": "No emails found", "emails": []}
 
         emails = []
-        for enquiry in emails:
-            jobs = crud.get_jobs_by_email_id(db, enquiry.id)
+        for email in emails:
+            jobs = crud.get_jobs_by_email_id(db, email.id)
             latest_job = max(jobs, key=lambda x: x.id) if jobs else None
-            emails.append({ "mail": enquiry, "job": latest_job })
+            emails.append({ "mail": email, "job": latest_job })
         
         # sort by mail date newest first
         emails.sort(key=lambda x: x["mail"].sent_at, reverse=True)
@@ -70,31 +75,29 @@ async def get_mails(db: Session = Depends(get_db)):
         return {"message": "An error occured while fetching emails"}
   
 
-@app.get("/emails/{enquiry_id}")
-async def get_enquiry(enquiry_id: int, db: Session = Depends(get_db)):
-    enquiry = crud.get_email(db, enquiry_id)
-    if not enquiry:
-        raise HTTPException(status_code=404, detail="Enquiry not found")
+@app.post("/emails")
+async def create_email(email: schemas.EmailCreate, db: Session = Depends(get_db)):
+    new_email = crud.create_email(db, email)
+    return {"message": "Email created successfully", "email": new_email}
+
+
+
+@app.get("/emails/{email_id}")
+async def get_email(email_id: int, db: Session = Depends(get_db)):
+    email = crud.get_email(db, email_id)
+    if not email:
+        raise HTTPException(status_code=404, detail="email not found")
       
-    jobs = crud.get_jobs_by_email_id(db, enquiry_id)
+    jobs = crud.get_jobs_by_email_id(db, email_id)
     latest_job = max(jobs, key=lambda x: x.id) if jobs else None
-    return { "mail": enquiry, "job": latest_job }
+    return { "mail": email, "job": latest_job }
 
 
-@app.put("/emails/{enquiry_id}/toggle-read")
-async def mark_enquiry_as_read(enquiry_id: int, db: Session = Depends(get_db)):
-    enquiry = crud.get_email(db, enquiry_id)
-    if not enquiry:
-        raise HTTPException(status_code=404, detail="Enquiry not found")
-    enquiry.is_read = not enquiry.is_read
-    crud.update_email(db, enquiry)
-    return {"message": "Enquiry marked as read", "enquiry": enquiry}
 
-
-@app.post("/emails/{enquiry_id}/save-and-confirm")
-async def save_and_confirm_enquiry(enquiry_id: int,  body: FinalDraft, db: Session = Depends(get_db)):
-    if not enquiry_id:
-        raise HTTPException(status_code=400, detail="Enquiry ID is required")
+@app.post("/emails/{email_id}/save-and-confirm")
+async def save_and_confirm_email(email_id: int,  body: FinalDraft, db: Session = Depends(get_db)):
+    if not email_id:
+        raise HTTPException(status_code=400, detail="email ID is required")
 
     job_id = body.job_id
     new_answers = body.answers
@@ -115,7 +118,7 @@ async def save_and_confirm_enquiry(enquiry_id: int,  body: FinalDraft, db: Sessi
     draft.draft_body = new_draft
     crud.update_draft_result(db, draft)
     
-    email = crud.get_email(db, enquiry_id)
+    email = crud.get_email(db, email_id)
     email.is_read = True
     crud.update_email(db, email)
     if save_in_db:  
@@ -168,7 +171,6 @@ async def retry_draft(feedback: Feedback, db: Session = Depends(get_db)):
   
 
 # Jobs
-
 @app.get("/jobs")
 async def get_jobs(db: Session = Depends(get_db)):
     jobs = crud.get_jobs(db)
@@ -186,34 +188,39 @@ async def get_jobs(db: Session = Depends(get_db)):
 @app.post("/jobs")
 async def generate_response(body: NewJob, db: Session = Depends(get_db)):
 
-    enquiry_id = body.email_id
-    enquiry = crud.get_email(db, enquiry_id)
-    if not enquiry:
-        raise HTTPException(status_code=404, detail="Enquiry not found")
+    email_id = body.email_id
+    workspace_name = body.workspace_name
     
-    old_jobs = crud.get_jobs_by_email_id(db, enquiry_id)
-    if old_jobs:
-        for job in old_jobs:
-            if job.status != models.JobStatus.COMPLETED and job.status != models.JobStatus.FAILED:
-                print(job.status == models.JobStatus.FAILED and job.status == models.JobStatus.COMPLETED)
-                print(f"Job already in progress: {job}")
-                return {"message": "Job already in progress", "job": job}
+    email = crud.get_email(db, email_id)
+    if not email:
+        raise HTTPException(status_code=404, detail="email not found")
+    
+    old_jobs = crud.get_jobs_by_email_id(db, email_id)
+    # if old_jobs:
+    #     for job in old_jobs:
+    #         if job.status != models.JobStatus.COMPLETED and job.status != models.JobStatus.FAILED:
+    #             print(job.status == models.JobStatus.FAILED and job.status == models.JobStatus.COMPLETED)
+    #             print(f"Job already in progress: {job}")
+    #             return {"message": "Job already in progress", "job": job}
 
-            if job.status == models.JobStatus.COMPLETED:
-                return {"message": "Job already exists", "job": job}
+    #         if job.status == models.JobStatus.COMPLETED:
+    #             return {"message": "Job already exists", "job": job}
 
  
     job_status = models.JobStatus.PENDING.name
     new_job = schemas.JobCreate(
-      email_id=enquiry_id,
+      email_id=email_id,
       status=job_status,
       started_at= datetime.now(),
     )
     job = crud.create_job(db, new_job)
-    workspace_slug = anyllm_client.get_workspace_slug("General")
-    new_thread = anyllm_client.new_thread(workspace_slug, "email-"+str(enquiry.id))
+    workspace_slug = anyllm_client.get_workspace_slug(workspace_name)
+    if not workspace_slug:
+        return {"message": f"Workspace {workspace_name} not found", "job": job}
+
+    new_thread = anyllm_client.new_thread(workspace_slug, "email-"+str(email.id))
     
-    process = Process(target=start_job_generater, args=(ollama_client, anyllm_client, enquiry_id, job.id, new_thread['slug']))
+    process = Process(target=start_job_generater, args=(ollama_client, anyllm_client, email_id, job.id, new_thread['slug']))
     process.start()
     
     job.process_id = process.pid
