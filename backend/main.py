@@ -4,15 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from .database import crud, models, schemas
 from .database.create_database import SessionLocal, engine
-from .email_client.gmail import get_unread_enquiries
 from .Generater import Generater
-from .Reviewer import Reviewer
 from .LLM.OllamaLLM import OllamaAI
 from .LLM.AnythingLLM_client import AnythingLLMClient
 from datetime import datetime
 from .jobs import start_job_generater, update_answer, retry_draft_email
 from .endpoints_models import Feedback, NewJob, FinalDraft
 from multiprocessing import Process
+from constants import ANYTHING_LLM_TOKEN, ANYTHING_LLM_BASE_URL
 import os, signal
 import json
 models.Base.metadata.create_all(bind=engine)
@@ -34,7 +33,7 @@ app.add_middleware(
 
 
 ollama_client = OllamaAI('http://localhost:11434', 'llama3:instruct')
-anyllm_client = AnythingLLMClient("http://localhost:3001/api", "3WMNAPZ-GYH4RBE-M67SR00-7Y7KYEF")
+anyllm_client = AnythingLLMClient(ANYTHING_LLM_BASE_URL, ANYTHING_LLM_TOKEN)
 
 def get_db():
     db = SessionLocal()
@@ -48,69 +47,30 @@ def get_db():
 async def root():
     return {"message": "Hello World"}
 
-# Enquiries
-
-@app.get("/enquiries/refresh")
-async def refresh_enquiries(db: Session = Depends(get_db)):
-    num_new_enquiries = 0
+# emails
+@app.get("/emails")
+async def get_mails(db: Session = Depends(get_db)):
     try:
-        new_enquiries = get_unread_enquiries()
-        current_enquiries = crud.get_emails(db)
-        for enquiry in new_enquiries:
-            if not enquiry or not enquiry.subject:
-                print("Enquiry has no subject")
-                continue
-          
-            if any(current_enquiry.subject == enquiry.subject for current_enquiry in current_enquiries):
-                print(f"Enquiry already exists: {enquiry.subject}")
-                continue
-              
-            new_enquiry = schemas.EmailCreate(
-                subject=enquiry.subject,
-                body=enquiry.plain if enquiry.plain else "",
-                sent_at=enquiry.date,
-                is_read=False
-            )
-            crud.create_email(db, new_enquiry)
-            num_new_enquiries += 1
-            
-    
-        mails = []
-        current_enquiries = crud.get_emails(db)
-        for enquiry in current_enquiries:
+        emails = crud.get_emails(db)
+        if not emails:
+            return {"message": "No emails found", "emails": []}
+
+        emails = []
+        for enquiry in emails:
             jobs = crud.get_jobs_by_email_id(db, enquiry.id)
             latest_job = max(jobs, key=lambda x: x.id) if jobs else None
-            mails.append({ "mail": enquiry, "job": latest_job })
-            
-        return {"message": f"Refreshed {num_new_enquiries} new enquiries", "mails": mails}
-
-    except Exception as e:
-        print(e)
-        return {"message": "An error occured while fetching enquiries"}
-
-@app.get("/enquiries")
-async def get_enquiries(db: Session = Depends(get_db)):
-    try:
-        enquiries = crud.get_emails(db)
-        if not enquiries:
-            return {"message": "No enquiries found", "mails": []}
-
-        mails = []
-        for enquiry in enquiries:
-            jobs = crud.get_jobs_by_email_id(db, enquiry.id)
-            latest_job = max(jobs, key=lambda x: x.id) if jobs else None
-            mails.append({ "mail": enquiry, "job": latest_job })
+            emails.append({ "mail": enquiry, "job": latest_job })
         
         # sort by mail date newest first
-        mails.sort(key=lambda x: x["mail"].sent_at, reverse=True)
-        return {"mails": mails, "message": "Enquiries fetched successfully"}
+        emails.sort(key=lambda x: x["mail"].sent_at, reverse=True)
+        return {"emails": emails, "message": "emails fetched successfully"}
       
     except Exception as e:
         print(e)
-        return {"message": "An error occured while fetching enquiries"}
+        return {"message": "An error occured while fetching emails"}
   
 
-@app.get("/enquiries/{enquiry_id}")
+@app.get("/emails/{enquiry_id}")
 async def get_enquiry(enquiry_id: int, db: Session = Depends(get_db)):
     enquiry = crud.get_email(db, enquiry_id)
     if not enquiry:
@@ -121,7 +81,7 @@ async def get_enquiry(enquiry_id: int, db: Session = Depends(get_db)):
     return { "mail": enquiry, "job": latest_job }
 
 
-@app.put("/enquiries/{enquiry_id}/toggle-read")
+@app.put("/emails/{enquiry_id}/toggle-read")
 async def mark_enquiry_as_read(enquiry_id: int, db: Session = Depends(get_db)):
     enquiry = crud.get_email(db, enquiry_id)
     if not enquiry:
@@ -131,7 +91,7 @@ async def mark_enquiry_as_read(enquiry_id: int, db: Session = Depends(get_db)):
     return {"message": "Enquiry marked as read", "enquiry": enquiry}
 
 
-@app.post("/enquiries/{enquiry_id}/save-and-confirm")
+@app.post("/emails/{enquiry_id}/save-and-confirm")
 async def save_and_confirm_enquiry(enquiry_id: int,  body: FinalDraft, db: Session = Depends(get_db)):
     if not enquiry_id:
         raise HTTPException(status_code=400, detail="Enquiry ID is required")
@@ -162,38 +122,7 @@ async def save_and_confirm_enquiry(enquiry_id: int,  body: FinalDraft, db: Sessi
         anyllm_client.save_draft_in_db(email.id, new_draft)
     
 
-# Answers
-@app.put("/answers/{answer_id}/review")
-async def review_answer(answer_id: int, db: Session = Depends(get_db)):
-    if not answer_id:
-        raise HTTPException(status_code=400, detail="Answer ID is required")
-      
-    answer = crud.get_answer_result(db, answer_id)
-    if not answer:
-        raise HTTPException(status_code=404, detail="Answer not found")
-    
-    extract_result = crud.get_extract_result(db, answer.extract_result_id)
-    if not extract_result:
-        raise HTTPException(status_code=404, detail="Extract result not found")
-    
-    email = crud.get_email(db, extract_result.email_id)
-    if not email:
-        raise HTTPException(status_code=404, detail="Email not found")
-    
-    reviewer = Reviewer(ollama_client)
-    review = reviewer.evaluate_answers([extract_result], [answer])
-    
-    
-    answer.binary_score = review[answer_id]['binary_scores']["useful"]
-    answer.linkert_score = review[answer_id]['linkert']
-    answer.hallucination_score = review[answer_id]['hallucination']
-    
-    crud.update_answer_result(db, answer)
-    
-    return {"message": "Review completed successfully", "review": review}
-  
-  
-  
+# Answers 
 @app.put("/answers/{answer_id}")
 async def retry_answer(answer_id: int, feedback: Feedback, db: Session = Depends(get_db)):
     if not answer_id:
@@ -408,43 +337,3 @@ async def retry_job(body: NewJob, db: Session = Depends(get_db)):
     raise HTTPException(status_code=404, detail="Job not found")
 
 
-# Reviewer
-@app.get("/reviewer/{job_id}")
-async def review_job(job_id: int, db: Session = Depends(get_db)):
-    if not job_id:
-        raise HTTPException(status_code=400, detail="Job ID is required")
-      
-    job = crud.get_job(db, job_id)
-    if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
-    
-    email = crud.get_email(db, job.email_id)
-    if not email:
-        raise HTTPException(status_code=404, detail="Email not found")
-      
-    extract_questions = crud.get_extract_results_by_job_id(db, job_id)
-    answers = crud.get_answer_results_by_job_id(db, job_id)
-    draft_email = crud.get_draft_results_by_job_id(db, job_id)
-    
-    reviewer = Reviewer(ollama_client)
-    
-    review = reviewer.evaluate(extract_questions, answers, draft_email[0].draft_body)
-    review_answers = review['answers_score']
-    review_draft = review['draft_email_score']
-    
-    for review_answer in review_answers.values():
-        answer = crud.get_answer_result(db, review_answer['answer_id'])
-        answer.binary_score = review_answer['binary_scores']["useful"]
-        answer.linkert_score = review_answer['linkert']
-        answer.hallucination_score = review_answer['hallucination']
-        crud.update_answer_result(db, answer)
-    
-    draft = draft_email[0]
-    draft.binary_score = review_draft['binary_scores']["useful"]
-    draft.linkert_score = review_draft['linkert']
-    draft.hallucination_score = review_draft['hallucination']
-    crud.update_draft_result(db, draft)
-    
-    
-    
-    return {"message": "Review completed successfully", "job": job_id}

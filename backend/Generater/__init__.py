@@ -5,7 +5,6 @@ import sys
 import os
 from typing import List
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from constants import NO_ANSWERS_TEMPLATE, WORKSPACE_CATEGORIES as categories
 from LLM.OllamaLLM import OllamaAI
 from LLM.AnythingLLM_client import AnythingLLMClient
 from database.schemas import Email, ExtractResult, AnswerResult, AnswerResultCreate

@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy import create_engine
 from contextlib import contextmanager
 from .Generater import Generater
-from .Reviewer import Reviewer
 from datetime import datetime
 import endpoints_models
 import logging
@@ -107,12 +106,12 @@ def get_db_session():
     finally:
         session.close()
 
-def start_job_generater(ollama_client, anyllm_client, enquiry_id, job_id, thread_slug):
+def start_job_generater(ollama_client, anyllm_client, email_id, job_id, thread_slug):
     try:
-        logger.info("Starting job generator for enquiry_id: %s, job_id: %s", enquiry_id, job_id)
+        logger.info("Starting job generator for email_id: %s, job_id: %s", email_id, job_id)
         generater = Generater(ollama_client, anyllm_client)
         with get_db_session() as db:
-            email = crud.get_email(db, enquiry_id)
+            email = crud.get_email(db, email_id)
             job = crud.get_job(db, job_id)
             
             crud.update_job_status(db, job, JobStatus.EXTRACTING)
