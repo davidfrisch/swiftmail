@@ -266,7 +266,6 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
             }
         })
 
-    other_jobs = crud.get_jobs_by_email_id(db, job.email_id)
 
     extracts_to_highlight = [answer_question['extract'] for answer_question in answers_questions]
     return {
@@ -278,7 +277,7 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
             "created_at": latest_draft.created_at,
         },
         "answers_questions": answers_questions,
-        "jobs": other_jobs,
+        "job": job,
         "extracts_to_highlight": extracts_to_highlight
     }
 

@@ -28,7 +28,7 @@ function App() {
   };
 
   const handleGetMail = async (mailId) => {
-    const email = await api.enquiries.getEnquiry(mailId);
+    const email = await api.emails.getEmail(mailId);
     setCurrentMail(email);
   };
 
