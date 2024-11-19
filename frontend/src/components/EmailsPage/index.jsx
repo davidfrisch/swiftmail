@@ -93,13 +93,6 @@ export default function EmailsPage({ handleView }) {
 
   const columns = [
     {
-      title: "Is Completed",
-      dataIndex: "is_read",
-      key: "isRead",
-      width: 150,
-      render: (isRead) => (isRead ? "Yes" : "No"),
-    },
-    {
       title: "Mail ID",
       dataIndex: "id",
       key: "id",
@@ -149,7 +142,7 @@ export default function EmailsPage({ handleView }) {
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <h1>Jobs</h1>
+        <h1>Mails</h1>
         
       </div>
       <div
@@ -165,7 +158,7 @@ export default function EmailsPage({ handleView }) {
       </div>
       <Table
         columns={columns}
-        dataSource={emails.map(({ email, job }) => ({ ...email, job }))}
+        dataSource={emails.map(({email, job}) => ({ ...email, job }))}
         rowKey="id"
         pagination={{ pageSize: 5 }}
         className="mails-table"

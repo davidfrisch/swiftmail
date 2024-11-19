@@ -60,15 +60,13 @@ async def get_mails(db: Session = Depends(get_db)):
         if not emails:
             return {"message": "No emails found", "emails": []}
 
-        emails = []
+        emails_with_job = []
         for email in emails:
             jobs = crud.get_jobs_by_email_id(db, email.id)
             latest_job = max(jobs, key=lambda x: x.id) if jobs else None
-            emails.append({ "email": email, "job": latest_job })
+            emails_with_job.append({ "email": email, "job": latest_job })
         
-        # sort by mail date newest first
-        emails.sort(key=lambda x: x["email"].sent_at, reverse=True)
-        return {"emails": emails, "message": "emails fetched successfully"}
+        return {"emails": emails_with_job, "message": "emails fetched successfully"}
       
     except Exception as e:
         print(e)
@@ -196,15 +194,15 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="email not found")
     
     old_jobs = crud.get_jobs_by_email_id(db, email_id)
-    # if old_jobs:
-    #     for job in old_jobs:
-    #         if job.status != models.JobStatus.COMPLETED and job.status != models.JobStatus.FAILED:
-    #             print(job.status == models.JobStatus.FAILED and job.status == models.JobStatus.COMPLETED)
-    #             print(f"Job already in progress: {job}")
-    #             return {"message": "Job already in progress", "job": job}
+    if old_jobs:
+        for job in old_jobs:
+            if job.status != models.JobStatus.COMPLETED and job.status != models.JobStatus.FAILED:
+                print(job.status == models.JobStatus.FAILED and job.status == models.JobStatus.COMPLETED)
+                print(f"Job already in progress: {job}")
+                return {"message": "Job already in progress", "job": job}
 
-    #         if job.status == models.JobStatus.COMPLETED:
-    #             return {"message": "Job already exists", "job": job}
+            if job.status == models.JobStatus.COMPLETED:
+                return {"message": "Job already exists", "job": job}
 
  
     job_status = models.JobStatus.PENDING.name

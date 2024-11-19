@@ -1,22 +1,43 @@
 import { useEffect, useState } from "react";
 import { Modal } from "antd";
-import { Select, Space } from "antd";
+import { Select, Space,  Input, Form } from "antd";
 import api from "../../api";
 
 import "./styles.css";
+const { TextArea } = Input;
 
 export default function NewJobModal({ open, setOpen }) {
   const [workspaces, setWorkspaces] = useState([]);
-  const [formJob, setFormJob] = useState({
-    title: "",
-    body: "",
-    workspace_name: "",
-  });
+
+  const [form] = Form.useForm();
 
   const fetchWorkspaces = async () => {
     const workspaces = await api.jobs.getWorkspaces();
-    console.log(workspaces);  
+    console.log(workspaces);
     setWorkspaces(workspaces);
+  };
+
+  const handleCreateJob = async () => {
+    try {
+      await form.validateFields();
+
+      const newEmail = await api.emails.createEmail({
+        "subject": form.getFieldValue("title") || `Email ${new Date().toISOString()}`,
+        "workspace_name": form.getFieldValue("workspace_name"),
+        "body": form.getFieldValue("body"),
+      });
+      // await api.jobs.createJob(newEmail.id);
+
+      console.log("Job created successfully");
+
+      setOpen(false);
+    } catch (error) {
+      console.error("Failed to create job:", error);
+    }
+  };
+
+  const handleOnClose = () => {
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -25,37 +46,41 @@ export default function NewJobModal({ open, setOpen }) {
 
   return (
     <>
-      <Modal
-        title="Create New Job"
-        centered
-        open={open}
-        onCancel={() => setOpen(false)}
-        width={1000}
+      <Form
+        form={form}
+        name="basic"
+        initialValues={{ remember: true }}
+        onFinish={handleCreateJob}
       >
         <Space direction="vertical" id="container-new-job-modal">
-          <input
-            type="text"
-            placeholder="Title"
-            className="container-new-job-modal-item"
-            value={formJob.title}
-            style={{ width: "80%" }}
-            onChange={(e) => setFormJob({ ...formJob, title: e.target.value })}
-          />
-          <Select
-            options={workspaces}
-            placeholder="Select a workspace"
-            onChange={(value) =>
-              setFormJob({ ...formJob, workspace_name: value })
-            }
-          />
-          <textarea
-            placeholder="Body"
-            value={formJob.body}
-            onChange={(e) => setFormJob({ ...formJob, body: e.target.value })}
-          />
-          <button onClick={() => console.log(formJob)}>Submit</button>
+          <Modal
+            title="Create New Job"
+            centered
+            open={open}
+            onOk={handleCreateJob}
+            onCancel={handleOnClose}
+            width={1000}
+          >
+            <Form.Item name="title" rules={[{ required: false }]}>
+              <Input
+                type="text"
+                placeholder="Title"
+                className="container-new-job-modal-item"
+                style={{ width: "80%" }}
+              />
+            </Form.Item>
+            <Form.Item name="workspace_name" rules={[{ required: true }]}>
+              <Select options={workspaces} placeholder="Select a workspace" />
+            </Form.Item>
+            <Form.Item name="body" rules={[{ required: true }]}>
+              <TextArea
+                placeholder="Body"
+                style={{ minHeight: 500, overflow: "auto" }}
+              />
+            </Form.Item>
+          </Modal>
         </Space>
-      </Modal>
+      </Form>
     </>
   );
 }

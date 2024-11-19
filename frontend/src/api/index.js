@@ -70,6 +70,11 @@ const emails = {
     return { ...mail, job };
   },
 
+  createEmail: async (email) => {
+    const response = await api.post('emails', email);
+    return response.data;
+  },
+
   toggleAsRead: async (emailId) => {
     const response = await api.put(`emails/${emailId}/toggle-read`);
     return response.data;
