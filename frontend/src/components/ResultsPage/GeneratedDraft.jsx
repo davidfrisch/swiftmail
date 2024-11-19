@@ -1,7 +1,8 @@
 import { Button, Spin, theme, Tooltip, Input, message } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, LinkOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import api from "../../api";
+import SourcesModal from "./SourcesModal";
 
 export default function GeneratedDraft({ results, setResults }) {
   const { colorBgContainer, borderRadiusLG } = theme;
@@ -9,6 +10,7 @@ export default function GeneratedDraft({ results, setResults }) {
   const [questionLoading, setQuestionLoading] = useState({});
   const [questionEdit, setQuestionEdit] = useState({});
   const [draftFeedback, setDraftFeedback] = useState("");
+  const [openSourcesModal, setOpenSourcesModal] = useState(false);
 
   const { TextArea } = Input;
 
@@ -69,6 +71,13 @@ export default function GeneratedDraft({ results, setResults }) {
 
   return (
     <div>
+      {results?.sources?.length > 0 && (
+        <SourcesModal
+          sources={results?.sources}
+          open={openSourcesModal}
+          setOpen={setOpenSourcesModal}
+        />
+      )}
       <div
         style={{
           background: colorBgContainer,
@@ -77,7 +86,23 @@ export default function GeneratedDraft({ results, setResults }) {
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <h1>Generated Draft </h1>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <h1>Generated Draft </h1>
+            <Button
+              type="link"
+              size="large"
+              onClick={() => setOpenSourcesModal(true)}
+              style={{ marginRight: 16 }}
+            >
+              <LinkOutlined />
+            </Button>
+          </div>
           <Button
             type="link"
             onClick={() => handleCopyToClipboard(results.draft_result.body)}

@@ -265,8 +265,13 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
                 "linkert_score": answer.linkert_score if isinstance(answer.linkert_score, int) else None
             }
         })
-
-
+        
+      
+    uniques_sources = [answer['unique_sources'] for answer in answers_questions]
+    unique_all_sources = list(set([source for sources in uniques_sources for source in sources]))
+ 
+            
+            
     extracts_to_highlight = [answer_question['extract'] for answer_question in answers_questions]
     return {
         "email": email,
@@ -278,7 +283,8 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
         },
         "answers_questions": answers_questions,
         "job": job,
-        "extracts_to_highlight": extracts_to_highlight
+        "extracts_to_highlight": extracts_to_highlight,
+        "sources": unique_all_sources
     }
 
 
