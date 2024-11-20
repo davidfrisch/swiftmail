@@ -28,6 +28,11 @@ class AnythingLLMClient:
   def ping_alive(self):
     response = self._make_request("GET", "ping")
     return response
+  
+  def login(self):
+    response = self._make_request("GET", "v1/auth")
+    print(f"AnythingLLM: {response}")
+    return response
 
   def run_migrations(self):
     response = self._make_request("GET", "migrate")
@@ -119,7 +124,7 @@ class AnythingLLMClient:
   def get_workspace_slug(self, name):
     workspaces = self.get_all_workspaces()['workspaces']
     for workspace in workspaces:
-        if workspace['name'] == name:
+        if workspace['name'] == name or workspace['slug'] == name:
             return workspace['slug']
     return None
 
@@ -140,8 +145,11 @@ class AnythingLLMClient:
     return response
 
   def get_threads(self, slug):
-    response = self._make_request("GET", f"workspace/{slug}/threads")
-    threads = response["threads"]
+    print(f"Getting threads for workspace: {slug}")
+    response = self._make_request("GET", f"v1/workspace/{slug}")
+    print("22222222")
+    threads = response["workspace"][0]["threads"]
+    print("33333333")
     return threads
   
   def update_thread(self, slug_workspace, slug_thread, payload):
@@ -150,18 +158,8 @@ class AnythingLLMClient:
   
   def new_thread(self, slug_workspace, name):
     print(f"Creating new thread with name: {name} in workspace: {slug_workspace}")
-    self._make_request("POST", f"v1/workspace/{slug_workspace}/thread/new")
-    threads = self.get_threads(slug_workspace)
-    thread_with_same_name = [thread for thread in threads if thread["name"].split("-copy-")[0] == name]
-    if len(thread_with_same_name) == 1:
-        name = name + "-copy-1"
-    elif len(thread_with_same_name) > 1:
-        biggest_number = max([int(thread["name"].split("-copy-")[1]) if "-copy-" in thread["name"] else 0 for thread in thread_with_same_name])
-        name = name + "-copy-" + str(biggest_number+1)
-    
-    latest_thread = sorted(threads, key=lambda x: x["createdAt"], reverse=True)[0]
-    self.update_thread(slug_workspace, latest_thread["slug"], {"name": name})
-    return latest_thread
+    response = self._make_request("POST", f"v1/workspace/{slug_workspace}/thread/new")
+    return response['thread']
   
   def delete_thread(self, slug_workspace, slug_thread):
     try:

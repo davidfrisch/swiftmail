@@ -34,6 +34,7 @@ app.add_middleware(
 
 ollama_client = OllamaAI('http://localhost:11434', 'llama3.2:latest')
 anyllm_client = AnythingLLMClient(ANYTHING_LLM_BASE_URL, ANYTHING_LLM_TOKEN)
+anyllm_client.login()
 
 def get_db():
     db = SessionLocal()
@@ -188,6 +189,7 @@ async def get_jobs(db: Session = Depends(get_db)):
 async def generate_response(body: NewJob, db: Session = Depends(get_db)):
 
     email_id = body.email_id
+    is_force = body.force
     
     email = crud.get_email(db, email_id)
     if not email:
@@ -195,16 +197,25 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     
     old_jobs = crud.get_jobs_by_email_id(db, email_id)
     if old_jobs:
-        for job in old_jobs:
-            if job.status != models.JobStatus.COMPLETED and job.status != models.JobStatus.FAILED:
-                print(job.status == models.JobStatus.FAILED and job.status == models.JobStatus.COMPLETED)
-                print(f"Job already in progress: {job}")
-                return {"message": "Job already in progress", "job": job}
+        for old_job in old_jobs:
+            if old_job.status != models.JobStatus.COMPLETED and old_job.status != models.JobStatus.FAILED:
+                print(old_job.status == models.JobStatus.FAILED and old_job.status == models.JobStatus.COMPLETED)
+                print(f"Job already in progress: {old_job}")
+                if not is_force:
+                    return {"message": "Job already in progress", "job": old_job}
+                  
+                old_job.status = models.JobStatus.FAILED
+                try:
+                    if old_job.process_id:
+                        os.kill(old_job.process_id, signal.SIGTERM)
+                        print(f"Process with PID {old_job.process_id} killed")
+                except ProcessLookupError:
+                    print(f"Process with PID {old_job.process_id} not found")
+                crud.update_job(db, old_job)
 
-            if job.status == models.JobStatus.COMPLETED:
+            if old_job.status == models.JobStatus.COMPLETED:
                 return {"message": "Job already exists", "job": job}
 
- 
     job_status = models.JobStatus.PENDING.name
     new_job = schemas.JobCreate(
       email_id=email_id,
@@ -214,7 +225,7 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     job = crud.create_job(db, new_job)
     workspace_slug = anyllm_client.get_workspace_slug(email.workspace_name)
     if not workspace_slug:
-        return {"message": f"Workspace {email.workspace_name} not found", "job": job}
+        return {"message": f"Workspace {email.workspace_name} not found", "job": job}, 404
 
     new_thread = anyllm_client.new_thread(workspace_slug, "email-"+str(email.id))
     
@@ -301,7 +312,6 @@ async def cancel_job(job_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Job already completed or failed")
     
     job.status = models.JobStatus.FAILED
-    
     try:
         if job.process_id:
             os.kill(job.process_id, signal.SIGTERM)
