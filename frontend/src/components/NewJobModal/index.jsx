@@ -25,9 +25,10 @@ export default function NewJobModal({ open, setOpen }) {
         "subject": form.getFieldValue("title") || `Email ${new Date().toISOString()}`,
         "workspace_name": form.getFieldValue("workspace_name"),
         "body": form.getFieldValue("body"),
+        "additional_information": form.getFieldValue("additional_information"),
       });
-      // await api.jobs.createJob(newEmail.id);
 
+      await api.jobs.createJob(newEmail.id);
       console.log("Job created successfully");
 
       setOpen(false);
@@ -74,8 +75,14 @@ export default function NewJobModal({ open, setOpen }) {
             </Form.Item>
             <Form.Item name="body" rules={[{ required: true }]}>
               <TextArea
-                placeholder="Body"
-                style={{ minHeight: 500, overflow: "auto" }}
+                placeholder="Email body"
+                style={{ minHeight: 400, overflow: "auto" }}
+              />
+            </Form.Item>
+            <Form.Item name="additional_information" rules={[{ required: true }]}>
+              <TextArea
+                placeholder="Add a note to help the generator"
+                style={{ minHeight: 100, overflow: "auto" }}
               />
             </Form.Item>
           </Modal>

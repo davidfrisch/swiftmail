@@ -71,7 +71,7 @@ export default function GeneratedDraft({ results, setResults }) {
 
   return (
     <div>
-      {results?.sources?.length > 0 && (
+      {results?.sources && (
         <SourcesModal
           sources={results?.sources}
           open={openSourcesModal}

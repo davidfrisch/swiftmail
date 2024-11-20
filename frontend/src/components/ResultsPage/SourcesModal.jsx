@@ -1,8 +1,8 @@
-import React from "react";
+
 import { Button, Modal, Tooltip } from "antd";
 
 export default function SourcesModal({ sources, open, setOpen }) {
-  console.log(sources);
+  
   return (
     <Modal
       title="Sources"
@@ -19,6 +19,8 @@ export default function SourcesModal({ sources, open, setOpen }) {
           </Tooltip>
         </div>
       ))}
+
+      {sources?.length === 0 && <p>No sources found.</p>}
     </Modal>
   );
 }

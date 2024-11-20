@@ -166,12 +166,9 @@ class Generater:
             answer = res['textResponse']
             return answer, [], 0
           
-          
-        total_sim_distance = sum([source['_distance'] if '_distance' in source else 0 for source in sources]) / len(sources) if len(sources) > 0 else 0
-        chunk_sources = [source['chunkSource'].replace("link://", "") for source in sources if 'chunkSource' in source]
+        chunk_sources = [source['url'] for source in sources]
         unique_sources = list(set(chunk_sources))
       
-        print(f"Total Sim Distance: {total_sim_distance}")
         return answer, unique_sources, sources
       
       

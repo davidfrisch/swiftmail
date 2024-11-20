@@ -1,10 +1,13 @@
 import React from "react";
-import { theme } from "antd";
+import { Button, theme } from "antd";
+import { useNavigate } from "react-router-dom";
 
 export default function OriginalEmail({ email }) {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const navigate = useNavigate();
 
   return (
     <div
@@ -14,6 +17,13 @@ export default function OriginalEmail({ email }) {
         borderRadius: borderRadiusLG,
       }}
     >
+      <Button
+        type="secondary"
+        style={{ marginBottom: 24 }}
+        onClick={() => navigate("/mails")}
+      >
+        Back
+      </Button>
       <h1>Email</h1>
 
       <h2>Subject: {email?.subject}</h2>

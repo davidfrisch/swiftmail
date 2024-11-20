@@ -18,6 +18,7 @@ class EmailBase(BaseModel):
     subject: str = None
     body: str = None
     workspace_name: str = None
+    additional_information: str = ""
     created_at: datetime = datetime.now()
 
 

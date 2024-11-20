@@ -72,7 +72,7 @@ const emails = {
 
   createEmail: async (email) => {
     const response = await api.post('emails', email);
-    return response.data;
+    return response.data.email;
   },
 
   toggleAsRead: async (emailId) => {

@@ -45,7 +45,7 @@ export default function ResultsPage({ jobId }) {
   return (
     <div>
       <OriginalEmail email={results?.email} />
-
+      
       {results?.draft_result && (
         <GeneratedDraft results={results} setResults={setResults} />
       )}

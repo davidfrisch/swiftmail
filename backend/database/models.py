@@ -21,6 +21,7 @@ class Email(Base):
     subject = Column(String(255))
     body = Column(Text)
     workspace_name = Column(String)
+    additional_information = Column(Text)
     created_at = Column(DateTime, default=datetime.now())
     
     
@@ -29,7 +30,7 @@ class Email(Base):
     job = relationship("Job", uselist=False, back_populates="email")
 
     def __repr__(self):
-        return f"<Email(id={self.id}, subject={self.subject}, body={self.body}), created_at={self.created_at}), workspace_name={self.workspace_name})>"
+        return f"<Email(id={self.id}, subject={self.subject}, body={self.body}), created_at={self.created_at}), workspace_name={self.workspace_name}, additional_information={self.additional_information})>"
 
 class ExtractResult(Base):
     __tablename__ = 'extract_results'

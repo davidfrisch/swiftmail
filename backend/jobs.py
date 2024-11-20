@@ -74,7 +74,7 @@ def update_answer(db: Session, generater: Generater, answer: schemas.AnswerResul
 def generate_draft_email(db: Session, generater: Generater, email: schemas.Email, job: schemas.Job):
     extract_results = crud.get_extract_results_by_job_id(db, job.id)
     answers = crud.get_answer_results_by_job_id(db, job.id)
-    draft_response = generater.generate_response_email(email, extract_results, answers)
+    draft_response = generater.generate_response_email(email, extract_results, answers, email.additional_information)
     
     new_draft_result = schemas.DraftResultCreate(
         job_id=job.id,

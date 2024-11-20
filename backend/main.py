@@ -125,50 +125,6 @@ async def save_and_confirm_email(email_id: int,  body: FinalDraft, db: Session =
         anyllm_client.save_draft_in_db(workspace_name, email.id, new_draft)
     
 
-# Answers 
-@app.put("/answers/{answer_id}")
-async def retry_answer(answer_id: int, feedback: Feedback, db: Session = Depends(get_db)):
-    if not answer_id:
-        raise HTTPException(status_code=400, detail="Answer ID is required")
-      
-    answer = crud.get_answer_result(db, answer_id)
-    if not answer:
-        raise HTTPException(status_code=404, detail="Answer not found")
-    
-    generator = Generater(ollama_client, anyllm_client)
-    new_answer = update_answer(db, generator, answer, feedback)
-  
-    return {"message": "Answer updated successfully", "answer": new_answer}
-      
-      
-
-
- 
-   
-@app.post("/drafts/retry")
-async def retry_draft(feedback: Feedback, db: Session = Depends(get_db)):
-    job_id = feedback.job_id
-    if not job_id:
-        raise HTTPException(status_code=400, detail="Job ID is required")
-      
-    job = crud.get_job(db, job_id)
-    if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
-      
-    drafts = crud.get_draft_results_by_job_id(db, job_id)
-    if not drafts:
-        raise HTTPException(status_code=404, detail="Draft not found")
-    
-    draft = drafts[0]
-    if not draft:
-        raise HTTPException(status_code=404, detail="Draft not found")
-    
-    generator = Generater(ollama_client, anyllm_client)
-    new_draft = retry_draft_email(db, generator, draft, feedback) 
-    
-  
-    return {"message": "Draft updated successfully", "draft": new_draft} 
-  
 
 # Jobs
 @app.get("/jobs")
@@ -195,6 +151,7 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     if not email:
         raise HTTPException(status_code=404, detail="email not found")
     
+    additional_information = email.additional_information
     old_jobs = crud.get_jobs_by_email_id(db, email_id)
     if old_jobs:
         for old_job in old_jobs:
@@ -219,6 +176,7 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
     job_status = models.JobStatus.PENDING.name
     new_job = schemas.JobCreate(
       email_id=email_id,
+      additional_information=additional_information,
       status=job_status,
       started_at= datetime.now(),
     )
@@ -361,3 +319,46 @@ async def retry_job(body: NewJob, db: Session = Depends(get_db)):
 async def get_workspaces():
     workspaces = anyllm_client.get_all_workspaces()
     return workspaces["workspaces"]
+  
+  
+# Answers 
+@app.put("/answers/{answer_id}")
+async def retry_answer(answer_id: int, feedback: Feedback, db: Session = Depends(get_db)):
+    if not answer_id:
+        raise HTTPException(status_code=400, detail="Answer ID is required")
+      
+    answer = crud.get_answer_result(db, answer_id)
+    if not answer:
+        raise HTTPException(status_code=404, detail="Answer not found")
+    
+    generator = Generater(ollama_client, anyllm_client)
+    new_answer = update_answer(db, generator, answer, feedback)
+  
+    return {"message": "Answer updated successfully", "answer": new_answer}
+      
+      
+   
+@app.post("/drafts/retry")
+async def retry_draft(feedback: Feedback, db: Session = Depends(get_db)):
+    job_id = feedback.job_id
+    if not job_id:
+        raise HTTPException(status_code=400, detail="Job ID is required")
+      
+    job = crud.get_job(db, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+      
+    drafts = crud.get_draft_results_by_job_id(db, job_id)
+    if not drafts:
+        raise HTTPException(status_code=404, detail="Draft not found")
+    
+    draft = drafts[0]
+    if not draft:
+        raise HTTPException(status_code=404, detail="Draft not found")
+    
+    generator = Generater(ollama_client, anyllm_client)
+    new_draft = retry_draft_email(db, generator, draft, feedback) 
+    
+  
+    return {"message": "Draft updated successfully", "draft": new_draft} 
+  
