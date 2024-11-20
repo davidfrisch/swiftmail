@@ -7,5 +7,6 @@
       "category": "Entry requirements"
     }
   ],
-  "prompt": "\n      Your name is John Doe and you are applying for a graduate program in Software Engineering. \n      You are a international student that is interested in the MSc program at UCL.\n      \n      Write an email to UCL admissions asking the following questions:\n \n      My programme requires a portfolio, how do I submit it?\n      \n    "
+  "prompt": "\n      Your name is John Doe and you are applying for a graduate program in Software Engineering. \n      You are a international student that is interested in the MSc program at UCL.\n      \n      Write an email to UCL admissions asking the following questions:\n \n      My programme requires a portfolio, how do I submit it?\n      \n    ",
+  "gold": "Dear John Doe,\n\nThank you for your interest in the MSc Software Engineering program at University College London (UCL).\n\nRegarding your inquiry about the portfolio submission, please note that once your application has been submitted, it will be reviewed by the Admissions selectors. If they would like to view your portfolio, they will contact you directly via email with detailed instructions on how to provide it.\n\nWe kindly request that you do not upload your portfolio to your application or send it to Admissions unless specifically requested.\n\nIf you have any further questions or require assistance with your application, please feel free to reach out. We wish you the best of luck with your application.\n\nBest regards,\n\n[Admissions Team]\nUniversity College London"
 }

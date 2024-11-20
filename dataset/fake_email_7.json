@@ -7,5 +7,7 @@
       "category": "Applications"
     }
   ],
-  "prompt": "\n      Your name is John Doe and you are applying for a graduate program in Software Engineering. \n      You are a international student that is interested in the MSc program at UCL.\n      \n      Write an email to UCL admissions asking the following questions:\n \n      When should I apply?\n      \n    "
+  "prompt": "\n      Your name is John Doe and you are applying for a graduate program in Software Engineering. \n      You are a international student that is interested in the MSc program at UCL.\n      \n      Write an email to UCL admissions asking the following questions:\n \n      When should I apply?\n      \n    ",
+  
+  "gold": "Dear John Doe,\n\nThank you for your interest in the MSc Software Engineering programme at University College London (UCL).\n\nApplications are considered on a rolling basis and may close earlier than the advertised deadline. We recommend that you submit your application as soon as possible to ensure consideration, as the programme will close once it is full or by the general deadline for applications.\n\nFor specific details regarding the application timeline and deadlines, please refer to the individual programme page on our website.\n\nIf you have further questions or need assistance, please feel free to reach out. We wish you the best with your application.\n\nBest regards,\n\n[Admissions Team]\nUniversity College London"
 }

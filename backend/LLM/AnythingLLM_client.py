@@ -45,6 +45,14 @@ class AnythingLLMClient:
     """Get a list of all files in the local files."""
     response = self._make_request("GET", "system/local-files")
     return response["localFiles"]
+  
+  def change_chunk_size(self, chunk_size, chunk_overlap):
+    payload = {
+    "text_splitter_chunk_size": chunk_size,
+    "text_splitter_chunk_overlap": chunk_overlap
+    }
+    response = self._make_request("POST", "admin/system-preferences", payload)
+    return response
 
 
   def get_folder(self, document_name: str):
@@ -173,7 +181,7 @@ class AnythingLLMClient:
     response = self._make_request("POST", f"v1/workspace/{slug_workspace}/thread/{slug_thread}/chat", payload)
     return response
   
-  def upload_document_to_workspace(self, slug, file_path):
+  def add_document_to_workspace(self, slug, file_path):
     files = {
       "file": open(file_path, 'rb')
     }
@@ -191,7 +199,7 @@ class AnythingLLMClient:
     return
 
 
-  def embed_document_into_workspace(self, slug, adds: list = [], deletes: list = []):
+  def update_documents_into_workspace(self, slug, adds: list = [], deletes: list = []):
     """Adds and deletes are lists of document IDs."""
     payload = {
       "adds": adds,
@@ -213,7 +221,7 @@ class AnythingLLMClient:
     document = self.get_folder("custom-documents")
     url_elem = self.get_url_from_folder(document, url)
     elem_to_add = "custom-documents/"+url_elem["name"]
-    self.embed_document_into_workspace(slug, adds=[elem_to_add])
+    self.update_documents_into_workspace(slug, adds=[elem_to_add])
 
 
   def delete_workspace(self, slug):
@@ -241,12 +249,12 @@ class AnythingLLMClient:
       f.write(draft)
     
     filepath = os.path.abspath(fullpath)
-    self.upload_document_to_workspace(workspace_slug, filepath)
+    self.add_document_to_workspace(workspace_slug, filepath)
     
     folder = self.get_folder("custom-documents")
     document_name = next(item["name"] for item in folder["items"] if item["title"] == filename)
     if not document_name:
       raise ValueError(f"Document {fullpath} not found in custom-documents folder")
     elem_to_add = "custom-documents/"+document_name
-    self.embed_document_into_workspace(workspace_slug, adds=[elem_to_add])
+    self.update_documents_into_workspace(workspace_slug, adds=[elem_to_add])
   
