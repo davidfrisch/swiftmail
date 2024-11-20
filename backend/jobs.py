@@ -72,14 +72,18 @@ def update_answer(db: Session, generater: Generater, answer: schemas.AnswerResul
     
 
 def generate_draft_email(db: Session, generater: Generater, email: schemas.Email, job: schemas.Job):
-    extract_results = crud.get_extract_results_by_job_id(db, job.id)
-    answers = crud.get_answer_results_by_job_id(db, job.id)
-    draft_response = generater.generate_response_email(email, extract_results, answers, email.additional_information)
+    # extract_results = crud.get_extract_results_by_job_id(db, job.id)
+    # answers = crud.get_answer_results_by_job_id(db, job.id)
+    
+    draft_response = generater.generate_response_email(email, [], [], email.additional_information)
+    draft_body = draft_response['textResponse']
+    sources = draft_response['sources']
     
     new_draft_result = schemas.DraftResultCreate(
         job_id=job.id,
         email_id=email.id,
-        draft_body=draft_response,
+        draft_body=draft_body,
+        sources = json.dumps(sources),
         created_at=datetime.now(),
     )
     

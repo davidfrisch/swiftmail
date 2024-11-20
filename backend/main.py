@@ -125,6 +125,15 @@ async def save_and_confirm_email(email_id: int,  body: FinalDraft, db: Session =
         anyllm_client.save_draft_in_db(workspace_name, email.id, new_draft)
     
 
+@app.delete("/emails/{email_id}")
+async def delete_email(email_id: int, db: Session = Depends(get_db)):
+    email = crud.get_email(db, email_id)
+    if not email:
+        raise HTTPException(status_code=404, detail="email not found")
+    
+    crud.delete_email(db, email)
+    return {"message": "Email deleted successfully", "email": email}
+
 
 # Jobs
 @app.get("/jobs")
@@ -206,54 +215,24 @@ async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Job not found")
     
     email = crud.get_email(db, job.email_id)
-    extract_results = crud.get_extract_results_by_job_id(db, job_id)
-    answers = crud.get_answer_results_by_job_id(db, job_id)
     draft_result = crud.get_draft_results_by_job_id(db, job_id)
     latest_draft = draft_result[0]
     
     body_draft = latest_draft.draft_body
+    sources = json.loads(latest_draft.sources)
     if "Subject:" in latest_draft.draft_body:
         body_draft = "\n\n".join(latest_draft.draft_body.split("\n\n")[1:])
         
-    
-    answers_questions = []
-    for answer in answers:
-        extract_result = next((extract_result for extract_result in extract_results if extract_result.id == answer.extract_result_id), None)
-        answers_questions.append({
-            "question": extract_result.question_text,
-            "extract": extract_result.question_text,
-            "problem_context": extract_result.problem_context,
-            "answer": answer.answer_text,
-            "question_id": extract_result.id,
-            "answer_id": answer.id,
-            "sources": json.loads(answer.sources) if answer.sources else [],
-            "unique_sources": json.loads(answer.unique_sources) if answer.unique_sources else [],
-            "scores": {
-                "binary_score": answer.binary_score if isinstance(answer.binary_score, int) else None,
-                "hallucination_score": answer.hallucination_score if isinstance(answer.hallucination_score, int) else None,
-                "linkert_score": answer.linkert_score if isinstance(answer.linkert_score, int) else None
-            }
-        })
-        
-      
-    uniques_sources = [answer['unique_sources'] for answer in answers_questions]
-    unique_all_sources = list(set([source for sources in uniques_sources for source in sources]))
- 
+    uniques_sources = [source["url"] for source in sources if source["url"]]            
             
-            
-    extracts_to_highlight = [answer_question['extract'] for answer_question in answers_questions]
     return {
         "email": email,
-        "extract_results": extract_results,
-        "answers": answers,
         "draft_result": {
             "body": body_draft,
             "created_at": latest_draft.created_at,
         },
-        "answers_questions": answers_questions,
         "job": job,
-        "extracts_to_highlight": extracts_to_highlight,
-        "sources": unique_all_sources
+        "sources": uniques_sources
     }
 
 

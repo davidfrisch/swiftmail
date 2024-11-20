@@ -20,6 +20,7 @@ class EmailBase(BaseModel):
     workspace_name: str = None
     additional_information: str = ""
     created_at: datetime = datetime.now()
+    is_deleted: bool = False
 
 
 class Email(EmailBase):
@@ -83,6 +84,7 @@ class AnswerResultCreate(AnswerResultBase):
 
 class DraftResultBase(BaseModel):
     draft_body: str
+    sources: str
     created_at: datetime
     binary_score: Optional[int] = None
     linkert_score: Optional[int] = None

@@ -53,8 +53,8 @@ class AnythingLLMClient:
   
   def change_chunk_size(self, chunk_size, chunk_overlap):
     payload = {
-    "text_splitter_chunk_size": chunk_size,
-    "text_splitter_chunk_overlap": chunk_overlap
+      "text_splitter_chunk_size": chunk_size,
+      "text_splitter_chunk_overlap": chunk_overlap
     }
     response = self._make_request("POST", "admin/system-preferences", payload)
     return response
@@ -147,9 +147,7 @@ class AnythingLLMClient:
   def get_threads(self, slug):
     print(f"Getting threads for workspace: {slug}")
     response = self._make_request("GET", f"v1/workspace/{slug}")
-    print("22222222")
     threads = response["workspace"][0]["threads"]
-    print("33333333")
     return threads
   
   def update_thread(self, slug_workspace, slug_thread, payload):

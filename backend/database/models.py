@@ -23,6 +23,7 @@ class Email(Base):
     workspace_name = Column(String)
     additional_information = Column(Text)
     created_at = Column(DateTime, default=datetime.now())
+    is_deleted = Column(Boolean, default=False)
     
     
     questions = relationship("ExtractResult", back_populates="email")
@@ -81,6 +82,7 @@ class DraftResult(Base):
     email_id = Column(Integer, ForeignKey('emails.id'), nullable=False)
     job_id = Column(Integer, ForeignKey('jobs.id'), nullable=False)
     draft_body = Column(String, nullable=False)
+    sources = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.now())
     binary_score = Column(Integer, nullable=True)
     linkert_score = Column(Integer, nullable=True)

@@ -4,10 +4,10 @@ from . import models, schemas
 from time import time
 ## Emails
 def get_emails(db: Session, skip: int = 0, limit: int = 100) -> List[schemas.Email]:
-    return db.query(models.Email).offset(skip).limit(limit).all()
+    return db.query(models.Email).filter(models.Email.is_deleted == False).offset(skip).limit(limit).all()
   
 def get_email(db: Session, email_id: int) -> schemas.Email:
-    return db.query(models.Email).filter(models.Email.id == email_id).first()
+    return db.query(models.Email).filter(models.Email.id == email_id and models.Email.is_deleted == False).first()
 
 def create_email(db: Session, email: schemas.Email):
     db_email = models.Email(subject=email.subject, body=email.body, workspace_name=email.workspace_name, additional_information=email.additional_information)
@@ -17,6 +17,12 @@ def create_email(db: Session, email: schemas.Email):
     return db_email
 
 def update_email(db: Session, email: models.Email):
+    db.commit()
+    db.refresh(email)
+    return email
+
+def delete_email(db: Session, email: models.Email):
+    email.is_deleted = True
     db.commit()
     db.refresh(email)
     return email

@@ -90,7 +90,12 @@ const emails = {
       }
     );
     return response.data;
-  }
+  },
+
+  delete: async (emailId) => {
+    const response = await api.delete(`emails/${emailId}`);
+    return response.data;
+  },
 }
 
 const answers = {

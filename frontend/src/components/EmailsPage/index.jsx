@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Table, Button, message, Spin } from "antd";
+import { Table, Button, message, Spin, Popconfirm } from "antd";
+import { EyeOutlined, DeleteOutlined } from "@ant-design/icons";
 import api from "../../api";
 import "./EmailsPage.css";
 import JobStatus from "./JobStatus";
@@ -9,7 +10,6 @@ export default function EmailsPage({ handleView }) {
   const [emails, setEmails] = useState([]);
   const [isCreatingJob, setIsCreatingJob] = useState(false);
   const [generatingJob, setGeneratingJob] = useState(null);
-
 
   const fetchMails = async () => {
     try {
@@ -27,7 +27,6 @@ export default function EmailsPage({ handleView }) {
     return () => clearInterval(interval);
   }, []);
 
-
   const handleGenerate = async (email) => {
     try {
       setGeneratingJob(email.id);
@@ -39,6 +38,17 @@ export default function EmailsPage({ handleView }) {
       message.error("Failed to generate job");
     } finally {
       setGeneratingJob(null);
+    }
+  };
+
+  const handleDelete = async (email) => {
+    try {
+      await api.emails.delete(email.id);
+      message.success(`Deleted email with ID: ${email.id}`);
+      fetchMails();
+    } catch (error) {
+      console.error("Failed to delete email:", error);
+      message.error("Failed to delete email");
     }
   };
 
@@ -54,19 +64,35 @@ export default function EmailsPage({ handleView }) {
     } finally {
       setGeneratingJob(null);
     }
-  }
+  };
 
   const renderActions = (mail) => {
     switch (mail?.job?.status) {
       case "COMPLETED":
         return (
-          <Button
-            type="link"
-            onClick={() => handleView(mail)}
-            style={{ marginRight: 8 }}
-          >
-            View
-          </Button>
+          <div>
+            <Button
+              type="text"
+              type="text"
+              onClick={() => handleView(mail)}
+              style={{ marginRight: 8 }}
+              size="large"
+            >
+              <EyeOutlined />
+            </Button>
+
+            <Popconfirm
+              title="Delete the task"
+              description="Are you sure to delete this task?"
+              onConfirm={() => handleDelete(mail)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button danger type="text" size="large">
+                <DeleteOutlined />
+              </Button>
+            </Popconfirm>
+          </div>
         );
       case "FAILED":
         return (
@@ -80,11 +106,7 @@ export default function EmailsPage({ handleView }) {
         );
       default:
         return (
-          <Button
-            disabled
-            type="link"
-            style={{ marginRight: 8 }}
-          >
+          <Button disabled type="link" style={{ marginRight: 8 }}>
             Generating
           </Button>
         );
@@ -116,9 +138,7 @@ export default function EmailsPage({ handleView }) {
         <span>
           <div>
             {mail?.job ? (
-              <div>
-                {renderActions(mail)}
-              </div>
+              <div>{renderActions(mail)}</div>
             ) : (
               <Button
                 type="link"
@@ -143,7 +163,6 @@ export default function EmailsPage({ handleView }) {
     <div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <h1>Mails</h1>
-        
       </div>
       <div
         style={{ display: "flex", marginBottom: 16, justifyContent: "start" }}
@@ -158,7 +177,7 @@ export default function EmailsPage({ handleView }) {
       </div>
       <Table
         columns={columns}
-        dataSource={emails.map(({email, job}) => ({ ...email, job }))}
+        dataSource={emails.map(({ email, job }) => ({ ...email, job }))}
         rowKey="id"
         pagination={{ pageSize: 5 }}
         className="mails-table"

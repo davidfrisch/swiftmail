@@ -59,7 +59,7 @@ class Generater:
                 )
                 
                 answers_results.append(answer_result)
-        generated_draft_email = self.generate_response_email(email, extract_questions,  answers_results)
+        generated_draft_email = self.generate_response_email(email, extract_questions,  answers_results, email.additional_information)
         path_output and self.dump_intermediate({'generated_draft_email': generated_draft_email}, path_output)
         self.anyllm_client.delete_thread(workspace_slug, thread_slug)
         return {
@@ -178,36 +178,24 @@ class Generater:
         program_administrator_name = "David"
         program_name = "UCL Software Engineering MSc"
         
-        
-        questions_answers = []
-        
-        for question in questions:
-            question_text = question.question_text
-            answer_text = next((answer.answer_text for answer in answers if answer.extract_result_id == question.id), "I don't have an answer for this question")
-            questions_answers.append(f"Question: {question_text}\nAnswer: {answer_text} \n-------\n")
-        print(questions_answers)
         prompt = f"""
         You are {program_administrator_name}, the program administrator for the {program_name} program.
         You have received an email from a student asking the following questions:
         Subject: {original_email.subject}
         Body: {original_email.body}
         
-        Here are the questions that the student asked with the answers:
-        {''.join(questions_answers)}
+      
         
         ---
-        Reply to the student's email with the answers to their questions.
         
-        {("Additional information:"+ additional_context) if additional_context else ""}
+        {("Additional information to consider:"+ additional_context) if additional_context else ""}
         """
         
-        generated_email = self.olllama_client.predict(prompt)
-        self.generated_draft_email = generated_email
-        
+        generated_email = self.anyllm_client.chat_with_workspace(original_email.workspace_name, prompt)
         return generated_email
     
     
-    def regenerate_response_email(self,  original_draft, corrections):
+    def regenerate_response_email(self,  email:Email, original_draft, corrections):
         prompt = f"""
         {original_draft}
         
@@ -218,8 +206,7 @@ class Generater:
         
         """
 
-        print(prompt)
-        generated_email = self.olllama_client.predict(prompt)
+        generated_email = self.anyllm_client.chat_with_workspace(email.workspace_name, prompt)['textResponse']
         
         is_column_on_first_line = generated_email.split("\n")[0].strip().find(":")
         if is_column_on_first_line != -1:

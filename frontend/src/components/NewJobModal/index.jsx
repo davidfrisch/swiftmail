@@ -79,7 +79,7 @@ export default function NewJobModal({ open, setOpen }) {
                 style={{ minHeight: 400, overflow: "auto" }}
               />
             </Form.Item>
-            <Form.Item name="additional_information" rules={[{ required: true }]}>
+            <Form.Item name="additional_information" rules={[{ required: false }]}>
               <TextArea
                 placeholder="Add a note to help the generator"
                 style={{ minHeight: 100, overflow: "auto" }}
