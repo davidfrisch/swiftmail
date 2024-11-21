@@ -1,0 +1,10 @@
+Why is my application fee payment not going through?
+-----------------------------
+There can be a number of reasons why your payment is not going through:
+
+Please do not use a Firefox browser to make your payment.
+The payment system does not accept special characters, please ensure that you only use anglicised characters when making the payment.
+The payment may have been blocked by your card issuer/bank. You should contact them to inform them that you are making an overseas payment.
+You can access Flywire's FAQs, useful videos and articles, and also access the Flywire 24/7 Live Chat and speak with our global support team instantly.
+
+Get help from Flywire

@@ -296,3 +296,4 @@ outputs
 backend/saved_results
 benchmarking/one_vs_multi_shots/response.json
 benchmarking/reviewer_benchmark/markdowns
+data_science/embedding/*.json

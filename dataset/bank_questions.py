@@ -150,13 +150,24 @@ ucl_questions = [
 
 
 
-def write_question_to_file(filename, question, answer):
-  with open (filename, "w") as f:
-    f.write(f"Question: {question}\n")
-    f.write("-"*50 + "\n")
-    f.write(f"Answer: {answer}\n")
+# def write_question_to_file(filename, question, answer):
+#   with open (filename, "w") as f:
+#     f.write(f"Question: {question}\n")
+#     f.write("-"*50 + "\n")
+#     f.write(f"Answer: {answer}\n")
     
-def write_questions_to_file(filename, questions):
-    for i, q in enumerate(questions):
-      write_question_to_file(filename, q["question"], q["answer"])
+# def write_questions_to_file(filename, questions):
+#     for i, q in enumerate(questions):
+#       write_question_to_file(filename, q["question"], q["answer"])
       
+
+# questions_benchmark = []
+# for i, q in enumerate(ucl_questions):
+#   filename = f"dataset/faq_ucl_question_{i}.txt"
+#   data = {
+#     "q": q["question"],
+#     "a": filename
+#   }
+#   questions_benchmark.append(data)
+
+print(len(ucl_questions))
