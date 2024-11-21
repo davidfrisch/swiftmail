@@ -70,7 +70,7 @@ function App() {
           )}
         </Routes>
       </Content>
-      <Footer id="footer">Swiftmail ©{new Date().getFullYear()}</Footer>
+      <Footer id="footer">SwiftMail ©{new Date().getFullYear()}</Footer>
     </Layout>
   );
 }

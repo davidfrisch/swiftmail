@@ -73,7 +73,6 @@ export default function EmailsPage({ handleView }) {
           <div>
             <Button
               type="text"
-              type="text"
               onClick={() => handleView(mail)}
               style={{ marginRight: 8 }}
               size="large"
@@ -114,12 +113,7 @@ export default function EmailsPage({ handleView }) {
   };
 
   const columns = [
-    {
-      title: "Mail ID",
-      dataIndex: "id",
-      key: "id",
-      width: 100,
-    },
+    
     {
       title: "Email Subject",
       dataIndex: "subject",

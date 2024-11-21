@@ -1,0 +1,214 @@
+
+Software Systems Engineering MSc
+
+London, Bloomsbury
+
+This is the programme information for 2025 entry
+
+If you require details of the previous year's programme, Software Systems Engineering MSc (2024), click here
+
+This one-year MSc will deepen your expertise in software engineering, preparing you for careers in leading IT companies or for further academic research. You will undertake a substantial research or engineering project, often in collaboration with industry partners, to develop the skills necessary for the software engineering field.
+
+UK students
+
+International students
+
+Study mode Full-time
+
+UK tuition fees (2025/26)
+
+£20,500
+
+Overseas tuition fees (2025/26)
+
+£39,800
+
+Duration
+
+1 calendar year
+
+Programme starts September 2025
+
+Applications accepted
+
+Applicants who require a visa: 14 Oct 2024 – 04 Apr 2025 Applications close at 5pm UK time Applications open
+
+Applicants who do not require a visa: 14 Oct 2024 – 29 Aug 2025 Applications close at 5pm UK time Applications open
+
+Apply for this course
+
+Entry requirements A minimum of an upper second-class UK Bachelor's degree (or international qualification of an equivalent standard) in computer science, computing, or software engineering. Relevant work experience may also be considered.
+
+English language requirements
+
+The English language level for this programme is: Level 2
+
+UCL Pre-Master's and Pre-sessional English courses are for international students who are aiming to study for a postgraduate degree at UCL. The courses will develop your academic English and academic skills required to succeed at postgraduate level. Further information can be found on our English language requirements page.
+
+Equivalent qualifications
+
+Country-specific information, including details of when UCL representatives are visiting your part of the world, can be obtained from the International Students website.
+
+International applicants can find out the equivalent qualification for their country by selecting from the list below. Please note that the equivalency will correspond to the broad UK degree classification stated on this page (e.g. upper second-class). Where a specific overall percentage is required in the UK qualification, the international equivalency will be higher than that stated below. Please contact Graduate Admissions should you require further advice.
+
+Select your country Select a country Afghanistan Albania Algeria Argentina Armenia Australia Austria Azerbaijan Bahrain Bangladesh Barbados Belarus Belgium Belize Bolivia Bosnia and Herzegovina Botswana Brazil Brunei Bulgaria Cambodia Cameroon Canada Caribbean / West Indies Chile China Colombia Congo (DR) Costa Rica Croatia Cuba Cyprus (Greek Cypriot and Turkish Cypriot communities) Czech Republic Denmark Dominican Republic Ecuador Egypt El Salvador Eritrea Estonia Ethiopia Fiji Finland France Gambia Georgia Germany Ghana Greece Guatemala Guyana Honduras Hong Kong (SAR) Hungary Iceland India Indonesia Iran Iraq Ireland Israel Italy Ivory Coast Jamaica Japan Jordan Kazakhstan Kenya Kuwait Kyrgyzstan Latvia Lebanon Lesotho Liberia Libya Liechtenstein Lithuania Luxembourg Macau (SAR) Madagascar Malawi Malaysia Malta Mauritius Mexico Moldova Mongolia Montenegro Morocco Myanmar (Burma) Namibia Nepal Netherlands New Zealand Nicaragua Nigeria North Macedonia Norway Oman Pakistan Panama Papua New Guinea Paraguay Peru Philippines Poland Portugal Qatar Romania Russia Rwanda Saudi Arabia Senegal Serbia Sierra Leone Singapore Slovakia Slovenia South Africa South Korea Spain Sri Lanka Sudan Swaziland/Eswatini Sweden Switzerland Syria Taiwan Tajikistan Tanzania Thailand Trinidad and Tobago Tunisia Turkey (including Turkish sector of Cyprus) Turkmenistan Uganda Ukraine United Arab Emirates (UAE) United States of America Uruguay Uzbekistan Venezuela Vietnam Yemen Zambia Zimbabwe
+
+About this degree
+
+Large-scale software systems are essential in many industries. This advanced programme teaches you from world-renowned lecturers who are leaders in both research and industry. You will learn to identify software requirements, design software architecture, develop and test software, and reflect on the professional responsibilities of software engineers. Elective modules allow you to specialise in areas such as security, networks, data engineering, and finance. A substantial project, either a group industry project or an individual research project, forms a key part of the programme.Most of our group projects are with industry clients, where you will apply your knowledge to real-world problems. Research projects will give you exposure to the most recent advances in software engineering research and are a brilliant option if you are considering a PhD in the future.This programme will give you all the skills you need to work on large-scale software systems in an industry or a research capacity. At the same time, you will benefit from studying in the heart of London, one of the largest IT sectors in the world.
+
+Who this course is for This programme is ideal for you if you have a background in software engineering, either through a previous degree in computer science or professional experience. If you do not have a computer science background, consider our MSc in Computer Science.
+
+Read about what it takes to study for a Master's at UCL
+
+What this course will give you Recognition from a top-ranked university: UCL is consistently ranked among the best universities globally (ranked 9th in the QS World University Rankings 2025), providing you with a prestigious qualification that is highly regarded by employers worldwide. Additionally, UCL was named the Times and Sunday Times University of the Year 2024.High-quality education from leading experts: Learn from world-renowned academics who are at the forefront of computer science innovation. UCL Computer Science is recognised for its research excellence, ranked first in England and second in the UK for research power in Computer Science and Informatics in the UK's most recent Research Excellence Framework (REF 2021).Real-world experience through project work: Apply your knowledge and skills in practical settings with a substantial research or engineering project. Many of these projects are conducted in collaboration with industry partners via the IXN Industry Exchange Network, giving you valuable hands-on experience and industry insights. Strong employability with high employment rates and starting salaries: Our graduates are highly sought after in the job market, thanks to UCL's strong reputation and the practical, industry-focused skills gained during the programme. You'll be well-prepared to enter a variety of high-demand roles in software systems engineering. Enhanced research skills: The research-based components of the programme will equip you with strong analytical and problem-solving abilities, preparing you for potential doctoral studies or research-intensive roles in industry.
+
+Read about what you'll get out of a graduate programme
+
+The foundation of your career Graduates work in various sectors, including tech giants like Amazon, Google, and Meta, the finance sector, and start-ups. Some pursue further research, leading to PhDs at prestigious institutions.
+
+My highlights from my programme were the times where I would get my hands dirty with designing and developing beautiful software as part of my coursework, for clients who have been in the industry for a long period of time. I worked on an app with someone who had worked at Microsoft for 20 years. After this, I worked with Cisco on a project. All this valuable industry experience was great.
+
+Karthik Ambu
+
+MSc Software Systems Engineering
+
+Read more about Karthik
+
+Employability The programme equips you with a strong skill set in software systems engineering, preparing you for roles in software engineering, development, and architecture. The research-based curriculum also prepares you for doctoral studies. Networking
+
+During the programme, you have ample opportunity to network with peers and members of academia and industry, particularly through collaborative project work and research seminars.  As a student and later as a graduate, you will have access to a UCL careers events programme, connecting you with employers and alumni. This programme provides invaluable insight into the reality of different roles, sectors, and current application processes.  UCL also has a large number of clubs and societies, which can be an effective way to connect with peers who share similar interests and career goals.  Be part of a university where entrepreneurial minds thrive. Our academic and industrial networks provide a safe and supportive environment if you want to grow your own company.
+
+Teaching and learning This programme is delivered through a combination of lectures, tutorials, lab classes, and self-directed learning supported by online resources. You will be assessed through various methods, including coursework, projects, exams, and a summer research project/dissertation. For full-time students, typical contact hours are approximately 12-14 contact  hours per teaching week, depending on module selections and timetabling. These contact hours include lectures, seminars, workshops, and tutorials, office hours and other events. Outside of these sessions, students are expected to engage in significant self-directed study and complete assessments. Formal teaching and self-directed study together amount to a workload comparable to a full-time job, roughly 35-40 hours per week in total.
+
+Modules
+
+Full-time
+
+The Software Systems Engineering MSc is a one-year programme.In Term 1, you will study Requirements Engineering and Software Architecture, which will introduce you to fundamental concepts and the latest techniques to develop your modelling skills and your ability to communicate requirements and architectures with clarity and precision to business stakeholders and software developers. You will improve your knowledge and understanding of the nature and variety of current software development practice. You will be introduced to cutting-edge research methods in software engineering, emphasising the close reading of research papers, the critical yet balanced evaluation of research ideas, and writing a research project proposal. You will choose from a range of specialist optional topics, which may include automated software engineering, computer security, malware, complex networks and web, and networked systems. In Term 2, you will study Validation and Verification, which will cover not only the state-of-the-practice in validation and verification, but also the most significant trends, problems and results in validation and verification research. You will also study responsible software engineering, which will equip you with the skills and knowledge to pursue a responsible and successful career in modern software engineering. You will choose from a range of optional topics, which may include machine learning, further computer security, and information retrieval and data mining, practical program analysis, and automated software engineering.In Term 3, you will primarily focus on your final research project/dissertation (either group or individual) and any examinations that take place in the main examination period.
+
+Compulsory modules
+
+Requirements Engineering and Software Architecture
+
+Validation and Verification
+
+Software Development Practice
+
+Research Methods in Software Engineering
+
+Professional Practice
+
+MSc Software Systems Engineering Research Project
+
+MSc Software Systems Engineering Group Project
+
+Optional modules
+
+Networked Systems
+
+Computer Security I
+
+Computer Security II
+
+People and Security
+
+Malware
+
+Information Retrieval and Data Mining
+
+Complex Networks and Online Social Networks
+
+Machine Learning for Domain Specialists
+
+Applied Deep Learning
+
+Engineering for Data Analysis 1
+
+Automated Software Engineering
+
+Engineering for Data Analysis 2
+
+Please note that the list of modules given here is indicative. This information is published a long time in advance of enrolment and module content and availability are subject to change. Modules that are in use for the current academic year are linked for further information. Where no link is present, further information is not yet available.
+
+Students undertake modules to the value of 180 credits. Upon successful completion of 180 credits, you will be awarded an MSc in Software Systems Engineering.
+
+Accessibility Details of the accessibility of UCL buildings can be obtained from AccessAble. Further information can also be obtained from the UCL Student Support and Wellbeing Services team.
+
+Where you'll study
+
+UCL Computer Science boasts state-of-the-art facilities that are designed to enhance your learning experience. Our recently renovated labs, with 55 high-performance PCs, ample laptop space, and versatile power options, create an optimal study environment. UCL East is home to our Intelligent Robotics Lab, a hub of innovation and cutting-edge technology. Facilities include the new Innovation Lab, which combines a computer cluster, advanced manufacturing equipment (such as 3D printers, laser cutters, and power tools), and an electronics manufacturing and testing area, all within a single space. The lab also features a motion capture system for conducting experiments on robot and human movement. Additionally, UCL boasts an award-winning Student Centre and 18 specialist libraries, ensuring you have access to top-tier resources and study spaces.
+
+Find out more
+
+Visit us
+
+All open days and events
+
+3 December 2024
+
+Online - Open day
+
+Graduate Open Events: Where can a UCL Engineering degree take you - Alumni Perspectives
+
+18:00 — 19:00
+
+Where can a UCL Engineering degree take you? Join us for a panel and Q&A event with UCL Engineering alumni. You'll learn what you can expect from postgraduate study at UCL Engineering and get application advice from previous students! This is an opportunity for all applicants to hear personal experiences of studying with us, but may be most relevant to those applying from the USA, Latin and South America.
+
+5 December 2024
+
+Online - Open day
+
+Graduate Open Events: Where can a UCL Engineering degree take you - Alumni Perspectives
+
+12:00 — 13:00
+
+Where can a UCL Engineering degree take you? Join us for a panel and Q&A event with UCL Engineering alumni. You'll learn what you can expect from postgraduate study at UCL Engineering and get application advice from previous students! This is an opportunity for all applicants to hear personal experiences of studying with us, but may be most relevant to those applying from the USA, Latin and South America.
+
+Fees and funding Fees for this course
+
+UK students
+
+International students
+
+Fee description Full-time
+
+Tuition fees (2025/26)
+
+£20,500
+
+Tuition fees (2025/26)
+
+£39,800
+
+The tuition fees shown are for the year indicated above. Fees for subsequent years may increase or otherwise vary. Where the programme is offered on a flexible/modular basis, fees are charged pro-rata to the appropriate full-time Master's fee taken in an academic session. Further information on fee status, fee increases and the fee schedule can be viewed on the UCL Students website: ucl.ac.uk/students/fees.
+
+Additional costs For Full-time and Part-time offer holders a fee deposit will be charged at 10% of the first year fee. Further information can be found in the Tuition fee deposits section on this page: Tuition fees.
+
+Students will require a modern computer (PC or Mac) with minimum specifications of 8GB RAM and 500GB SSD storage with a camera and microphone. However, we recommend at least 16GB RAM and 0.5-1 TB SSD storage. If you are considering undertaking a machine learning project, there will be computational capability available to you from within the Computer Science department, but you may nevertheless find it helpful to have a capable GPU in addition to the above. UCL’s main teaching locations are in zones 1 (Bloomsbury) and zones 2/3 (UCL East). The cost of a monthly 18+ Oyster travel card for zones 1-2 is £114.50. This price was published by TfL in 2024. For more information on additional costs for prospective students and the cost of living in London, please view our estimated cost of essential expenditure at UCL's cost of living guide.
+
+Funding your studies
+
+For more information about funding opportunities for UCL Computer Science taught postgraduate programmes, please see the department's scholarships webpage. For a comprehensive list of the funding opportunities available at UCL, including funding relevant to your nationality, please visit the Scholarships and Funding website.
+
+See all the ways you can fund your studies
+
+Next steps Students are advised to apply as early as possible due to competition for places. Those applying for scholarship funding (particularly overseas applicants) should take note of application deadlines.
+
+There is an application processing fee for this programme of £90 for online applications. Further information can be found at Application fees.
+
+When we assess your application we wish to learn:
+
+why you want to study Software Systems Engineering at graduate level why you want to study Software Systems Engineering at UCL what particularly attracts you to this programme how your academic and professional background meets the demands of this programme what programming experience you have where you would like to go professionally with your degree.
+
+Together with essential academic requirements, the personal statement is your opportunity to illustrate whether your reasons for applying to this programme match what the programme will deliver. Your application will be judged entirely on the evidence you provide. Due to competition for places on this programme, no late applications will be considered. Students with visa requirements or applying for scholarships are advised to apply early.
+
+Please note that you may submit applications for a maximum of two graduate programmes (or one application for the Law LLM) in any application cycle.
+
+This programme requires two references. Further information regarding references can be found on this Selecting your references page.
+
+Choose your programme Please read the Application Guidance before proceeding with your application.
+
+Year of entry: 2025-2026
+
+MSc Software Systems Engineering, Full-time
