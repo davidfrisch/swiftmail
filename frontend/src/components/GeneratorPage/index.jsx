@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Input, message, Spin } from "antd";
-import { PaperClipOutlined } from "@ant-design/icons";
+import { CopyOutlined } from "@ant-design/icons";
 import "./styles.css";
 import JobStatus from "../EmailsPage/JobStatus";
 const { TextArea } = Input;
@@ -64,6 +64,20 @@ export default function GeneratorPage() {
 
   return (
     <div className="container">
+      <div className="container-header">
+        {loading ? (
+          <Spin style={{ margin: "10px" }} />
+        ) : (
+          <Button
+            type={`${draftText?.length ? "primary" : "default"}`}
+            onClick={() => handleCopyToClipboard(draftText)}
+            id="copy-to-clipboard"
+            disabled={!draftText?.length}
+          >
+            <CopyOutlined />
+          </Button>
+        )}
+      </div>
       <div className="textarea-container">
         <div className="input-box">
           <TextArea
@@ -82,18 +96,6 @@ export default function GeneratorPage() {
             style={{ minHeight: "70vh" }}
             readOnly
           />
-          {loading ? (
-            <Spin style={{ margin: "10px" }} />
-          ) : (
-            <Button
-              type={`${draftText?.length ? "primary" : "default"}`}
-              onClick={() => handleCopyToClipboard(draftText)}
-              id="copy-to-clipboard"
-              disabled={!draftText?.length}
-            >
-              Copy <PaperClipOutlined />
-            </Button>
-          )}
         </div>
       </div>
       {loading ? (
