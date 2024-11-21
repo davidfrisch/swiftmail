@@ -11,6 +11,7 @@ import EmailsPage from "./components/EmailsPage";
 import ResultsPage from "./components/ResultsPage";
 import { Layout } from "antd";
 import api from "./api";
+import GeneratorPage from "./components/GeneratorPage";
 const { Content, Footer } = Layout;
 
 function App() {
@@ -35,7 +36,7 @@ function App() {
   useEffect(() => {
     const currentPath = window.location.pathname;
     if (currentPath === "/" || currentPath === "/mails") {
-      navigate("/mails");
+      navigate("/");
       setCurrentMail(null);
     }
 
@@ -44,7 +45,7 @@ function App() {
       if (!isNaN(mailId)) {
         handleGetMail(mailId);
       } else {
-        navigate("/mails");
+        navigate("/");
         setCurrentMail(null);
       }
     }
@@ -57,7 +58,7 @@ function App() {
       </header>
       <Content id="content-wrap">
         <Routes>
-          <Route path="/" element={<EmailsPage handleView={handleView} />} />
+          <Route path="/" element={<GeneratorPage />} />
           <Route
             path="/mails"
             element={<EmailsPage handleView={handleView} />}

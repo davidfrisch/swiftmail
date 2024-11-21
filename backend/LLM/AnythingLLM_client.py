@@ -22,7 +22,7 @@ class AnythingLLMClient:
             logger.error(f"{response.json()}")
         return response.json()
     except Exception as e:
-        logger.error(f"[ERROR] {e}")
+        logger.error(f"[ERROR] {url}: {e}")
         raise e
 
   def ping_alive(self):
@@ -114,7 +114,7 @@ class AnythingLLMClient:
     return response
 
   def get_all_workspaces(self):
-    response = self._make_request("GET", "v1/workspaces")
+    response = self._make_request("GET", "workspaces")
     return response
 
   def get_workspace(self, slug):
@@ -145,9 +145,8 @@ class AnythingLLMClient:
     return response
 
   def get_threads(self, slug):
-    print(f"Getting threads for workspace: {slug}")
-    response = self._make_request("GET", f"v1/workspace/{slug}")
-    threads = response["workspace"][0]["threads"]
+    response = self._make_request("GET", f"workspace/{slug}/threads")
+    threads = response["threads"]
     return threads
   
   def update_thread(self, slug_workspace, slug_thread, payload):
@@ -155,9 +154,18 @@ class AnythingLLMClient:
     
   
   def new_thread(self, slug_workspace, name):
-    print(f"Creating new thread with name: {name} in workspace: {slug_workspace}")
-    response = self._make_request("POST", f"v1/workspace/{slug_workspace}/thread/new")
-    return response['thread']
+    res = self._make_request("POST", f"v1/workspace/{slug_workspace}/thread/new")
+    new_thread = res["thread"]
+    threads = self.get_threads(slug_workspace)
+    thread_with_same_name = [thread for thread in threads if thread["name"].split("-copy-")[0] == name]
+    if len(thread_with_same_name) == 1:
+        name = name + "-copy-1"
+    elif len(thread_with_same_name) > 1:
+        biggest_number = max([int(thread["name"].split("-copy-")[1]) if "-copy-" in thread["name"] else 0 for thread in thread_with_same_name])
+        name = name + "-copy-" + str(biggest_number+1)
+    
+    self.update_thread(slug_workspace, new_thread["slug"], {"name": name})
+    return new_thread
   
   def delete_thread(self, slug_workspace, slug_thread):
     try:

@@ -174,7 +174,7 @@ class Generater:
       
 
 
-    def generate_response_email(self, original_email: Email, questions: List[ExtractResult], answers: List[AnswerResult], additional_context="") -> str:
+    def generate_response_email(self, original_email: Email, questions: List[ExtractResult], answers: List[AnswerResult], additional_context="", thread_slug=None) -> str:
         program_administrator_name = "David"
         program_name = "UCL Software Engineering MSc"
         
@@ -190,8 +190,10 @@ class Generater:
         
         {("Additional information to consider:"+ additional_context) if additional_context else ""}
         """
-        
-        generated_email = self.anyllm_client.chat_with_workspace(original_email.workspace_name, prompt)
+        if thread_slug:
+            generated_email = self.anyllm_client.chat_with_thread(original_email.workspace_name, thread_slug, prompt, mode="query")
+        else:
+            generated_email = self.anyllm_client.chat_with_workspace(original_email.workspace_name, prompt)
         return generated_email
     
     

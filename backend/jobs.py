@@ -71,11 +71,12 @@ def update_answer(db: Session, generater: Generater, answer: schemas.AnswerResul
     return new_answer
     
 
-def generate_draft_email(db: Session, generater: Generater, email: schemas.Email, job: schemas.Job):
+def generate_draft_email(db: Session, generater: Generater, email: schemas.Email, job: schemas.Job, thread_slug):
     # extract_results = crud.get_extract_results_by_job_id(db, job.id)
     # answers = crud.get_answer_results_by_job_id(db, job.id)
     
-    draft_response = generater.generate_response_email(email, [], [], email.additional_information)
+    draft_response = generater.generate_response_email(email, [], [], email.additional_information, thread_slug)
+
     draft_body = draft_response['textResponse']
     sources = draft_response['sources']
     
@@ -120,17 +121,19 @@ def start_job_generater(ollama_client, anyllm_client, email_id, job_id, thread_s
             
             crud.update_job_status(db, job, JobStatus.EXTRACTING)
             crud.update_job(db, job)
-            logger.info("Job status updated to EXTRACTING")
             
-            extract_questions_from_email(db, generater, email, job)
+            # logger.info("Job status updated to EXTRACTING")
+            # extract_questions_from_email(db, generater, email, job)
             
-            crud.update_job_status(db, job, JobStatus.ANSWERING)
-            logger.info("Job status updated to ANSWERING")
-            answer_questions(db, generater, email, job, thread_slug)
+            # crud.update_job_status(db, job, JobStatus.ANSWERING)
+            # logger.info("Job status updated to ANSWERING")
+            # answer_questions(db, generater, email, job, thread_slug)
             
             crud.update_job_status(db, job, JobStatus.DRAFTING)
+            
+            
             logger.info("Job status updated to DRAFTING")
-            generate_draft_email(db, generater, email, job)
+            generate_draft_email(db, generater, email, job, thread_slug)
             
             crud.update_job_status(db, job, JobStatus.COMPLETED)
             logger.info("Job status updated to COMPLETED")

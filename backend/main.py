@@ -149,7 +149,6 @@ async def get_jobs(db: Session = Depends(get_db)):
         
     return jobs
 
-
 @app.post("/jobs")
 async def generate_response(body: NewJob, db: Session = Depends(get_db)):
 
@@ -207,7 +206,17 @@ async def generate_response(body: NewJob, db: Session = Depends(get_db)):
 
     return {"message": "Response generated successfully", "job": job}
 
-  
+
+@app.get("/jobs/{job_id}")
+async def get_job(job_id: int, db: Session = Depends(get_db)):
+    job = crud.get_job(db, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+      
+    email = crud.get_email(db, job.email_id)
+    job.email = email
+    return {"message": "Job fetched successfully", "job": job}
+
 @app.get("/jobs/{job_id}/results")
 async def get_jobs_results(job_id: int, db: Session = Depends(get_db)):
     job = crud.get_job(db, job_id)

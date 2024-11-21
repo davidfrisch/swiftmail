@@ -16,7 +16,7 @@ const progressStatus = {
   PENDING: { status: "active", percent: 0 },
   EXTRACTING: { status: "active", percent: 25 },
   ANSWERING: { status: "active", percent: 50 },
-  DRAFTING: { status: "active", percent: 75 },
+  DRAFTING: { status: "active", percent: 50 },
   COMPLETED: { status: "success", percent: 100 },
 };
 

@@ -1,0 +1,72 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+.textarea-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  max-width: 80vw;
+  min-height: 70vh;
+}
+
+.textarea {
+  height: 2000;
+  padding: 15px; 
+  font-size: 16px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.input-box {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.output-box {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.button-generate {
+  margin-top: 20px;
+  padding: 12px 40px; /* Slightly larger button */
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-generate:hover {
+  background-color: #0056b3;
+}
+
+.job-status {
+  margin-top: 20px;
+  width: 50%;
+}
+
+#copy-to-clipboard {
+  padding: 12px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
