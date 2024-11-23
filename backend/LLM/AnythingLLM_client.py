@@ -51,13 +51,25 @@ class AnythingLLMClient:
     response = self._make_request("GET", "system/local-files")
     return response["localFiles"]
   
-  def change_chunk_size(self, chunk_size, chunk_overlap):
+  def set_chunk_size(self, chunk_size, chunk_overlap):
     payload = {
       "text_splitter_chunk_size": chunk_size,
       "text_splitter_chunk_overlap": chunk_overlap
     }
     response = self._make_request("POST", "admin/system-preferences", payload)
     return response
+  
+  
+  def set_embedding_provider(self, model, max_chunk_size):
+      payload = {
+          "EmbeddingBasePath": "http://host.docker.internal:11434",
+          "EmbeddingEngine": "ollama",
+          "EmbeddingModelPref": model,
+          "EmbeddingModelMaxChunkLength": str(max_chunk_size)
+        }
+      print(payload)
+      response = self._make_request("POST", "system/update-env", payload)
+      return response
 
 
   def get_folder(self, document_name: str):
@@ -71,6 +83,8 @@ class AnythingLLMClient:
 
   def get_url_from_folder(self, folder: dict, url: str):
     for item in folder["items"]:
+      if item['type'] == "file" and item['title'] == url.split("/")[-1]:
+        return item
       if item["chunkSource"] == "link://"+url:
         return item
     return None
@@ -185,11 +199,27 @@ class AnythingLLMClient:
     response = self._make_request("POST", f"v1/workspace/{slug_workspace}/thread/{slug_thread}/chat", payload)
     return response
   
+  def is_already_in_documents(self, folder_name, file_path):
+    folder = self.get_folder(folder_name)
+    url_elem = self.get_url_from_folder(folder, file_path)
+    return url_elem is not None
+  
+  
+  
   def add_document_to_workspace(self, slug, file_path):
+    if self.is_already_in_documents("custom-documents", file_path):
+      logger.error(f"[WARNING] File {file_path} already exists in custom-documents")
+      return
+    
     files = {
       "file": open(file_path, 'rb')
     }
-    response = self._make_request("POST", f"workspace/{slug}/upload", files=files)
+    self._make_request("POST", f"workspace/{slug}/upload", files=files)
+    documents = self.get_folder("custom-documents")
+    url_elem = self.get_url_from_folder(documents, file_path)
+  
+    elem_to_add = "custom-documents/"+url_elem["name"]
+    response = self.update_documents_into_workspace(slug, adds=[elem_to_add])
     return response
   
   def __upload_link_to_workspace(self, slug, link) -> None:
